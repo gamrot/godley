@@ -8,7 +8,7 @@
 #'
 #' @export
 
-add_equation <-function(model ,
+add_equation <- function(model ,
                         equation = '',
                         desc = '',
                         hidden = FALSE) {
