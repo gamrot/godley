@@ -1,4 +1,4 @@
-# godley — an integrated approach to stock-flow consistent modelling
+# godley 0.1.0 — an integrated approach to stock-flow consistent modelling
 
 ## Installation
 To install godley package please use ```devtools```:
