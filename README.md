@@ -15,7 +15,7 @@ library("godley")
 ```
 
 ## Overview
-godley is an R package for simulating SFC (stock-flow consistent) models. Package can be used to create, simulate and modify various model scenarios and sensitivities and to visualize simulation results. The vast majority of available components is presented in `example` directory containing scripts with models from a book: *Monetary Economy (Godley & Lavoie, 2007)*.
+godley is an R package for simulating SFC (stock-flow consistent) models. Package can be used to create, simulate and modify various model scenarios and sensitivities and to visualize simulation results. The vast majority of available components is presented in `vignettes` directory containing scripts with models from a book: *Monetary Economy (Godley & Lavoie, 2007)*.
 
 ## Functions
 Main functions in package are: \
