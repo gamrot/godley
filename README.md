@@ -1,4 +1,4 @@
-# godley 0.1.0 — an integrated approach to stock-flow consistent modelling
+# godley (0.1.0) — an integrated approach to stock-flow consistent modelling
 
 ## Installation
 To install godley package please use ```devtools```:
@@ -19,16 +19,16 @@ godley is an R package for simulating SFC (stock-flow consistent) models. Packag
 
 ## Functions
 Main functions in package are: \
-```create_model()``` — creates a SFC model. \
-```add_variable()``` — adds variables to the SFC model. \
-```add_equation()``` — adds equations to the SFC model. \
-```change_init()``` — changes initial value for selected parameter. \
-```prepare()``` — prepares model for simulation. \
-```simulate_scenario()``` — calculates provided scenario(s) from the SFC model. \
-```plot_simulation()``` — plots simulation results of provided scenario(s). \
-```create_shock()``` — creates a SFC_shock object. \
-```add_shock()``` — adds shock equations to the SFC_shock object. \
-```add_scenario()``` — adds new scenario to the SFC model. \
+```create_model()``` — creates a SFC model, \
+```add_variable()``` — adds variables to the SFC model, \
+```add_equation()``` — adds equations to the SFC model, \
+```change_init()``` — changes initial value for selected parameter, \
+```prepare()``` — prepares model for simulation, \
+```simulate_scenario()``` — calculates provided scenario(s) from the SFC model, \
+```plot_simulation()``` — plots simulation results of provided scenario(s), \
+```create_shock()``` — creates a SFC_shock object, \
+```add_shock()``` — adds shock equations to the SFC_shock object, \
+```add_scenario()``` — adds new scenario to the SFC model, \
 ```create_sensitivity()``` — creates a new SFC model with sensitivity scenarios for provided variable. 
 
 ## Example
