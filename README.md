@@ -248,9 +248,9 @@ Main functions in package godley described above in *Example* section are: \
 ```create_sensitivity()``` - creates a new SFC model with sensitivity scenarios for provided variable. 
 
 ## Similar packages
-There are two other packages that also allows users to build stock-flow consistent models: \
+There are two other packages that also allows users to build stock-flow consistent models: 
 
-- R package sfcr (https://github.com/joaomacalos/sfcr) \
+- R package sfcr (https://github.com/joaomacalos/sfcr) 
 - Python package pysolve3 (https://github.com/gpetrini/pysolve3)
 
 ## References
