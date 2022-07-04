@@ -239,7 +239,6 @@ Main functions in package godley described above in *Example* section are: \
 ```create_model()``` - creates a SFC model, \
 ```add_variable()``` - adds variables to the SFC model, \
 ```add_equation()``` - adds equations to the SFC model, \
-```change_init()``` - changes initial value for selected parameter, \
 ```simulate_scenario()``` - calculates provided scenario(s) from the SFC model, \
 ```plot_simulation()``` - plots simulation results of provided scenario(s), \
 ```create_shock()``` - creates a SFC_shock object, \
