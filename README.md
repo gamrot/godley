@@ -1,11 +1,11 @@
 # godley - a modern approach to stock-flow consistent modelling in R
-```godley``` is an R package for simulating SFC (stock-flow consistent) models. It can be used to create and simulate fully fledged post-keynesian / MMT models of the economy. It allows users to apply shocks to the economy, simulate effects of changing parameters, visualize different macro scenarios and much more. It's named after Wynne Godley, a famous post-keynesian theorist.
+```godley``` is an R package for simulating SFC (stock-flow consistent) models. It can be used to create and simulate fully fledged post-keynesian / MMT models of the economy. It allows users to apply shocks, simulate effects of changing parameters, visualize different macro scenarios and much more. ```godley``` is named after Wynne Godley (1926-2010).
 
 ## Installation
 To install the package, simply type ```devtools::install_github("gamrot/godley")```
 
 ## Usage
-Below you can find a simple example of ```godley``` in action — a SIM model from *Monetary Economics (Godley & Lavoie, 2007)*.
+Below you can find a simple example of ```godley``` in action — a SIM model from Monetary Economics (Godley & Lavoie, 2007).
 
 First, we need to create an empty model using ```create_model()``` function.
 
@@ -13,7 +13,6 @@ First, we need to create an empty model using ```create_model()``` function.
 model_sim <- create_model(name = "SFC SIM")
 ```
 
-#### Variables
 Now let's add some variables using the ```add_variable()``` function. This will add a ```$varibles``` tibble to the model.
 
 ```
@@ -58,7 +57,6 @@ model_sim$variables
 ## 16 W      Wage rate                               1
 ```
 
-#### Equations
 Okay, let's add some equations, shall we? There's a function for that! You've guessed it, it's the ```add_equation()``` function. It also adds a tibble to the model, this time it's called ```$equations```
 
 ```
@@ -95,8 +93,6 @@ model_sim$equation
 ## 12 H_s = H_h                            "Money equilibrium" TRUE
 ```
 
-#### Simulation
-
 With all variables and equations defined, it's about time to run some simulations using the ```simulate_scenario()``` function. You can choose simulation method (```Newton``` or ```Gauss```) and number of periods (think quarters or years). Results will be stored in a ```$result``` tibble under a ```$baseline``` scenario.
 
 ```
@@ -122,7 +118,6 @@ model_sim$baseline$result
 ## #   G_d <dbl>, W <dbl>
 ```
 
-#### Plot
 When everything is done, you can plot the results using the ```plot_simulation()``` function. You can define which variables or expressions you want. Let's plot Income, Government spending and Taxes.
 
 ```
@@ -132,10 +127,13 @@ plot_simulation(model = model_sim, scenario = c("baseline"), from = 1, to = 50,
 
 ![Scenario baseline](images_sim/Scenario_baseline.png)
 
+And one more thing, if you're lazy like me, you can create models using templates using ```create_model(template = 'SIM')```. You can choose from ```SIM```, ```PC```, ```LP```, ```REG```, ```OPEN```, ```BMW```, ```BMWK```, ```DIS```, ```DISINF``` and ```SIMEX```. Basically all models from Godley & Lavoie (2007). 
+
 ### Shocks
 ```godley``` allows you to create and simulate shocks. Let's see what happens if we increase government spending.
 
 To create the shock first we need to create an empty shock object with a ```create_shock()```. Next let's see what's gonna happen when we use the ```add_shock()``` function to increase government spending by 5 units from 5th to 50th period.
+
 ```
 sim_shock <- create_shock() 
 
