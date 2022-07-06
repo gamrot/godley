@@ -1,4 +1,4 @@
-# godley - a modern approach to stock-flow consistent modelling in R
+# godley
 ```godley``` is an R package for simulating SFC (stock-flow consistent) models. It can be used to create and simulate fully fledged post-keynesian / MMT models of the economy. It allows users to apply shocks, simulate effects of changing parameters, visualize different macro scenarios and much more. ```godley``` is named after Wynne Godley (1926-2010).
 
 ## Installation
@@ -9,13 +9,13 @@ Below you can find a simple example of ```godley``` in action — a SIM model fr
 
 First, we need to create an empty model using ```create_model()``` function.
 
-```
+``` r
 model_sim <- create_model(name = "SFC SIM")
 ```
 
 Now let's add some variables using the ```add_variable()``` function. This will add a ```$varibles``` tibble to the model.
 
-```
+``` r
 model_sim <- model_sim %>%
   add_variable("C_d", desc = "Consumption demand by households") %>%
   add_variable("C_s", desc = "Consumption supply") %>%
@@ -59,7 +59,7 @@ model_sim$variables
 
 Okay, let's add some equations, shall we? There's a function for that! You've guessed it, it's the ```add_equation()``` function. It also adds a tibble to the model, this time it's called ```$equations```
 
-```
+``` r
 model_sim <- model_sim %>%
   add_equation("C_s = C_d", desc = "Consumption") %>%
   add_equation("G_s = G_d") %>%
@@ -95,7 +95,7 @@ model_sim$equation
 
 With all variables and equations defined, it's about time to run some simulations using the ```simulate_scenario()``` function. You can choose simulation method (```Newton``` or ```Gauss```) and number of periods (think quarters or years). Results will be stored in a ```$result``` tibble under a ```$baseline``` scenario.
 
-```
+``` r
 model_sim <- simulate_scenario(model = model_sim, scenario = "baseline", max_iter = 350, 
                                periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Newton")
 
@@ -120,7 +120,7 @@ model_sim$baseline$result
 
 When everything is done, you can plot the results using the ```plot_simulation()``` function. You can define which variables or expressions you want. Let's plot Income, Government spending and Taxes.
 
-```
+``` r
 plot_simulation(model = model_sim, scenario = c("baseline"), from = 1, to = 50, 
                 expressions = c("Y", "G_s", "T_s"))
 ```
@@ -134,7 +134,7 @@ And one more thing, if you're lazy like me, you can create models using template
 
 To create the shock first we need to create an empty shock object with a ```create_shock()```. Next let's see what's gonna happen when we use the ```add_shock()``` function to increase government spending by 5 units from 5th to 50th period.
 
-```
+``` r
 sim_shock <- create_shock() 
 
 sim_shock <- add_shock(shock = sim_shock, equation = "G_d = 25", 
@@ -150,14 +150,14 @@ sim_shock
 
 With everything defined, let's add a new scenario using the ```add_scenario()``` function. But first we need to instrcut ```godley``` which scenario we will use as a starting point (and which period).
 
-```
+``` r
 model_sim <- add_scenario(model = model_sim, name = "expansion", origin = "baseline", 
 			  origin_period = 100, shock = sim_shock)
 ```
 
 After a shock scenario is created we can simulate it using the now familiar ```simulate_scenario()``` function.
 
-```
+``` r
 model_sim <- simulate_scenario(model = model_sim, max_iter = 350, periods = 100, 
 			       hidden_tol = 0.1, tol = 1e-08, method = "Newton")
 
@@ -182,7 +182,7 @@ model_sim$expansion$result
 
 Now let's see the results using the ```plot_simulation()``` function. As you can see, an increase in government expenditures has a positive effect on income... And not so positive short-term effect on government ballance.
 
-```
+``` r
 plot_simulation(model = model_sim, scenario = c("expansion"), from = 1, to = 50, 
                 expressions = c("Y", "G_s", "T_s"))
 ```
@@ -193,14 +193,14 @@ plot_simulation(model = model_sim, scenario = c("expansion"), from = 1, to = 50,
 
 First we need to create a new object using ```create_sensitivity()``` function and define lower and upper bounds for the parameter we want analyze.
 
-```
+``` r
 model_sens <- create_sensitivity(model_pass = model_sim, variable = "alpha1", 
 				 lower = 0.1, upper = 0.7, step = 0.05)
 ```
 
 Now we're ready to simulate results and see it on a plot
 
-```
+``` r
 model_sens <- simulate_scenario(model = model_sens, max_iter = 350, periods = 100, 
                                 hidden_tol = 0.1, tol = 1e-08, method = "Newton")
 
