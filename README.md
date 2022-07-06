@@ -3,7 +3,7 @@
 
 ```godley``` is named after Wynne Godley (1926-2010), a famous British post-keynesian economist and a father of stock-flow consistent modeling.
 
-## Installation 
+## Installation 🪛
 The best way to start using ```godley``` is to install it directly grom GitHub using the ```devtools``` package. 
 
 ``` r
@@ -11,7 +11,7 @@ install.packages("devtools")
 devtools::install_github("gamrot/godley")
 ```
 
-## Usage
+## Usage 📊
 Below you can find a simple example of ```godley``` in action. Let's play with the well known "SIM model" from Monetary Economics (Godley & Lavoie, 2007).
 
 First, we need to create an empty model using ```create_model()``` function.
@@ -195,7 +195,7 @@ plot_simulation(model = model_sim, scenario = c("expansion"), from = 1, to = 50,
 ```
 ![Scenario extansion](images_sim/Scenario_expansion.png)
 
-### Sensitivity
+### Sensitivity 🧙
 ```godley``` allows users to see if simulation results are sensitive to parameter changes. After all, we don't want to create models that make sense just for a specific combination of parameters. Let's see how small changes to *alpha1* affect short-term model dynamics.
 
 First we need to create a new object using ```create_sensitivity()``` function and define lower and upper bounds for the parameter we want analyze.
@@ -217,7 +217,7 @@ plot_simulation(model = model_sens, scenario = "sensitivity", take_all = TRUE,
 ![Sensitivity](images_sim/Sensitivity.png)
 
 
-## Functions
+## Functions 🔧
 Here's a list of package's most important fucntions.
 
 ```create_model()``` - creates an SFC model \
@@ -232,12 +232,11 @@ Here's a list of package's most important fucntions.
 
 ```create_sensitivity()``` - creates a new SFC model with sensitivity scenarios for selected parameters. 
 
-## Similar work
+## Similar work 👪
 There are two other packages that also allows users to build stock-flow consistent models: 
 
 - `sfcr` (https://github.com/joaomacalos/sfcr), you should definitely check it out!
 - `pysolve3` (https://github.com/gpetrini/pysolve3)
 
-## Getting help
-
+## Getting help 🐛
 If you encounter a clear bug, please file an issue with a minimal reproducible example on [GitHub](https://github.com/gamrot/godley/issues).
