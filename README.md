@@ -1,33 +1,22 @@
-# godley (0.1.0) - an integrated approach to stock-flow consistent modelling
-Package godley is an R package for simulating SFC (stock-flow consistent) models. Package can be used to create, simulate and modify various model scenarios, calculate sensitivities and visualize simulations results. 
+# godley - a modern approach to stock-flow consistent modelling in R
+```godley``` is an R package for simulating SFC (stock-flow consistent) models. It can be used to create and simulate fully fledged post-keynesian / MMT models of the economy. It allows users to apply shocks to the economy, simulate effects of changing parameters, visualize different macro scenarios and much more. It's named after Wynne Godley, a famous post-keynesian theorist.
 
 ## Installation
-There are two ways to install godley package with ```devtools```:
+To install the package, simply type ```devtools::install_github("gamrot/godley")```
 
-- use ```install_github()``` function to install package directly from github:
-```
-devtools::install_github("gamrot/godley", build_vignettes = TRUE)
-library("godley")
-```
-- or set working directory to location with godley package files and use ```install()``` function:
-```
-devtools::install(build_vignettes = TRUE)
-library("godley")
-```
-## Example
-Below you can find an example of application godley package to simulate model SIM from Chapter 3 *Monetary Economics: (Godley & Lavoie, 2007)*. More examples from the book will be described in the *articles*.
+## Usage
+Below you can find a simple example of ```godley``` in action — a SIM model from *Monetary Economics (Godley & Lavoie, 2007)*.
 
-### Baseline scenario
-To create model SIM you need to create first an empty SFC model using ```create_model()``` function:
+First, we need to create an empty model using ```create_model()``` function.
+
 ```
-# Create empty model
 model_sim <- create_model(name = "SFC SIM")
 ```
 
 #### Variables
-When new empty SFC model is created you can add all variables that will be used in simulation using ```add_variable()``` function. As a result the tibble with defined variables will be created in the model:
+Now let's add some variables using the ```add_variable()``` function. This will add a ```$varibles``` tibble to the model.
+
 ```
-# Add variables
 model_sim <- model_sim %>%
   add_variable("C_d", desc = "Consumption demand by households") %>%
   add_variable("C_s", desc = "Consumption supply") %>%
@@ -68,10 +57,11 @@ model_sim$variables
 ## 15 G_d    Government demand                      20  
 ## 16 W      Wage rate                               1
 ```
+
 #### Equations
-As a next step you need to add all equations that will be used in simulation using ```add_equation()``` function. As a result the tibble with defined equations will be created in the model:
+Okay, let's add some equations, shall we? There's a function for that! You've guessed it, it's the ```add_equation()``` function. It also adds a tibble to the model, this time it's called ```$equations```
+
 ```
-# Add equations
 model_sim <- model_sim %>%
   add_equation("C_s = C_d", desc = "Consumption") %>%
   add_equation("G_s = G_d") %>%
@@ -104,12 +94,12 @@ model_sim$equation
 ## 11 N_d = Y/W                            ""                  FALSE 
 ## 12 H_s = H_h                            "Money equilibrium" TRUE
 ```
+
 #### Simulation
 
-If all variables and equations are defined, you can simulate created scenario with ```simulate_scenario()``` function. You should define i.a. method of simulation (Newton or Gauss) and number of periods. In this example simulation will be performed for next 100 periods using Newton method. Results of simulation are stored in the *result* tibble:
+With all variables and equations defined, it's about time to run some simulations using the ```simulate_scenario()``` function. You can choose simulation method (```Newton``` or ```Gauss```) and number of periods (think quarters or years). Results will be stored in a ```$result``` tibble under a ```$baseline``` scenario.
 
 ```
-# simulate baseline scenario
 model_sim <- simulate_scenario(model = model_sim, scenario = "baseline", max_iter = 350, 
                                periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Newton")
 
@@ -133,27 +123,22 @@ model_sim$baseline$result
 ```
 
 #### Plot
-When simulation is done you can plot results using ```plot_simulation()``` function. In this function you should define which set of variables and/or expressions will be displayed on the plot. In this example Income, Government spending and Taxes will be shown:
+When everything is done, you can plot the results using the ```plot_simulation()``` function. You can define which variables or expressions you want. Let's plot Income, Government spending and Taxes.
+
 ```
-# Plot scenario results
 plot_simulation(model = model_sim, scenario = c("baseline"), from = 1, to = 50, 
                 expressions = c("Y", "G_s", "T_s"))
-
 ```
+
 ![Scenario baseline](images_sim/Scenario_baseline.png)
 
-As you can see on the plot above in steady state the Income is equal 100, while the Government spending and Taxes are both equals 20.
+### Shocks
+```godley``` allows you to create and simulate shocks. Let's see what happens if we increase government spending.
 
-### Shock scenario
-Package godley allows to create and simulate shock scenarios. In this example shock with an increased government expenditures to 25 will be implemented.
-
-#### Shock equation
- To create the shock first you need to create empty shock object with ```create_shock()``` function and add new shock equation with ```add_shock()``` function. In this function you should define starting and ending periods for the applied shock:
+To create the shock first we need to create an empty shock object with a ```create_shock()```. Next let's see what's gonna happen when we use the ```add_shock()``` function to increase government spending by 5 units from 5th to 50th period.
 ```
-# create an empty shock
 sim_shock <- create_shock() 
 
-# add a shock equation - an increase in government expenditures to 25
 sim_shock <- add_shock(shock = sim_shock, equation = "G_d = 25", 
 		       desc = "permanent increase in government expenditures", start = 5, end = 50)
 
@@ -164,18 +149,17 @@ sim_shock
 ##   <chr>    <chr>                                         <dbl> <dbl>
 ## 1 G_d = 25 permanent increase in government expenditures     5    50
 ```
-#### Shock scenario
-When equation is defined, as a next step you need to add this shock as a new scenario into created earlier SFC model using ```add_scenario()``` function. In this function you need to define which period of original scenario will be treated as first period of the shock scenario: 
-```
-# create new scenario with shock equation
-model_sim <- add_scenario(model = model_sim, name = "expansion", origin = "baseline", 
-			  origin_period = 100, shock = sim_shock)
+
+With everything defined, let's add a new scenario using the ```add_scenario()``` function. But first we need to instrcut ```godley``` which scenario we will use as a starting point (and which period).
 
 ```
-#### Shock simulation
-After scenario is created you should simulate it:
+model_sim <- add_scenario(model = model_sim, name = "expansion", origin = "baseline", 
+			  origin_period = 100, shock = sim_shock)
 ```
-# simulate shock scenario
+
+After a shock scenario is created we can simulate it using the now familiar ```simulate_scenario()``` function.
+
+```
 model_sim <- simulate_scenario(model = model_sim, max_iter = 350, periods = 100, 
 			       hidden_tol = 0.1, tol = 1e-08, method = "Newton")
 
@@ -197,37 +181,31 @@ model_sim$expansion$result
 ## # ... with 90 more rows, and 4 more variables: alpha2 <dbl>, theta <dbl>,
 ## #   G_d <dbl>, W <dbl>
 ```
-#### Plot
-Now you can display results of calculated shock scenario. As you can see below due to increase of government expenditures to 25 the Income in steady state has increased to 125 and Taxes increased to level of government expenditures (25).
+
+Now let's see the results using the ```plot_simulation()``` function. As you can see, an increase in government expenditures has a positive effect on income... And not so positive short-term effect on government ballance.
 
 ```
-# plot results
 plot_simulation(model = model_sim, scenario = c("expansion"), from = 1, to = 50, 
                 expressions = c("Y", "G_s", "T_s"))
 ```
 ![Scenario extansion](images_sim/Scenario_expansion.png)
 
 ### Sensitivity
-Package godley allows user to create and calculate various sensitivities. In this example you will find guidance how to calculate sensitivity for variable *alpha1* from model SIM.
-#### Sensitivity model
-First you need to create sensitivity model using ```create_sensitivity()``` function and define lower and upper boundaries for the variable and the step of sensitivity. As a results new SFC model with defined sensitivity scenarios will be created:
+```godley``` allows users to see if simulation results are sensitive to parameter changes. After all, we don't want to create models that make sense just for a specific combination of parameters. Let's see how small changes to *alpha1* affect short-term model dynamics.
+
+First we need to create a new object using ```create_sensitivity()``` function and define lower and upper bounds for the parameter we want analyze.
+
 ```
-# create sensitivity
 model_sens <- create_sensitivity(model_pass = model_sim, variable = "alpha1", 
 				 lower = 0.1, upper = 0.7, step = 0.05)
 ```
-#### Sensitivity simulation
-Next you should simulate all sensitivity scenarios:
+
+Now we're ready to simulate results and see it on a plot
+
 ```
-# simulate sensitivity
 model_sens <- simulate_scenario(model = model_sens, max_iter = 350, periods = 100, 
                                 hidden_tol = 0.1, tol = 1e-08, method = "Newton")
-```
 
-#### Plot
-After simulation is completed you can plot and compare sensitivity results:
-```
-# plot sensitivity results
 plot_simulation(model = model_sens, scenario = "sensitivity", take_all = TRUE, 
 		            from = 1, to = 50, expressions = c("Y"))
 ```
@@ -235,22 +213,22 @@ plot_simulation(model = model_sens, scenario = "sensitivity", take_all = TRUE,
 
 
 ## Functions
-Main functions in package godley described above in *Example* section are: \
-```create_model()``` - creates a SFC model, \
-```add_variable()``` - adds variables to the SFC model, \
-```add_equation()``` - adds equations to the SFC model, \
-```simulate_scenario()``` - calculates provided scenario(s) from the SFC model, \
-```plot_simulation()``` - plots simulation results of provided scenario(s), \
-```create_shock()``` - creates a SFC_shock object, \
-```add_shock()``` - adds shock equations to the SFC_shock object, \
-```add_scenario()``` - adds new scenario to the SFC model, \
-```create_sensitivity()``` - creates a new SFC model with sensitivity scenarios for provided variable. 
+Here's a list of package's most important fucntions.
 
-## Similar packages
+```create_model()``` - creates an SFC model \
+```add_variable()``` - adds a variable \
+```add_equation()``` - adds an equation \
+```simulate_scenario()``` - simulates a selected scenario(s) \
+```plot_simulation()``` - plots simulation results
+
+```create_shock()``` - creates an ```SFC_shock``` object \
+```add_shock()``` - adds shock equations \
+```add_scenario()``` - adds scenario to an existing model \
+
+```create_sensitivity()``` - creates a new SFC model with sensitivity scenarios for selected parameters. 
+
+## Similar work
 There are two other packages that also allows users to build stock-flow consistent models: 
 
-- R package sfcr (https://github.com/joaomacalos/sfcr) 
-- Python package pysolve3 (https://github.com/gpetrini/pysolve3)
-
-## References
-Package godley was created based on the book *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*  written by *Wynne Godley and Marc Lavoie, 2007*.
+- `sfcr` (https://github.com/joaomacalos/sfcr), you should definitely check it out!
+- `pysolve3` (https://github.com/gpetrini/pysolve3)
