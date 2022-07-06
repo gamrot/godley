@@ -220,15 +220,15 @@ plot_simulation(model = model_sens, scenario = "sensitivity", take_all = TRUE,
 ## Functions 🔧
 Here's a list of package's most important fucntions.
 
-```create_model()``` - creates an SFC model \
-```add_variable()``` - adds a variable \
-```add_equation()``` - adds an equation \
-```simulate_scenario()``` - simulates a selected scenario(s) \
+```create_model()``` - creates an SFC model
+```add_variable()``` - adds a variable
+```add_equation()``` - adds an equation
+```simulate_scenario()``` - simulates a selected scenario(s)
 ```plot_simulation()``` - plots simulation results
 
-```create_shock()``` - creates an ```SFC_shock``` object \
-```add_shock()``` - adds shock equations \
-```add_scenario()``` - adds scenario to an existing model \
+```create_shock()``` - creates an ```SFC_shock``` object
+```add_shock()``` - adds shock equations
+```add_scenario()``` - adds scenario to an existing model
 
 ```create_sensitivity()``` - creates a new SFC model with sensitivity scenarios for selected parameters. 
 
