@@ -4,7 +4,7 @@
 ## Installation
 The best way to start using ```godley``` is to install it directly grom GitHub using the ```devtools``` package. 
 
-```
+``` r
 install.packages("devtools")
 devtools::install_github("gamrot/godley")
 ```
@@ -126,13 +126,13 @@ model_sim$baseline$result
 When everything is done, you can plot the results using the ```plot_simulation()``` function. You can define which variables or expressions you want. Let's plot Income, Government spending and Taxes.
 
 ``` r
-plot_simulation(model = model_sim, scenario = c("baseline"), from = 1, to = 50, 
+plot_simulation(model = model_sim, scenario = "baseline", from = 1, to = 50, 
                 expressions = c("Y", "G_s", "T_s"))
 ```
 
 ![Scenario baseline](images_sim/Scenario_baseline.png)
 
-And one more thing, if you're lazy like me, you can create models using templates using ```create_model(template = 'SIM')```. You can choose from ```SIM```, ```PC```, ```LP```, ```REG```, ```OPEN```, ```BMW```, ```BMWK```, ```DIS```, ```DISINF``` and ```SIMEX```. Basically all models from Godley & Lavoie (2007). 
+And one more thing (if you're lazy like me), you can create models using "templates" using ```create_model(template = "SIM")```. You can choose from ```SIM```, ```PC```, ```LP```, ```REG```, ```OPEN```, ```BMW```, ```BMWK```, ```DIS```, ```DISINF``` and ```SIMEX```. Basically all models from Godley & Lavoie (2007). 
 
 ### Shocks
 ```godley``` allows you to create and simulate shocks. Let's see what happens if we increase government spending.
