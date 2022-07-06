@@ -2,10 +2,15 @@
 ```godley``` is an R package for simulating SFC (stock-flow consistent) models. It can be used to create and simulate fully fledged post-keynesian / MMT models of the economy. It allows users to apply shocks, simulate effects of changing parameters, visualize different macro scenarios and much more. ```godley``` is named after Wynne Godley (1926-2010).
 
 ## Installation
-To install the package, simply type ```devtools::install_github("gamrot/godley")```
+The best way to start using ```godley``` is to install it directly grom GitHub using the ```devtools``` package. 
+
+```
+install.packages("devtools")
+devtools::install_github("gamrot/godley")
+```
 
 ## Usage
-Below you can find a simple example of ```godley``` in action — a SIM model from Monetary Economics (Godley & Lavoie, 2007).
+Below you can find a simple example of ```godley``` in action. Let's play with the well known "SIM model" from Monetary Economics (Godley & Lavoie, 2007).
 
 First, we need to create an empty model using ```create_model()``` function.
 
@@ -16,22 +21,22 @@ model_sim <- create_model(name = "SFC SIM")
 Now let's add some variables using the ```add_variable()``` function. This will add a ```$varibles``` tibble to the model.
 
 ``` r
-model_sim <- model_sim %>%
-  add_variable("C_d", desc = "Consumption demand by households") %>%
-  add_variable("C_s", desc = "Consumption supply") %>%
-  add_variable("G_s", desc = "Government supply") %>%
-  add_variable("H_h", desc = "Cash money held by households") %>%
-  add_variable("H_s", desc = "Cash money supplied by the government") %>%
-  add_variable("N_d", desc = "Demand for labor") %>%
-  add_variable("N_s", desc = "Supply of labor") %>%
-  add_variable("T_d", desc = "Taxes, demand") %>%
-  add_variable("T_s", desc = "Taxes, supply") %>%
-  add_variable("Y", desc = "Income = GDP") %>%
-  add_variable("Yd", desc = "Disposable income of households") %>%
-  add_variable("alpha1", init = 0.6, desc = "Propensity to consume out of income") %>%
-  add_variable("alpha2", init = 0.4, desc = "Propensity to consume out of wealth") %>%
-  add_variable("theta", init = 0.2, desc = "Tax rate") %>%
-  add_variable("G_d", init = 20, desc = "Government demand") %>%
+model_sim <- model_sim |>
+  add_variable("C_d", desc = "Consumption demand by households") |>
+  add_variable("C_s", desc = "Consumption supply") |>
+  add_variable("G_s", desc = "Government supply") |>
+  add_variable("H_h", desc = "Cash money held by households") |>
+  add_variable("H_s", desc = "Cash money supplied by the government") |>
+  add_variable("N_d", desc = "Demand for labor") |>
+  add_variable("N_s", desc = "Supply of labor") |>
+  add_variable("T_d", desc = "Taxes, demand") |>
+  add_variable("T_s", desc = "Taxes, supply") |>
+  add_variable("Y", desc = "Income = GDP") |>
+  add_variable("Yd", desc = "Disposable income of households") |>
+  add_variable("alpha1", init = 0.6, desc = "Propensity to consume out of income") |>
+  add_variable("alpha2", init = 0.4, desc = "Propensity to consume out of wealth") |>
+  add_variable("theta", init = 0.2, desc = "Tax rate") |>
+  add_variable("G_d", init = 20, desc = "Government demand") |>
   add_variable("W", init = 1, desc = "Wage rate")
 
 model_sim$variables
@@ -57,21 +62,21 @@ model_sim$variables
 ## 16 W      Wage rate                               1
 ```
 
-Okay, let's add some equations, shall we? There's a function for that! You've guessed it, it's the ```add_equation()``` function. It also adds a tibble to the model, this time it's called ```$equations```
+Okay, let's add some equations, shall we? There's a function for that! You've guessed it, it's the ```add_equation()``` function. It also adds a tibble to the model, this time it's called ```$equation```
 
 ``` r
-model_sim <- model_sim %>%
-  add_equation("C_s = C_d", desc = "Consumption") %>%
-  add_equation("G_s = G_d") %>%
-  add_equation("T_s = T_d") %>%
-  add_equation("N_s = N_d") %>%
-  add_equation("Yd = W * N_s - T_s") %>%
-  add_equation("T_d = theta * W * N_s") %>%
-  add_equation("C_d = alpha1 * Yd + alpha2 * H_h[-1]") %>%
-  add_equation("H_s = G_d - T_d + H_s[-1]") %>%
-  add_equation("H_h = Yd - C_d + H_h[-1]") %>%
-  add_equation("Y = C_s + G_s") %>%
-  add_equation("N_d = Y/W") %>%
+model_sim <- model_sim |>
+  add_equation("C_s = C_d", desc = "Consumption") |>
+  add_equation("G_s = G_d") |>
+  add_equation("T_s = T_d") |>
+  add_equation("N_s = N_d") |>
+  add_equation("Yd = W * N_s - T_s") |>
+  add_equation("T_d = theta * W * N_s") |>
+  add_equation("C_d = alpha1 * Yd + alpha2 * H_h[-1]") |>
+  add_equation("H_s = G_d - T_d + H_s[-1]") |>
+  add_equation("H_h = Yd - C_d + H_h[-1]") |>
+  add_equation("Y = C_s + G_s") |>
+  add_equation("N_d = Y/W") |>
   add_equation("H_s = H_h", desc = "Money equilibrium", hidden = TRUE)
   
 model_sim$equation
@@ -230,3 +235,7 @@ There are two other packages that also allows users to build stock-flow consiste
 
 - `sfcr` (https://github.com/joaomacalos/sfcr), you should definitely check it out!
 - `pysolve3` (https://github.com/gpetrini/pysolve3)
+
+## Getting help
+
+If you encounter a clear bug, please file an issue with a minimal reproducible example on [GitHub](https://github.com/gamrot/godley/issues).
