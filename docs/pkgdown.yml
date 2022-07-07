@@ -1,0 +1,16 @@
+pandoc: '2.18'
+pkgdown: 2.0.5
+pkgdown_sha: ~
+articles:
+  01_Model_SIM: 01_Model_SIM.html
+  02_Model_SIMEX: 02_Model_SIMEX.html
+  03_Model_PC: 03_Model_PC.html
+  04_Model_LP: 04_Model_LP.html
+  05_Model_REG: 05_Model_REG.html
+  06_Model_OPEN: 06_Model_OPEN.html
+  07_Model_BMW: 07_Model_BMW.html
+  08_Model_BMWK: 08_Model_BMWK.html
+  09_Model_DIS: 09_Model_DIS.html
+  10_Model_DISINF: 10_Model_DISINF.html
+last_built: 2022-07-07T12:19Z
+
