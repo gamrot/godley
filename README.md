@@ -218,7 +218,7 @@ plot_simulation(model = model_sens, scenario = "sensitivity", take_all = TRUE,
 ![Sensitivity](man/figures/images/Sensitivity.png)
 
 ### Other examples ⭐
-[Here](https://gamrot.github.io/godley/) you can find more details about the package functions and other models created with ```godley```.
+[Here](https://gamrot.github.io/godley/) you can find more details about package functions and other models created with ```godley```.
 
 ## Functions 🔧
 Here's a list of package's most important functions.
