@@ -1,10 +1,10 @@
 # model SIMEX
 
 # Create empty model
-model_SIMEX <- create_model(name = "SFC SIMEX")
+model_simex <- create_model(name = "SFC SIMEX")
 
 # Add variables
-model_SIMEX <- model_SIMEX %>%
+model_simex <- model_simex %>%
   add_variable("C_d", desc = "Consumption demand by households") %>%
   add_variable("C_s", desc = "Consumption supply") %>%
   add_variable("G_s", desc = "Government supply") %>%
@@ -26,7 +26,7 @@ model_SIMEX <- model_SIMEX %>%
 
 
 # Add equations
-model_SIMEX <- model_SIMEX %>%
+model_simex <- model_simex %>%
   add_equation("C_s = C_d", desc = "Consumption") %>%
   add_equation("G_s = G_d") %>%
   add_equation("T_s = T_d") %>%
@@ -43,20 +43,50 @@ model_SIMEX <- model_SIMEX %>%
   add_equation("H_s = H_h", desc = "Money equilibrium", hidden = TRUE)
 
 # Simulate model
-model_SIMEX <- simulate_scenario(model_SIMEX, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
-
-# Create empty shock
-shock_SIMEX <- create_shock()
-
-# Add shock equation with increased government expenditures and create new scenario with this shock
-shock_SIMEX <- shock_SIMEX %>%
-  add_shock(equation = "G_d = 25", desc = "permanent increase in government expenditures", start = 5, end = 50)
-
-model_SIMEX <- model_SIMEX %>%
-  add_scenario(name = "expansion", origin = "baseline", origin_period = 1, shock = shock_SIMEX)
-
-# Simulate shock
-model_SIMEX <- simulate_scenario(model_SIMEX, scenario = "expansion", max_iter = 350, periods = 50, hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+model_simex <- simulate_scenario(model_simex,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+)
 
 # Plot results
-plot_simulation(model = model_SIMEX, scenario = "baseline", from = 1, to = 100, expressions = c("Y", "C_d", "C_s / alpha1"))
+plot_simulation(
+  model = model_simex, scenario = c("baseline"), from = 1, to = 50,
+  expressions = c("Y", "C_d", "C_s / alpha1")
+)
+
+# Create empty shock
+shock_simex <- create_shock()
+
+# Add shock equation with increased government expenditures
+shock_simex <- add_shock(shock_simex,
+  equation = "G_d = 25",
+  desc = "Increase in government expenditures", start = 5, end = 50
+)
+
+# Create new scenario with this shock
+model_simex <- add_scenario(model_simex,
+  name = "expansion", origin = "baseline",
+  origin_period = 1, shock = shock_simex
+)
+
+# Simulate shock
+model_simex <- simulate_scenario(model_simex,
+  scenario = "expansion", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+)
+
+# Plot results
+plot_simulation(
+  model = model_simex, scenario = c("baseline", "expansion"), from = 1, to = 50,
+  expressions = c("Y")
+)
+
+plot_simulation(
+  model = model_simex, scenario = c("baseline", "expansion"), from = 1, to = 50,
+  expressions = c("C_d")
+)
+
+plot_simulation(
+  model = model_simex, scenario = c("baseline", "expansion"), from = 1, to = 50,
+  expressions = c("C_s / alpha1")
+)

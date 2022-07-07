@@ -4,3 +4,7 @@
 *.Rproj.user
 .Rproj.user
 inst/doc
+docs
+vignettes/*.R
+vignettes/*.html
+!vignettes/examples*.R

@@ -146,7 +146,8 @@ To create the shock first we need to create an empty shock object with a ```crea
 sim_shock <- create_shock() 
 
 sim_shock <- add_shock(shock = sim_shock, equation = "G_d = 25", 
-		       desc = "permanent increase in government expenditures", start = 5, end = 50)
+		                   desc = "permanent increase in government expenditures", 
+		                   start = 5, end = 50)
 
 sim_shock
 
@@ -217,9 +218,6 @@ plot_simulation(model = model_sens, scenario = "sensitivity", take_all = TRUE,
 ```
 ![Sensitivity](man/figures/images/Sensitivity.png)
 
-### Other examples ⭐
-On [godley](https://github.com/pages/gamrot/godley/) you can find more details about the package usage.
-
 ## Functions 🔧
 Here's a list of package's most important functions.
 
@@ -240,6 +238,3 @@ There are two other packages that also allows users to build stock-flow consiste
   
   - [sfcr](https://github.com/joaomacalos/sfcr) - you should definitely check it out!
   - [pysolve3](https://github.com/gpetrini/pysolve3)
-
-## Getting help 🐛
-If you encounter a clear bug, please file an issue with a minimal reproducible example on [GitHub](https://github.com/gamrot/godley/issues).

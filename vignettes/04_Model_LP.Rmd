@@ -1,0 +1,118 @@
+---
+title: "Model LP"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Model LP}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Please find below guidelines how godley package can be used to create model LP — model with long-term bonds, capital gains and liquidity preference described by *Wynne Godley* and *Marc Lavoie* in Chapter 5 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+
+```{r setup}
+library(godley)
+```
+
+### Base scenario
+First you need to create empty SFC model:
+```{r}
+# Create empty model
+model_lp <- create_model(name = "SFC LP")
+```
+
+Next you have to add variables:
+```{r}
+# Add variables
+model_lp <- add_variable(model_lp, "Y", desc = "") 
+model_lp <- add_variable(model_lp, "YDr") 
+model_lp <- add_variable(model_lp, "TX") 
+model_lp <- add_variable(model_lp, "V", init = 0.0000001) 
+model_lp <- add_variable(model_lp, "CG") 
+model_lp <- add_variable(model_lp, "C") 
+model_lp <- add_variable(model_lp, "VE", init = 0.0000001) 
+model_lp <- add_variable(model_lp, "Hh") 
+model_lp <- add_variable(model_lp, "Hd") 
+model_lp <- add_variable(model_lp, "Bd") 
+model_lp <- add_variable(model_lp, "BLd") 
+model_lp <- add_variable(model_lp, "BLh", desc = "") 
+model_lp <- add_variable(model_lp, "Bs", desc = "") 
+model_lp <- add_variable(model_lp, "Hs", desc = "") 
+model_lp <- add_variable(model_lp, "Bcb", desc = "") 
+model_lp <- add_variable(model_lp, "BLs", desc = "") 
+model_lp <- add_variable(model_lp, "ERrbl", desc = "") 
+model_lp <- add_variable(model_lp, "rbl", desc = "", ) 
+model_lp <- add_variable(model_lp, "CGE", desc = "") 
+model_lp <- add_variable(model_lp, "YDEr", desc = "") 
+model_lp <- add_variable(model_lp, "pebl", desc = "") 
+model_lp <- add_variable(model_lp, "Bh", desc = "") 
+model_lp <- add_variable(model_lp, "alpha1", init = 0.8, desc = "Propensity to consume out of income") 
+model_lp <- add_variable(model_lp, "alpha2", init = 0.2, desc = "Propensity to consume out of wealth") 
+model_lp <- add_variable(model_lp, "theta", init = 0.1938, desc = "Tax rate") 
+model_lp <- add_variable(model_lp, "rb", init = 0.03, desc = "") 
+model_lp <- add_variable(model_lp, "G", init = 20, desc = "Government demand") 
+model_lp <- add_variable(model_lp, "pbl", init = 20, desc = "") 
+model_lp <- add_variable(model_lp, "lambda20", init = 0.44196, desc = "") 
+model_lp <- add_variable(model_lp, "lambda22", init = 1.1, desc = "") 
+model_lp <- add_variable(model_lp, "lambda23", init = -1, desc = "") 
+model_lp <- add_variable(model_lp, "lambda24", init = -0.03, desc = "") 
+model_lp <- add_variable(model_lp, "lambda30", init = .3997, desc = "") 
+model_lp <- add_variable(model_lp, "lambda32", init = -1, desc = "") 
+model_lp <- add_variable(model_lp, "lambda33", init = 1.1, desc = "") 
+model_lp <- add_variable(model_lp, "lambda34", init = -0.03, desc = "") 
+model_lp <- add_variable(model_lp, "chi", init = 0.1, desc = "")
+```
+
+You also have to add equations:
+```{r}
+# Add equations
+model_lp <- add_equation(model_lp, "Y=C + G", desc = "") 
+model_lp <- add_equation(model_lp, "YDr= Y - TX + rb[-1] * Bh[-1] + BLh[-1]") 
+model_lp <- add_equation(model_lp, "TX =theta * (Y + rb[-1] * Bh[-1] + BLh[-1])") 
+model_lp <- add_equation(model_lp, "V = V[-1] + (YDr - C) + CG") 
+model_lp <- add_equation(model_lp, "CG = (pbl - pbl[-1]) * BLh[-1]") 
+model_lp <- add_equation(model_lp, "C = alpha1 * YDEr + alpha2 * V[-1]") 
+model_lp <- add_equation(model_lp, "VE = V[-1] + (YDEr - C) + CG") 
+model_lp <- add_equation(model_lp, "Hh = V - Bh - pbl * BLh") 
+model_lp <- add_equation(model_lp, "Hd = VE - Bd - pbl * BLd") 
+model_lp <- add_equation(model_lp, "Bd = (VE * lambda20) + VE * (lambda22 * rb + lambda23 * ERrbl) 
+                         + lambda24 * (YDEr)") 
+model_lp <- add_equation(model_lp, "BLd = VE * (lambda30 + lambda32 * rb + lambda33 * ERrbl 
+                         + lambda34 * (YDEr/VE))/pbl") 
+model_lp <- add_equation(model_lp, "BLh = BLd", desc = "", hidden = F) 
+model_lp <- add_equation(model_lp, "Bs = Bs[-1] + (G + rb[-1] * Bs[-1] + BLs[-1]) 
+                         - (TX + rb[-1] * Bcb[-1]) - ((BLs - BLs[-1]) * pbl)", desc = "", hidden = F) 
+model_lp <- add_equation(model_lp, "Hs = Hs[-1] + (Bcb - Bcb[-1])", desc = "", hidden = F) 
+model_lp <- add_equation(model_lp, "Bcb = Bs - Bh", desc = "", hidden = F) 
+model_lp <- add_equation(model_lp, "BLs = BLh", desc = "", hidden = F) 
+model_lp <- add_equation(model_lp, "ERrbl = rbl + chi * ((pebl - pbl)/pbl)", desc = "", hidden = F) 
+model_lp <- add_equation(model_lp, "rbl = 1/pbl", desc = "", hidden = F) 
+model_lp <- add_equation(model_lp, "CGE = chi * (pebl - pbl) * BLh", desc = "", hidden = F) 
+model_lp <- add_equation(model_lp, "YDEr = YDr[-1]", desc = "", hidden = F) 
+model_lp <- add_equation(model_lp, "Bh = Bd", desc = "") 
+model_lp <- add_equation(model_lp, "pebl = pbl", desc = "") 
+model_lp <- add_equation(model_lp, "Hs = Hh", desc = "Money equilibrium", hidden = TRUE)
+```
+
+Now you can simulate model (in this example for the next 100 periods using Gauss method):
+```{r}
+# Simulate model
+model_lp <- simulate_scenario(model_lp, scenario = "baseline", max_iter = 350, periods = 100, 
+                              hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+```
+
+Based on calculated simulation you can display simulation results for desired set of variables:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_lp, scenario = c("baseline"), from = 1, to = 100, 
+                expressions = c("Y","V"))
+```
+
+### References
+More information about model LP can be found in Chapter 5 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*

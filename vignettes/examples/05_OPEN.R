@@ -1,9 +1,9 @@
 # model OPEN
 
-model_OPEN <- create_model(name = "SFC OPEN")
+model_open <- create_model(name = "SFC OPEN")
 
 # Add variables
-model_OPEN <- model_OPEN %>%
+model_open <- model_open %>%
   add_variable("xr", init = 1) %>%
   add_variable("pg_N", init = 1) %>%
   add_variable("r_N", init = 0.025) %>%
@@ -55,7 +55,7 @@ model_OPEN <- model_OPEN %>%
   add_variable("deltaor_N")
 
 # Add equations
-model_OPEN <- model_OPEN %>%
+model_open <- model_open %>%
   add_equation("Y_N = C_N + G_N + X_N - IM_N") %>%
   add_equation("Y_S = C_S + G_S + X_S - IM_S") %>%
   add_equation("IM_N = mu_N * Y_N") %>%
@@ -88,44 +88,69 @@ model_OPEN <- model_OPEN %>%
   add_equation("deltaor_S = deltaor_N", hidden = TRUE)
 
 # Simulate model
-model_OPEN <- simulate_scenario(model_OPEN, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
-
-plot_simulation(
-  model = model_OPEN, scenario = "baseline", from = 1, to = 60,
-  expressions = c("TB_N = X_N - IM_N", "TB_S = X_S - IM_S", "GB_N = TX_N - (G_N + dplyr::lag(r_N) * dplyr::lag(Bh_N))", "GB_S = TX_S - (G_S + dplyr::lag(r_S) * dplyr::lag(Bh_S))")
+model_open <- simulate_scenario(model_open,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
 )
 
-# Scenario: Ever-falling gold reserves
-
-shock <- create_shock() %>%
-  add_shock(equation = "mu_S = 0.25", desc = "increase in the propensity to import in the South", start = 5, end = 60)
-
-model_OPEN <- model_OPEN %>%
-  add_scenario(name = "expansion", origin = "baseline", origin_period = 100, shock = shock)
-
-model_OPEN <- simulate_scenario(model_OPEN, scenario = "expansion", max_iter = 350, periods = 60, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+# Plot results
+plot_simulation(
+  model = model_open, scenario = "baseline", from = 1, to = 50,
+  expressions = c(
+    "TB_N = X_N - IM_N",
+    "TB_S = X_S - IM_S",
+    "GB_N = TX_N - (G_N + dplyr::lag(r_N) * dplyr::lag(Bh_N))",
+    "GB_S = TX_S - (G_S + dplyr::lag(r_S) * dplyr::lag(Bh_S))"
+  )
+)
 
 plot_simulation(
-  model = model_OPEN, scenario = "expansion", from = 1, to = 60,
+  model = model_open, scenario = "baseline", from = 1, to = 50,
   expressions = c("Y_N", "Y_S")
 )
 
 plot_simulation(
-  model = model_OPEN, scenario = "expansion", from = 1, to = 60,
-  expressions = c("TB_N = X_N - IM_N", "TB_S = X_S - IM_S", "GB_N = TX_N - (G_N + dplyr::lag(r_N) * dplyr::lag(Bh_N))", "GB_S = TX_S - (G_S + dplyr::lag(r_S) * dplyr::lag(Bh_S))")
-)
-
-plot_simulation(
-  model = model_OPEN, scenario = "expansion", from = 1, to = 60,
-  expressions = c("TB_N = X_N - IM_N", "TB_S = X_S - IM_S", "GB_N = TX_N - (G_N + dplyr::lag(r_N) * dplyr::lag(Bh_N))", "GB_S = TX_S - (G_S + dplyr::lag(r_S) * dplyr::lag(Bh_S))")
-)
-
-plot_simulation(
-  model = model_OPEN, scenario = "expansion", from = 1, to = 60,
+  model = model_open, scenario = "baseline", from = 1, to = 50,
   expressions = c("or_S", "or_N")
 )
 
+# Create shock with increased propensity to import in the South
+shock_open <- create_shock()
+
+shock_open <- add_shock(shock_open,
+  equation = "mu_S = 0.25",
+  desc = "increase in the propensity to import in the South",
+  start = 5, end = 50
+)
+
+model_open <- add_scenario(model_open,
+  name = "expansion", origin = "baseline",
+  origin_period = 100, shock = shock_open
+)
+
+# Simulate shock
+model_open <- simulate_scenario(model_open,
+  scenario = "expansion", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
+
+# Plot results
 plot_simulation(
-  model = model_OPEN, scenario = "expansion", from = 1, to = 60,
-  expressions = c("TB_N = X_N - IM_N", "TB_S = X_S - IM_S", "GB_N = TX_N - (G_N + dplyr::lag(r_N) * dplyr::lag(Bh_N))", "GB_S = TX_S - (G_S + dplyr::lag(r_S) * dplyr::lag(Bh_S))")
+  model = model_open, scenario = "expansion", from = 1, to = 50,
+  expressions = c(
+    "TB_N = X_N - IM_N",
+    "TB_S = X_S - IM_S",
+    "GB_N = TX_N - (G_N + dplyr::lag(r_N) * dplyr::lag(Bh_N))",
+    "GB_S = TX_S - (G_S + dplyr::lag(r_S) * dplyr::lag(Bh_S))"
+  )
+)
+
+plot_simulation(
+  model = model_open, scenario = "expansion", from = 1, to = 50,
+  expressions = c("Y_N", "Y_S")
+)
+
+plot_simulation(
+  model = model_open, scenario = "expansion", from = 1, to = 50,
+  expressions = c("or_S", "or_N")
 )

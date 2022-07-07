@@ -1,0 +1,132 @@
+---
+title: "Model SIM"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Model SIM}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(magrittr)
+```
+
+Please find below guidelines how godley package can be used to create model SIM — the simplest model with government money described by *Wynne Godley* and *Marc Lavoie* in Chapter 3 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+
+```{r setup}
+library(godley)
+```
+
+### Base scenario
+First you need to create empty SFC model:
+```{r}
+# Create empty model
+model_sim <- create_model(name = "SFC SIM")
+```
+
+Next you have to add variables:
+```{r}
+# Add variables
+model_sim <- add_variable(model_sim, "C_d", desc = "Consumption demand by households")
+model_sim <- add_variable(model_sim, "C_s", desc = "Consumption supply")
+model_sim <- add_variable(model_sim, "G_s", desc = "Government supply")
+model_sim <- add_variable(model_sim, "H_h", desc = "Cash money held by households")
+model_sim <- add_variable(model_sim, "H_s", desc = "Cash money supplied by the government")
+model_sim <- add_variable(model_sim, "N_d", desc = "Demand for labor")
+model_sim <- add_variable(model_sim, "N_s", desc = "Supply of labor")
+model_sim <- add_variable(model_sim, "T_d", desc = "Taxes, demand")
+model_sim <- add_variable(model_sim, "T_s", desc = "Taxes, supply")
+model_sim <- add_variable(model_sim, "Y", desc = "Income = GDP")
+model_sim <- add_variable(model_sim, "Yd", desc = "Disposable income of households")
+model_sim <- add_variable(model_sim, "alpha1", init = 0.6, desc = "Propensity to consume out of income")
+model_sim <- add_variable(model_sim, "alpha2", init = 0.4, desc = "Propensity to consume out of wealth")
+model_sim <- add_variable(model_sim, "theta", init = 0.2, desc = "Tax rate")
+model_sim <- add_variable(model_sim, "G_d", init = 20, desc = "Government demand")
+model_sim <- add_variable(model_sim, "W", init = 1, desc = "Wage rate")
+```
+
+You also have to add equations:
+```{r}
+# Add equations
+model_sim <- add_equation(model_sim, "C_s = C_d", desc = "Consumption")
+model_sim <- add_equation(model_sim, "G_s = G_d")
+model_sim <- add_equation(model_sim, "T_s = T_d")
+model_sim <- add_equation(model_sim, "N_s = N_d")
+model_sim <- add_equation(model_sim, "Yd = W * N_s - T_s")
+model_sim <- add_equation(model_sim, "T_d = theta * W * N_s")
+model_sim <- add_equation(model_sim, "C_d = alpha1 * Yd + alpha2 * H_h[-1]")
+model_sim <- add_equation(model_sim, "H_s = G_d - T_d + H_s[-1]")
+model_sim <- add_equation(model_sim, "H_h = Yd - C_d + H_h[-1]")
+model_sim <- add_equation(model_sim, "Y = C_s + G_s")
+model_sim <- add_equation(model_sim, "N_d = Y/W")
+model_sim <- add_equation(model_sim, "H_s = H_h", desc = "Money equilibrium", hidden = TRUE)
+```
+
+Now you can simulate model (in this example for the next 100 periods using Newton method):
+```{r}
+# Simulate model
+model_sim <- simulate_scenario(model_sim, scenario = "baseline", max_iter = 350, periods = 100, 
+                               hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+```
+
+Based on calculated simulation you can display results for desired set of variables:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_sim, scenario = c("baseline"), from = 1, to = 50, 
+                expressions = c("Y", "C_d", "G_s"))
+```
+
+### Shock scenario
+With godley package you can simulate how a shock will affect the base scenario. In this example you will implement a permanent increase in government expenditures. \
+\
+First you need to create empty shock object:
+```{r}
+# Create empty shock
+shock_sim <- create_shock()
+```
+
+Next you need to add appropriate equation:
+```{r}
+# Add shock equation with increased government expenditures
+shock_sim <- add_shock(shock_sim, equation = "G_d = 25", 
+                       desc = "Increase in government expenditures", start = 5, end = 50)
+```
+
+Later you need to create the shock scenario:
+```{r}
+# Create new scenario with this shock
+model_sim <- add_scenario(model_sim, name = "expansion", origin = "baseline", 
+                          origin_period = 1, shock = shock_sim)
+```
+
+Now you can simulate new shock scenario:
+```{r}
+# Simulate shock
+model_sim <- simulate_scenario(model_sim, scenario = "expansion", max_iter = 350, periods = 100, 
+                               hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+```
+
+You can also compare results from shock and base scenarios:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_sim, scenario = c("baseline", "expansion"), from = 1, to = 50, 
+                expressions = c("Y"))
+```
+
+```{r, out.width="100%"}
+plot_simulation(model = model_sim, scenario = c("baseline", "expansion"), from = 1, to = 50, 
+                expressions = c("C_d"))
+```
+
+```{r, out.width="100%"}
+plot_simulation(model = model_sim, scenario = c("baseline", "expansion"), from = 1, to = 50, 
+                expressions = c("G_s"))
+```
+
+### References
+More information about model SIM can be found in Chapter 3 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*

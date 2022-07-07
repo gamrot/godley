@@ -1,0 +1,181 @@
+---
+title: "Model BMW"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Model BMW}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Please find below guidelines how godley package can be used to create model BMW — the simplest model with private bank money described by *Wynne Godley* and *Marc Lavoie* in Chapter 7 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+
+```{r setup}
+library(godley)
+```
+
+### Base scenario
+First you need to create empty SFC model:
+```{r}
+# Create empty model
+model_bmw <- create_model(name = "SFC BMW")
+```
+
+Next you have to add variables:
+```{r}
+# Add variables
+model_bmw <- add_variable(model_bmw, "rl", init = 0.025) 
+model_bmw <- add_variable(model_bmw, "alpha0", init = 20) 
+model_bmw <- add_variable(model_bmw, "alpha1", init = 0.75) 
+model_bmw <- add_variable(model_bmw, "alpha2", init = 0.10) 
+model_bmw <- add_variable(model_bmw, "delta", init = 0.10) 
+model_bmw <- add_variable(model_bmw, "gamma", init = 0.15) 
+model_bmw <- add_variable(model_bmw, "kappa", init = 1) 
+model_bmw <- add_variable(model_bmw, "pr", init = 1) 
+model_bmw <- add_variable(model_bmw, "Nd", init = .001) 
+model_bmw <- add_variable(model_bmw, "Ns", init = .001) 
+model_bmw <- add_variable(model_bmw, "Y", init = .001) 
+model_bmw <- add_variable(model_bmw, "Cs") 
+model_bmw <- add_variable(model_bmw, "Cd") 
+model_bmw <- add_variable(model_bmw, "Is") 
+model_bmw <- add_variable(model_bmw, "Id") 
+model_bmw <- add_variable(model_bmw, "Ls") 
+model_bmw <- add_variable(model_bmw, "Ld") 
+model_bmw <- add_variable(model_bmw, "WBd") 
+model_bmw <- add_variable(model_bmw, "AF") 
+model_bmw <- add_variable(model_bmw, "K") 
+model_bmw <- add_variable(model_bmw, "YD") 
+model_bmw <- add_variable(model_bmw, "WBs") 
+model_bmw <- add_variable(model_bmw, "rm") 
+model_bmw <- add_variable(model_bmw, "Mh") 
+model_bmw <- add_variable(model_bmw, "Ms") 
+model_bmw <- add_variable(model_bmw, "W") 
+model_bmw <- add_variable(model_bmw, "DA") 
+model_bmw <- add_variable(model_bmw, "KT")
+```
+
+You also have to add equations:
+```{r}
+# Add equations
+model_bmw <- add_equation(model_bmw, "Cs = Cd") 
+model_bmw <- add_equation(model_bmw, "Is = Id") 
+model_bmw <- add_equation(model_bmw, "Ns = Nd") 
+model_bmw <- add_equation(model_bmw, "Ls = Ls[-1] + Ld - Ld[-1]") 
+model_bmw <- add_equation(model_bmw, "Y = Cs + Is") 
+model_bmw <- add_equation(model_bmw, "WBd = Y - rl[-1] * Ld[-1] - AF") 
+model_bmw <- add_equation(model_bmw, "AF = delta * K[-1]") 
+model_bmw <- add_equation(model_bmw, "Ld = Ld[-1] + Id - AF") 
+model_bmw <- add_equation(model_bmw, "YD = WBs + rm[-1] * Mh[-1]") 
+model_bmw <- add_equation(model_bmw, "Mh = Mh[-1] + YD - Cd") 
+model_bmw <- add_equation(model_bmw, "Ms = Ms[-1] + Ls - Ls[-1]") 
+model_bmw <- add_equation(model_bmw, "rm = rl") 
+model_bmw <- add_equation(model_bmw, "WBs = W * Ns") 
+model_bmw <- add_equation(model_bmw, "Nd = Y / pr") 
+model_bmw <- add_equation(model_bmw, "W = WBd / Nd") 
+model_bmw <- add_equation(model_bmw, "Cd = alpha0 + alpha1 * YD + alpha2 * Mh[-1]") 
+model_bmw <- add_equation(model_bmw, "K = K[-1] + Id - DA") 
+model_bmw <- add_equation(model_bmw, "DA = delta * K[-1]") 
+model_bmw <- add_equation(model_bmw, "KT = kappa * Y[-1]") 
+model_bmw <- add_equation(model_bmw, "Id = gamma * (KT - K[-1]) + DA") 
+model_bmw <- add_equation(model_bmw, "Ms = Mh", hidden = T)
+```
+
+Now you can simulate model (in this example for the next 100 periods using Gauss method):
+```{r}
+# Simulate model
+model_bmw <- simulate_scenario(model_bmw, scenario = "baseline", max_iter = 350, periods = 100, 
+                               hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+```
+
+Based on calculated simulation you can display results for desired set of variables:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_bmw, scenario = c("baseline"), from = 1, to = 50, 
+                expressions = c("Cd", "YD"))
+```
+
+### Shock scenarios
+With godley you can simulate how a shock will affect the base scenario. 
+
+#### Shock 1
+In this example you will implement increased autonomous consumption expenditures. \
+\
+First you need to create empty shock:
+```{r}
+# Create empty shock
+shock_bmw <- create_shock()
+```
+
+Next you need to add appropriate equation:
+```{r}
+# Add shock equation with increase in autonomous consumption expenditures
+shock_bmw <- add_shock(shock_bmw, equation = "alpha0 = 30", 
+                       desc = "Increase in autonomous consumption expenditures", start = 5, end = 50)
+```
+
+Then you need to create new shock scenario:
+```{r}
+# Create new scenario with this shock
+model_bmw <- add_scenario(model_bmw, name = "expansion1", origin = "baseline", 
+                          origin_period = 100, shock = shock_bmw)
+```
+
+Now you can simulate new shock scenario:
+```{r}
+# Simulate shock
+model_bmw <- simulate_scenario(model_bmw, scenario = "expansion1", max_iter = 350, periods = 100, 
+                               hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+```
+
+You can also plot results from the shock scenarios:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_bmw, scenario = c("expansion1"), from = 1, to = 50, 
+                expressions = c("Cd", "YD"))
+```
+
+#### Shock 2
+In this example you will implement increased propensity to save. \
+\
+First you need to create empty shock:
+```{r}
+# Create empty shock
+shock_bmw <- create_shock()
+```
+
+Next you need to add appropriate equation:
+```{r}
+# Add shock equation with increased propensity to save
+shock_bmw <- add_shock(shock_bmw, equation = "alpha1 = 0.7", 
+                       desc = "Increase in the propensity to save", start = 5, end = 50)
+```
+
+Later you need to create new shock scenario:
+```{r}
+# Create new scenario with this shock
+model_bmw <- add_scenario(model_bmw, name = "expansion2", origin = "baseline", 
+                          origin_period = 100, shock = shock_bmw)
+```
+
+Now you can simulate new shock scenario:
+```{r}
+# Simulate shock
+model_bmw <- simulate_scenario(model_bmw, scenario = "expansion2", max_iter = 350, periods = 100, 
+                               hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+```
+
+You can also plot results from the shock scenarios:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_bmw, scenario = c("expansion2"), from = 1, to = 50, 
+                expressions = c("Cd", "YD"))
+```
+
+### References
+More information about model BMW can be found in Chapter 7 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*

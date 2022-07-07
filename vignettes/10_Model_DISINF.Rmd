@@ -1,0 +1,250 @@
+---
+title: "Model DISINF"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Model DISINF}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Please find below guidelines how godley package can be used to create model DISINF — model with private bank money, inventories and inflation described by *Wynne Godley* and *Marc Lavoie* in Chapter 9 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+
+```{r setup}
+library(godley)
+```
+
+### Base scenario
+First you need to create empty SFC model:
+```{r}
+# Create empty model
+model_disinf <- create_model(name = "SFC DISINF")
+```
+
+Next you have to add variables:
+```{r}
+# Add variables
+model_disinf <- add_variable(model_disinf, "rrc", init = 0.025)
+model_disinf <- add_variable(model_disinf, "pr", init = 1)
+model_disinf <- add_variable(model_disinf, "add", init = 0.02)
+model_disinf <- add_variable(model_disinf, "alpha0", init = 15)
+model_disinf <- add_variable(model_disinf, "alpha1", init = 0.8)
+model_disinf <- add_variable(model_disinf, "alpha2", init = 0.1)
+model_disinf <- add_variable(model_disinf, "beta", init = 0.9)
+model_disinf <- add_variable(model_disinf, "epsilon", init = 0.8)
+model_disinf <- add_variable(model_disinf, "gamma", init = 0.25)
+model_disinf <- add_variable(model_disinf, "phi", init = 0.24)
+model_disinf <- add_variable(model_disinf, "sigma_T", init = 0.2)
+model_disinf <- add_variable(model_disinf, "Omega0", init = -1.4)
+model_disinf <- add_variable(model_disinf, "Omega1", init = 1)
+model_disinf <- add_variable(model_disinf, "Omega2", init = 1.2)
+model_disinf <- add_variable(model_disinf, "Omega3", init = 0.3)
+model_disinf <- add_variable(model_disinf, "p", init = 1)
+model_disinf <- add_variable(model_disinf, "W", init = 1)
+model_disinf <- add_variable(model_disinf, "UC", init = 1)
+model_disinf <- add_variable(model_disinf, "s_E", init = .00001)
+model_disinf <- add_variable(model_disinf, "inv_T")
+model_disinf <- add_variable(model_disinf, "inv_E")
+model_disinf <- add_variable(model_disinf, "inv")
+model_disinf <- add_variable(model_disinf, "s")
+model_disinf <- add_variable(model_disinf, "c")
+model_disinf <- add_variable(model_disinf, "N")
+model_disinf <- add_variable(model_disinf, "WB")
+model_disinf <- add_variable(model_disinf, "INV")
+model_disinf <- add_variable(model_disinf, "S")
+model_disinf <- add_variable(model_disinf, "EF")
+model_disinf <- add_variable(model_disinf, "Ld")
+model_disinf <- add_variable(model_disinf, "Ls")
+model_disinf <- add_variable(model_disinf, "Ms")
+model_disinf <- add_variable(model_disinf, "rm")
+model_disinf <- add_variable(model_disinf, "EFb")
+model_disinf <- add_variable(model_disinf, "Mh")
+model_disinf <- add_variable(model_disinf, "YD")
+model_disinf <- add_variable(model_disinf, "C")
+model_disinf <- add_variable(model_disinf, "omega_T")
+model_disinf <- add_variable(model_disinf, "Nfe")
+model_disinf <- add_variable(model_disinf, "yfe")
+model_disinf <- add_variable(model_disinf, "mh")
+model_disinf <- add_variable(model_disinf, "y")
+model_disinf <- add_variable(model_disinf, "rl")
+model_disinf <- add_variable(model_disinf, "pic")
+model_disinf <- add_variable(model_disinf, "ydhs")
+model_disinf <- add_variable(model_disinf, "yd")
+model_disinf <- add_variable(model_disinf, "ydhs_E")
+```
+
+You also have to add equations:
+```{r}
+# Add equations
+model_disinf <- add_equation(model_disinf, "y = s_E + inv_E - inv[-1]")
+model_disinf <- add_equation(model_disinf, "inv_T = sigma_T * s_E")
+model_disinf <- add_equation(model_disinf, "inv_E = inv[-1] + gamma * (inv_T - inv[-1])")
+model_disinf <- add_equation(model_disinf, "inv = inv[-1] + (y - s)")
+model_disinf <- add_equation(model_disinf, "s_E = beta * s[-1] + (1 - beta) * s_E[-1]")
+model_disinf <- add_equation(model_disinf, "s = c")
+model_disinf <- add_equation(model_disinf, "N = y / pr")
+model_disinf <- add_equation(model_disinf, "WB = N * W")
+model_disinf <- add_equation(model_disinf, "UC = WB / y")
+model_disinf <- add_equation(model_disinf, "INV = inv * UC")
+model_disinf <- add_equation(model_disinf, "S = p * s")
+model_disinf <- add_equation(model_disinf, "p = (1 + phi) * (1 + rrc * sigma_T) * UC")
+model_disinf <- add_equation(model_disinf, "EF = S - WB + (INV - INV[-1]) - rl * INV[-1]")
+model_disinf <- add_equation(model_disinf, "Ld = INV")
+model_disinf <- add_equation(model_disinf, "Ls = Ld")
+model_disinf <- add_equation(model_disinf, "Ms = Ls")
+model_disinf <- add_equation(model_disinf, "rm = rl - add")
+model_disinf <- add_equation(model_disinf, "EFb = rl[-1] * Ls[-1] - rm[-1] * Mh[-1]")
+model_disinf <- add_equation(model_disinf, "pic = (UC / UC[-1]) - 1")
+model_disinf <- add_equation(model_disinf, "rl = (1 + rrc) * (1 + pic) - 1")
+model_disinf <- add_equation(model_disinf, "YD = WB + EF + EFb + rm * Mh[-1]")
+model_disinf <- add_equation(model_disinf, "Mh = Mh[-1] + YD - C")
+model_disinf <- add_equation(model_disinf, "ydhs = c + (mh - mh[-1])")
+model_disinf <- add_equation(model_disinf, "yd = YD / p")
+model_disinf <- add_equation(model_disinf, "C = c * p")
+model_disinf <- add_equation(model_disinf, "mh = Mh / p")
+model_disinf <- add_equation(model_disinf, "c = alpha0 + alpha1 * ydhs_E + alpha2 * mh[-1]")
+model_disinf <- add_equation(model_disinf, "ydhs_E = epsilon * ydhs[-1] + (1 - epsilon) * ydhs_E[-1]")
+model_disinf <- add_equation(model_disinf, "omega_T = Omega0 + Omega1 * pr + Omega2 * (N / Nfe)")
+model_disinf <- add_equation(model_disinf, "W = W[-1] * (1 + Omega3 * (omega_T[-1] - (W[-1]/p[-1])))")
+model_disinf <- add_equation(model_disinf, "yfe = (1 + sigma_T) * s - inv[-1]")
+model_disinf <- add_equation(model_disinf, "Nfe = s / pr")
+```
+
+Now you can simulate model (in this example for the next 100 periods using Gauss method):
+```{r}
+# Simulate model
+model_disinf<- simulate_scenario(model_disinf, scenario = "baseline", max_iter = 350, periods = 100, 
+                                 hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+```
+
+Based on calculated simulation you can display results for desired set of variables:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_disinf, scenario = c("baseline"), from = 1, to = 50, 
+                expressions = c("p", "UC", "UCp = UC/p"))
+```
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_disinf, scenario = c("baseline"), from = 1, to = 50, 
+                expressions = c("inflation = (p - dplyr::lag(p)) / dplyr::lag(p)"))
+```
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_disinf, scenario = c("baseline"), from = 1, to = 50, 
+                expressions = c("ydhs_ss = alpha0 / (1 - alpha1 - alpha2*sigma_T * (UC/p))", 
+                                "ydhs", "c", "s"))
+```
+
+### Shock scenario
+With godley you can simulate how a shock will affect the base scenario. 
+
+#### Shock 1
+In this example you will implement an increase in the costing margins. \
+\
+First you need to create empty shock:
+```{r}
+# Create empty shock
+shock_disinf <- create_shock()
+```
+
+Next you need to add appropriate equation:
+```{r}
+# Add shock equation
+shock_disinf <- add_shock(shock_disinf, equation = "phi = 0.3", 
+                          desc = "Increase in the costing margins", start = 5, end = 50)
+```
+
+Then you need to create new shock scenario:
+```{r}
+# Create new scenario with this shock
+model_disinf <- add_scenario(model_disinf, name = "expansion1", origin = "baseline", 
+                         origin_period = 100, shock = shock_disinf)
+```
+
+Now you can simulate new shock scenario:
+```{r}
+# Simulate shock
+model_disinf <- simulate_scenario(model_disinf, scenario = "expansion1", max_iter = 350, periods = 100, 
+                              hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+```
+
+You can also display simulation results on the plots:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_disinf, scenario = c("expansion1"), from = 1, to = 50, 
+                expressions = c("p", "UC", "UCp = UC/p"))
+```
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_disinf, scenario = c("expansion1"), from = 1, to = 50, 
+                expressions = c("inflation = (p - dplyr::lag(p)) / dplyr::lag(p)"))
+```
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_disinf, scenario = c("expansion1"), from = 1, to = 50, 
+                expressions = c("ydhs_ss = alpha0 / (1 - alpha1 - alpha2*sigma_T * (UC/p))", 
+                                "ydhs", "c", "s"))
+```
+
+#### Shock 2
+In this example you will implement an increase in the target real wage. \
+\
+First you need to create empty shock:
+```{r}
+# Create empty shock
+shock_disinf <- create_shock()
+```
+
+Next you need to add appropriate equation:
+```{r}
+# Add shock equation
+shock_disinf <- add_shock(shock_disinf, equation = "Omega0   = -1", 
+                          desc = "Increase in the target real wage", start = 5, end = 100)
+```
+
+Then you need to create new shock scenario:
+```{r}
+# Create new scenario with this shock
+model_disinf <- add_scenario(model_disinf, name = "expansion2", origin = "baseline", 
+                             origin_period = 1, shock = shock_disinf)
+```
+
+Now you can simulate new shock scenario:
+```{r}
+# Simulate shock
+model_disinf <- simulate_scenario(model_disinf, scenario = "expansion2", max_iter = 350, periods = 100, 
+                                  hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+```
+
+You can also display simulation results on the plots:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_disinf, scenario = c("expansion2"), from = 1, to = 50, 
+                expressions = c("p", "UC", "UCp = UC/p"))
+```
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_disinf, scenario = c("expansion2"), from = 1, to = 50, 
+                expressions = c("inflation = (p - dplyr::lag(p)) / dplyr::lag(p)"))
+```
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_disinf, scenario = c("expansion2"), from = 1, to = 50, 
+                expressions = c("ydhs_ss = alpha0 / (1 - alpha1 - alpha2*sigma_T * (UC/p))", 
+                                "ydhs", "c", "s"))
+```
+
+### References
+More information about model DISINF can be found in Chapter 9 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*

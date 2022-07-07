@@ -51,7 +51,5 @@ add_shock <- function(shock,
   )
   shock <- tibble::add_row(shock, new_row)
 
-  message("Added shock ", equation)
-
   return(shock)
 }

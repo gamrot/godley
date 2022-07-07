@@ -1,10 +1,10 @@
 # model LP
 
 # Create empty model
-model_LP <- create_model(name = "SFC LP")
+model_lp <- create_model(name = "SFC LP")
 
 # Add variables
-model_LP <- model_LP %>%
+model_lp <- model_lp %>%
   add_variable("Y", desc = "") %>%
   add_variable("YDr") %>%
   add_variable("TX") %>%
@@ -44,7 +44,7 @@ model_LP <- model_LP %>%
   add_variable("chi", init = 0.1, desc = "")
 
 # Add equations
-model_LP <- model_LP %>%
+model_lp <- model_lp %>%
   add_equation("Y=C + G", desc = "") %>%
   add_equation("YDr= Y - TX + rb[-1] * Bh[-1] + BLh[-1]") %>%
   add_equation("TX =theta * (Y + rb[-1] * Bh[-1] + BLh[-1])") %>%
@@ -70,7 +70,13 @@ model_LP <- model_LP %>%
   add_equation("Hs = Hh", desc = "Money equilibrium", hidden = TRUE)
 
 # Simulate model
-model_LP <- simulate_scenario(model_LP, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_lp <- simulate_scenario(model_lp,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
 
 # Plot results
-plot_simulation(model = model_LP, scenario = "baseline", from = 1, to = 100, expressions = c("V"))
+plot_simulation(
+  model = model_lp, scenario = c("baseline"), from = 1, to = 100,
+  expressions = c("Y", "V")
+)

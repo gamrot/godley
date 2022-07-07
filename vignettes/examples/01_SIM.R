@@ -1,10 +1,10 @@
 # model SIM
 
 # Create empty model
-model_SIM <- create_model(name = "SFC SIM")
+model_sim <- create_model(name = "SFC SIM")
 
 # Add variables
-model_SIM <- model_SIM %>%
+model_sim <- model_sim %>%
   add_variable("C_d", desc = "Consumption demand by households") %>%
   add_variable("C_s", desc = "Consumption supply") %>%
   add_variable("G_s", desc = "Government supply") %>%
@@ -23,7 +23,7 @@ model_SIM <- model_SIM %>%
   add_variable("W", init = 1, desc = "Wage rate")
 
 # Add equations
-model_SIM <- model_SIM %>%
+model_sim <- model_sim %>%
   add_equation("C_s = C_d", desc = "Consumption") %>%
   add_equation("G_s = G_d") %>%
   add_equation("T_s = T_d") %>%
@@ -38,33 +38,50 @@ model_SIM <- model_SIM %>%
   add_equation("H_s = H_h", desc = "Money equilibrium", hidden = TRUE)
 
 # Simulate model
-model_SIM <- simulate_scenario(model_SIM, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+model_sim <- simulate_scenario(model_sim,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+)
+
+# Plot results
+plot_simulation(
+  model = model_sim, scenario = c("baseline"), from = 1, to = 50,
+  expressions = c("Y", "C_d", "G_s")
+)
 
 # Create empty shock
 shock_sim <- create_shock()
 
-# Add shock equation with increased government expenditures and create new scenario with this shock
-shock_sim <- shock_sim %>%
-  add_shock(equation = "G_d = 25", desc = "Increase in government expenditures", start = 5, end = 50)
+# Add shock equation with increased government expenditures
+shock_sim <- add_shock(shock_sim,
+  equation = "G_d = 25",
+  desc = "Increase in government expenditures", start = 5, end = 50
+)
 
-model_SIM <- model_SIM %>%
-  add_scenario(name = "expansion", origin = "baseline", origin_period = 100, shock = shock_sim)
+# Create new scenario with this shock
+model_sim <- add_scenario(model_sim,
+  name = "expansion", origin = "baseline",
+  origin_period = 1, shock = shock_sim
+)
 
 # Simulate shock
-model_SIM <- simulate_scenario(model_SIM,
+model_sim <- simulate_scenario(model_sim,
   scenario = "expansion", max_iter = 350, periods = 100,
   hidden_tol = 0.1, tol = 1e-08, method = "Newton"
 )
 
 # Plot results
-plot_simulation(model = model_SIM, scenario = c("baseline", "expansion"), from = 1, to = 50, expressions = c("Y", "C_d", "C_s / alpha1"))
+plot_simulation(
+  model = model_sim, scenario = c("expansion"), from = 1, to = 50,
+  expressions = c("Y", "C_d", "G_s")
+)
 
 # Create sensitivity scenarios for alpha1
-model_sen <- create_sensitivity(model_SIM, variable = "alpha1", lower = 0, upper = 0.8, step = 0.1)
+model_sen <- create_sensitivity(model_sim, variable = "alpha1", lower = 0, upper = 0.8, step = 0.1)
 
 # Simulate sensitivity for alpha1
 model_sen <- simulate_scenario(model_sen, max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Newton")
 
 # plot sensitivity results for alpha1
-plot_simulation(model = model_sen, scenario = "sensitivity", take_all = T, from = 1, to = 100, expressions = c("Y"))
-plot_simulation(model = model_sen, scenario = "sensitivity", take_all = T, from = 1, to = 100, expressions = c("C_d"))
+plot_simulation(model = model_sen, scenario = "sensitivity", take_all = T, from = 1, to = 50, expressions = c("Y"))
+plot_simulation(model = model_sen, scenario = "sensitivity", take_all = T, from = 1, to = 50, expressions = c("C_d"))

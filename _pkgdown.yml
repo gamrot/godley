@@ -1,0 +1,51 @@
+template:
+  bootstrap: 5
+
+footer:
+  structure: 
+    left: 
+    right: built_with
+
+home:
+  sidebar:
+    structure: [links, license]
+  links:
+  - text: Source code
+    href: https://github.com/gamrot/godley
+  - text: Bug report
+    href: https://github.com/gamrot/godley/issues
+
+navbar:
+  structure:
+    left:  [intro, reference, articles]
+    right: [github]
+  components:
+    github:
+      icon: fa-github
+      href: https://github.com/gamrot/godley
+
+articles:
+- title: SFC models with godley package
+  navbar: ~
+  contents:
+  - 01_Model_SIM
+  - 02_Model_SIMEX
+  - 03_Model_PC
+  - 04_Model_LP
+  - 05_Model_REG
+  - 06_Model_OPEN
+  - 07_Model_BMW
+  - 08_Model_BMWK
+  - 09_Model_DIS
+  - 10_Model_DISINF
+
+reference:
+- title: Functions in godley package
+  contents:
+  - starts_with("add")
+  - change_init
+  - starts_with("create")
+  - d
+  - plot_simulation
+  - prepare
+  - simulate_scenario

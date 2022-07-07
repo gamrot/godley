@@ -1,0 +1,218 @@
+---
+title: "Model DIS"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Model DIS}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Please find below guidelines how godley package can be used to create model DIS — model with private bank money, inventories and disequilibrium (of a kind) in the goods market described by *Wynne Godley* and *Marc Lavoie* in Chapter 9 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+
+```{r setup}
+library(godley)
+```
+
+### Base scenario
+First you need to create empty SFC model:
+```{r}
+# Create empty model
+model_dis<- create_model(name = "SFC DIS")
+```
+
+Next you have to add variables:
+```{r}
+# Add variables
+model_dis <- add_variable(model_dis, "rl", init = 0.025)
+model_dis <- add_variable(model_dis, "pr", init = 1)
+model_dis <- add_variable(model_dis, "W", init = 0.75)
+model_dis <- add_variable(model_dis, "add", init = 0.02)
+model_dis <- add_variable(model_dis, "alpha0", init = 15)
+model_dis <- add_variable(model_dis, "alpha1", init = 0.8)
+model_dis <- add_variable(model_dis, "alpha2", init = 0.1)
+model_dis <- add_variable(model_dis, "beta", init = 0.75)
+model_dis <- add_variable(model_dis, "epsilon", init = 0.75)
+model_dis <- add_variable(model_dis, "gamma", init = 0.25)
+model_dis <- add_variable(model_dis, "phi", init = 0.25)
+model_dis <- add_variable(model_dis, "sigma_T", init = 0.15)
+model_dis <- add_variable(model_dis, "y", init = .001)
+model_dis <- add_variable(model_dis, "p", init = .001)
+model_dis <- add_variable(model_dis, "NHUC", init = .001)
+model_dis <- add_variable(model_dis, "s_E", init = .001)
+model_dis <- add_variable(model_dis, "inv_T")
+model_dis <- add_variable(model_dis, "inv_E")
+model_dis <- add_variable(model_dis, "inv")
+model_dis <- add_variable(model_dis, "s")
+model_dis <- add_variable(model_dis, "c")
+model_dis <- add_variable(model_dis, "N")
+model_dis <- add_variable(model_dis, "WB")
+model_dis <- add_variable(model_dis, "UC")
+model_dis <- add_variable(model_dis, "INV")
+model_dis <- add_variable(model_dis, "S")
+model_dis <- add_variable(model_dis, "EF")
+model_dis <- add_variable(model_dis, "Ld")
+model_dis <- add_variable(model_dis, "Ls")
+model_dis <- add_variable(model_dis, "Ms")
+model_dis <- add_variable(model_dis, "rm")
+model_dis <- add_variable(model_dis, "EFb")
+model_dis <- add_variable(model_dis, "Mh")
+model_dis <- add_variable(model_dis, "YD")
+model_dis <- add_variable(model_dis, "C")
+model_dis <- add_variable(model_dis, "ydhs")
+model_dis <- add_variable(model_dis, "mh")
+model_dis <- add_variable(model_dis, "ydhs_E")
+```
+
+You also have to add equations:
+```{r}
+# Add equations
+model_dis <- add_equation(model_dis, "y = s_E + inv_E - inv[-1]")
+model_dis <- add_equation(model_dis, "inv_T = sigma_T * s_E")
+model_dis <- add_equation(model_dis, "inv_E = inv[-1] + gamma * (inv_T - inv[-1])")
+model_dis <- add_equation(model_dis, "inv = inv[-1] + (y - s)")
+model_dis <- add_equation(model_dis, "s_E = beta * s[-1] + (1 - beta) * s_E[-1]")
+model_dis <- add_equation(model_dis, "s = c")
+model_dis <- add_equation(model_dis, "N = y / pr")
+model_dis <- add_equation(model_dis, "WB = N * W")
+model_dis <- add_equation(model_dis, "UC = WB / y")
+model_dis <- add_equation(model_dis, "INV = inv * UC")
+model_dis <- add_equation(model_dis, "S = p * s")
+model_dis <- add_equation(model_dis, "p = (1 + phi) * NHUC")
+model_dis <- add_equation(model_dis, "NHUC = (1 - sigma_T) * UC + sigma_T * (1 + rl[-1]) * UC[-1]")
+model_dis <- add_equation(model_dis, "EF = S - WB + (INV - INV[-1]) - rl[-1] * INV[-1]")
+model_dis <- add_equation(model_dis, "Ld = INV")
+model_dis <- add_equation(model_dis, "Ls = Ld")
+model_dis <- add_equation(model_dis, "Ms = Ls")
+model_dis <- add_equation(model_dis, "rm = rl - add")
+model_dis <- add_equation(model_dis, "EFb = rl[-1] * Ls[-1] - rm[-1] * Mh[-1]")
+model_dis <- add_equation(model_dis, "YD = WB + EF + EFb + rm[-1] * Mh[-1]")
+model_dis <- add_equation(model_dis, "Mh = Mh[-1] + YD - C")
+model_dis <- add_equation(model_dis, "ydhs = c + (mh - mh[-1])")
+model_dis <- add_equation(model_dis, "C = c * p")
+model_dis <- add_equation(model_dis, "mh = Mh / p")
+model_dis <- add_equation(model_dis, "c = alpha0 + alpha1 * ydhs_E + alpha2 * mh[-1]")
+model_dis <- add_equation(model_dis, "ydhs_E = epsilon * ydhs[-1] + (1 - epsilon) * ydhs_E[-1]")
+model_dis <- add_equation(model_dis, "Mh = Ms", hidden = T)
+```
+
+Now you can simulate model (in this example for the next 100 periods using Gauss method):
+```{r}
+# Simulate model
+model_dis<- simulate_scenario(model_dis, scenario = "baseline", max_iter = 350, periods = 100, 
+                              hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+```
+
+Based on calculated simulation you can display results for desired set of variables:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_dis, scenario = c("baseline"), from = 1, to = 50, 
+                expressions = c("ydhs", "c"))
+```
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_dis, scenario = c("baseline"), from = 1, to = 50, 
+                expressions = c("delta_inv = inv - dplyr::lag(inv)", 
+                                "delta_inv_E = inv_E - dplyr::lag(inv_E)"))
+```
+
+### Shock scenario
+With godley package you can simulate how a shock will affect the base scenario. 
+
+#### Shock 1
+In this example you will implement one-shot increase in the costing margin. \
+\
+First you need to create empty shock:
+```{r}
+# Create empty shock
+shock_dis <- create_shock()
+```
+
+Next you need to add appropriate equation:
+```{r}
+# Add shock equation
+shock_dis <- add_shock(shock_dis, equation = "phi = 0.35", 
+                       desc = "One-shot increase in the costing margin", start = 5, end = 40)
+```
+
+Then you need to create new shock scenario:
+```{r}
+# Create new scenario with this shock
+model_dis<- add_scenario(model_dis, name = "expansion1", origin = "baseline", 
+                         origin_period = 100, shock = shock_dis)
+```
+
+Now you can simulate new shock scenario:
+```{r}
+# Simulate shock
+model_dis<- simulate_scenario(model_dis, scenario = "expansion1", max_iter = 350, periods = 100, 
+                              hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+```
+
+You can also display results on the plot:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_dis, scenario = c("expansion1"), from = 1, to = 40, 
+                expressions = c("c", "ydhs"))
+```
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_dis, scenario = c("expansion1"), from = 1, to = 40, 
+                expressions = c("delta_inv = inv - dplyr::lag(inv)", 
+                                "delta_inv_E = inv_E - dplyr::lag(inv_E)"))
+```
+
+#### Shock 2
+In this example you will implement an increase in the target inventories to sales ratio. \
+\
+First you need to create empty shock:
+```{r}
+# Create empty shock
+shock_dis <- create_shock()
+```
+
+Next you need to add appropriate equation:
+```{r}
+# Add shock equation
+shock_dis <- add_shock(shock_dis, equation = "sigma_T  = 0.25", 
+                       desc = "Increase in the target inventories to sales ratio", start = 5, end = 50)
+```
+
+Later you need to create new shock scenario:
+```{r}
+# Create new scenario with this shock
+model_dis<- add_scenario(model_dis, name = "expansion2", origin = "baseline", 
+                         origin_period = 100, shock = shock_dis)
+```
+
+Now you can simulate new shock scenario:
+```{r}
+# Simulate shock
+model_dis<- simulate_scenario(model_dis, scenario = "expansion2", max_iter = 350, periods = 100, 
+                              hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+```
+
+You can also display results on the plot:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_dis, scenario = c("expansion2"), from = 1, to = 50, 
+                expressions = c("c", "ydhs"))
+```
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_dis, scenario = c("expansion2"), from = 1, to = 50, 
+                expressions = c("delta_inv = inv - dplyr::lag(inv)", 
+                                "delta_inv_E = inv_E - dplyr::lag(inv_E)"))
+```
+
+### References
+More information about model DIS can be found in Chapter 9 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*

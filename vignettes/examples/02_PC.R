@@ -1,10 +1,10 @@
 # model PC
 
 # Create empty model
-model_PC <- create_model(name = "SFC PC")
+model_pc <- create_model(name = "SFC PC")
 
 # Add variables
-model_PC <- model_PC %>%
+model_pc <- model_pc %>%
   add_variable("B_cb", desc = "") %>%
   add_variable("H_s", desc = "") %>%
   add_variable("B_s", desc = "") %>%
@@ -26,7 +26,7 @@ model_PC <- model_PC %>%
   add_variable("lambda2", init = 0.01, desc = "")
 
 # Add equations
-model_PC <- model_PC %>%
+model_pc <- model_pc %>%
   add_equation("Y = C + G", desc = "") %>%
   add_equation("Yd = Y - T_x + r[-1] * B_h[-1]") %>%
   add_equation("T_x = theta * (Y + r[-1] * B_h[-1])") %>%
@@ -41,24 +41,42 @@ model_PC <- model_PC %>%
   add_equation("H_h = H_s", hidden = T)
 
 # Simulate model
-model_PC <- simulate_scenario(model_PC, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_pc <- simulate_scenario(model_pc, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
 
-# Create empty shock
+# Plot results
+plot_simulation(
+  model = model_pc, scenario = c("baseline"), from = 1, to = 50,
+  expressions = c("B_h / V")
+)
+
+# Plot results
+plot_simulation(
+  model = model_pc, scenario = c("baseline"), from = 1, to = 50,
+  expressions = c("H_h / V")
+)
+
+# Create shock - increased rate of interest on bills
 shock_pc <- create_shock()
 
-# Add shock with increased rate of interest on bills
 shock_pc <- shock_pc %>%
   add_shock(equation = "r = 0.035", desc = "Increase in the rate of interest on bills", start = 5, end = 50)
 
-model_PC <- model_PC %>%
+model_pc <- model_pc %>%
   add_scenario(name = "expansion", origin = "baseline", origin_period = 100, shock = shock_pc)
 
 # Simulate shock
-model_PC <- simulate_scenario(model_PC,
+model_pc <- simulate_scenario(model_pc,
   scenario = "expansion", max_iter = 350, periods = 100,
   hidden_tol = 0.1, tol = 1e-08, method = "Newton"
 )
 
 # Plot results
-plot_simulation(model = model_PC, scenario = "expansion", from = 1, to = 100, expressions = c("B_h / V"))
-plot_simulation(model = model_PC, scenario = "expansion", from = 1, to = 100, expressions = c("H_h / V"))
+plot_simulation(
+  model = model_pc, scenario = "expansion", from = 1, to = 50,
+  expressions = c("B_h / V")
+)
+
+plot_simulation(
+  model = model_pc, scenario = "expansion", from = 1, to = 50,
+  expressions = c("H_h / V")
+)

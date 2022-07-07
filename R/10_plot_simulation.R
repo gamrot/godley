@@ -27,8 +27,6 @@ plot_simulation <- function(model,
   checkmate::assert_int(to, na.ok = T, lower = 0)
   checkmate::assert_character(expressions)
 
-  message("Plottig simulations ... ")
-
   if (take_all == TRUE) {
     scenarios <- c()
     for (i in scenario) {
@@ -40,12 +38,12 @@ plot_simulation <- function(model,
     scenario <- scenarios
 
     if (is.null(scenario)) {
-      stop(paste(c("There is/ are no scenario(s) named like:", scenario_pass, "in the model"), collapse = " "))
+      stop(paste(c("There is/ are no scenario(s) named: ", scenario_pass, "in the model"), collapse = " "))
     }
   }
 
   if (!(all(scenario %in% names(model)))) {
-    stop(paste(c("There is/ are no scenario(s) named:", scenario[!(scenario %in% names(model))], "in the model"), collapse = " "))
+    stop(paste(c("There is/ are no scenario(s) named: ", scenario[!(scenario %in% names(model))], "in the model"), collapse = " "))
   }
 
   if (is.na(to)) {
@@ -71,7 +69,7 @@ plot_simulation <- function(model,
     result_var <- tibble::tibble(periods = 1:nrow(model[[scenario[1]]]$result))
     for (n in 1:length(expressions)) {
       result <- eval(exprs[[n]])
-      names(result) <- paste0(expressions[[n]], "_", i)
+      names(result) <- paste0(i, ": ", stringr::str_trim(stringr::str_split(expressions[[n]], "=")[[1]][1]))
       result_var <- result_var %>% tibble::add_column(result)
     }
     result_var <- result_var[from:to, ]
@@ -83,7 +81,7 @@ plot_simulation <- function(model,
   fig <- plotly::plot_ly()
 
   for (i in 2:ncol(results)) {
-    legend <- paste("function: ", colnames(results)[i])
+    legend <- paste(colnames(results)[i])
 
     fig <- plotly::add_trace(fig,
       y = results[[i]], x = results$periods,
@@ -96,13 +94,25 @@ plot_simulation <- function(model,
   }
 
   fig <- plotly::layout(fig,
+    #    autosize = F,
+    #    width = 1000,
+    #    height = 500,
     spikedistance = 1000,
     hovermode = "spikers",
     xaxis = list(title = "period"),
-    title = list(text = paste("Scenario ", scenario))
+    showlegend = TRUE,
+    legend = list(xanchor = "left", x = 1.02, y = 0.92)
   )
 
-  message("... Done")
+  if (length(scenario) == 1) {
+    fig <- plotly::layout(fig,
+      title = list(text = paste("Scenario", scenario))
+    )
+  } else {
+    fig <- plotly::layout(fig,
+      title = list(text = "Multiple scenarios")
+    )
+  }
 
   return(fig)
 }

@@ -35,7 +35,5 @@ add_variable <- function(model,
     }
   }
 
-  message("Added variable ", name, ", with initial value ", init)
-
   return(model)
 }

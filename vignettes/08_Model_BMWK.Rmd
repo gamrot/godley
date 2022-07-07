@@ -1,0 +1,142 @@
+---
+title: "Model BMWK"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Model BMWK}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Please find below guidelines how godley package can be used to create the model BMWK — Kaldorian model with private bank money described by *Wynne Godley* and *Marc Lavoie* in Chapter 7 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+
+```{r setup}
+library(godley)
+```
+
+### Base scenario
+First you need to create empty SFC model:
+```{r}
+# Create empty model
+model_bmwk <- create_model(name = "SFC BMWK")
+```
+
+Next you have to add variables:
+```{r}
+# Add variables
+model_bmwk <- add_variable(model_bmwk, "rl", init = 0.025)
+model_bmwk <- add_variable(model_bmwk, "alpha0", init = 20)
+model_bmwk <- add_variable(model_bmwk, "alpha2", init = 0.10)
+model_bmwk <- add_variable(model_bmwk, "delta", init = 0.10)
+model_bmwk <- add_variable(model_bmwk, "gamma", init = 0.15)
+model_bmwk <- add_variable(model_bmwk, "kappa", init = 1)
+model_bmwk <- add_variable(model_bmwk, "pr", init = 1)
+model_bmwk <- add_variable(model_bmwk, "Nd", init = .001)
+model_bmwk <- add_variable(model_bmwk, "Ns", init = .001)
+model_bmwk <- add_variable(model_bmwk, "Y", init = .001)
+model_bmwk <- add_variable(model_bmwk, "alpha1w", init = .8)
+model_bmwk <- add_variable(model_bmwk, "alpha1r", init = .15)
+model_bmwk <- add_variable(model_bmwk, "Cs")
+model_bmwk <- add_variable(model_bmwk, "Cd")
+model_bmwk <- add_variable(model_bmwk, "Is")
+model_bmwk <- add_variable(model_bmwk, "Id")
+model_bmwk <- add_variable(model_bmwk, "Ls")
+model_bmwk <- add_variable(model_bmwk, "Ld")
+model_bmwk <- add_variable(model_bmwk, "WBd")
+model_bmwk <- add_variable(model_bmwk, "AF")
+model_bmwk <- add_variable(model_bmwk, "K")
+model_bmwk <- add_variable(model_bmwk, "YD")
+model_bmwk <- add_variable(model_bmwk, "WBs")
+model_bmwk <- add_variable(model_bmwk, "rm")
+model_bmwk <- add_variable(model_bmwk, "Mh")
+model_bmwk <- add_variable(model_bmwk, "Ms")
+model_bmwk <- add_variable(model_bmwk, "W")
+model_bmwk <- add_variable(model_bmwk, "DA")
+model_bmwk <- add_variable(model_bmwk, "KT")
+```
+
+You also have to add equations:
+```{r}
+# Add equations
+model_bmwk <- add_equation(model_bmwk, "Cs = Cd")
+model_bmwk <- add_equation(model_bmwk, "Is = Id")
+model_bmwk <- add_equation(model_bmwk, "Ns = Nd")
+model_bmwk <- add_equation(model_bmwk, "Ls = Ls[-1] + Ld - Ld[-1]")
+model_bmwk <- add_equation(model_bmwk, "Y = Cs + Is")
+model_bmwk <- add_equation(model_bmwk, "WBd = Y - rl[-1] * Ld[-1] - AF")
+model_bmwk <- add_equation(model_bmwk, "AF = delta * K[-1]")
+model_bmwk <- add_equation(model_bmwk, "Ld = Ld[-1] + Id - AF")
+model_bmwk <- add_equation(model_bmwk, "YD = WBs + rm[-1] * Mh[-1]")
+model_bmwk <- add_equation(model_bmwk, "Mh = Mh[-1] + YD - Cd")
+model_bmwk <- add_equation(model_bmwk, "Ms = Ms[-1] + Ls - Ls[-1]")
+model_bmwk <- add_equation(model_bmwk, "rm = rl")
+model_bmwk <- add_equation(model_bmwk, "WBs = W * Ns")
+model_bmwk <- add_equation(model_bmwk, "Nd = Y / pr")
+model_bmwk <- add_equation(model_bmwk, "W = WBd / Nd")
+model_bmwk <- add_equation(model_bmwk, "Cd = alpha0 + alpha1w * WBs + alpha1r * rm[-1] * Mh[-1] + alpha2 * Mh")
+model_bmwk <- add_equation(model_bmwk, "K = K[-1] + Id - DA")
+model_bmwk <- add_equation(model_bmwk, "DA = delta * K[-1]")
+model_bmwk <- add_equation(model_bmwk, "KT = kappa * Y[-1]")
+model_bmwk <- add_equation(model_bmwk, "Id = gamma * (KT - K[-1]) + DA")
+model_bmwk <- add_equation(model_bmwk, "Ms = Mh", hidden = T)
+```
+
+Now you can simulate model (in this example for the next 100 periods using Gauss method):
+```{r}
+# Simulate model
+model_bmwk <- simulate_scenario(model_bmwk, scenario = "baseline", max_iter = 350, periods = 100, 
+                               hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+```
+
+Based on calculated simulation you can display results for desired set of variables:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_bmwk, scenario = c("baseline"), from = 1, to = 50, 
+                expressions = c("Y"))
+```
+
+### Shock scenario
+You can simulate now how a shock will affect the base scenario. In this example you will implement increase in the interest rate. \
+\
+First you need to create empty shock:
+```{r}
+# Create empty shock
+shock_bmwk <- create_shock()
+```
+
+Next you need to add appropriate equation:
+```{r}
+# Add shock equation
+shock_bmwk <- add_shock(shock_bmwk, equation = "rl = 0.035", 
+                       desc = "Increase in the interest rate", start = 5, end = 50)
+```
+
+Then you need to create new shock scenario:
+```{r}
+# Create new scenario with this shock
+model_bmwk <- add_scenario(model_bmwk, name = "expansion", origin = "baseline", 
+                          origin_period = 100, shock = shock_bmwk)
+```
+
+Now you can simulate new shock scenario:
+```{r}
+# Simulate shock
+model_bmwk <- simulate_scenario(model_bmwk, scenario = "expansion", max_iter = 350, periods = 100, 
+                               hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+```
+
+You can also plot simulation results from the shock scenario:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_bmwk, scenario = c("expansion"), from = 1, to = 50, 
+                expressions = c("Y"))
+```
+
+### References
+More information about model BMWK can be found in Chapter 7 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*

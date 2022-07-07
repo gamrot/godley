@@ -109,12 +109,21 @@ prepare <- function(model) {
   res <- godley:::validate_model_input(model)
   eqs_separated <- res[[1]]
   external_values <- res[[2]]
+  funs <- res[[3]]
 
   # Prepare them for the simulation process
   km <- godley:::find_adjacency(eqs_separated)
   blocks <- godley:::find_blocks(km)
   eqs_separated$block <- blocks
   calls <- godley:::prep_equations(eqs_separated, external_values)
+
+  if (length(funs) != 0) {
+    for (fun in funs) {
+      patt <- paste0("m\\[.i, \\'", fun, "\\'\\]\\(")
+      repl <- paste0(fun, "(")
+      calls$rhs <- stringr::str_replace_all(calls$rhs, patt, repl)
+    }
+  }
 
   var <- model$variables$init
   names(var) <- model$variables$name

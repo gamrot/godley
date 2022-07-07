@@ -1,10 +1,10 @@
 # model DISINF
 
 # Create empty model
-model_DISINF <- create_model(name = "SFC DISINF")
+model_disinf <- create_model(name = "SFC DISINF")
 
 # Add variables
-model_DISINF <- model_DISINF %>%
+model_disinf <- model_disinf %>%
   add_variable("rrc", init = 0.025) %>%
   add_variable("pr", init = 1) %>%
   add_variable("add", init = 0.02) %>%
@@ -54,7 +54,7 @@ model_DISINF <- model_DISINF %>%
   add_variable("ydhs_E")
 
 # Add equations
-model_DISINF <- model_DISINF %>%
+model_disinf <- model_disinf %>%
   add_equation("y = s_E + inv_E - inv[-1]") %>%
   add_equation("inv_T = sigma_T * s_E") %>%
   add_equation("inv_E = inv[-1] + gamma * (inv_T - inv[-1])") %>%
@@ -89,32 +89,32 @@ model_DISINF <- model_DISINF %>%
   add_equation("Nfe = s / pr")
 
 # Simulate model
-model_DISINF <- simulate_scenario(model_DISINF, scenario = "baseline", max_iter = 350, periods = 200, hidden_tol = 0.1, tol = 1e-20, method = "Gauss")
+model_disinf <- simulate_scenario(model_disinf, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-20, method = "Gauss")
 
 # Plot results
-plot_simulation(model = model_DISINF, scenario = "baseline", from = 1, to = 200, expressions = c("y"))
+plot_simulation(model = model_disinf, scenario = "baseline", from = 1, to = 100, expressions = c("y"))
 
 # Scenario 1: Increase in the costing margins
 shock <- create_shock() %>%
   add_shock(equation = "phi = 0.3", desc = "Increase in the costing margins", start = 5, end = 100)
 
-model_DISINF <- model_DISINF %>%
+model_disinf <- model_disinf %>%
   add_scenario(name = "expansion", origin = "baseline", origin_period = 100, shock = shock)
 
-model_DISINF <- simulate_scenario(model_DISINF, scenario = "expansion", max_iter = 350, periods = 100, hidden_tol = .1, tol = 1e-15, method = "Gauss")
+model_disinf <- simulate_scenario(model_disinf, scenario = "expansion", max_iter = 350, periods = 100, hidden_tol = .1, tol = 1e-15, method = "Gauss")
 
 plot_simulation(
-  model = model_DISINF, scenario = "expansion", from = 1, to = 100,
+  model = model_disinf, scenario = "expansion", from = 1, to = 100,
   expressions = c("inflation = (p - dplyr::lag(p)) / dplyr::lag(p)")
 )
 
 plot_simulation(
-  model = model_DISINF, scenario = "expansion", from = 1, to = 100,
+  model = model_disinf, scenario = "expansion", from = 1, to = 100,
   expressions = c("p", "UC", "UCp = UC/p")
 )
 
 plot_simulation(
-  model = model_DISINF, scenario = "expansion", from = 1, to = 100,
+  model = model_disinf, scenario = "expansion", from = 1, to = 100,
   expressions = c("ydhs_ss = alpha0 / (1 - alpha1 - alpha2*sigma_T * (UC/p))", "ydhs", "c", "s")
 )
 
@@ -122,12 +122,12 @@ plot_simulation(
 shock2 <- create_shock() %>%
   add_shock(equation = "Omega0   = -1", desc = "Increase in the target real wage", start = 5, end = 100)
 
-model_DISINF <- model_DISINF %>%
+model_disinf <- model_disinf %>%
   add_scenario(name = "expansion2", origin = "baseline", origin_period = 100, shock = shock2)
 
-model_DISINF <- simulate_scenario(model_DISINF, scenario = "expansion2", max_iter = 350, periods = 100, tol = 1e-08, method = "Gauss")
+model_disinf <- simulate_scenario(model_disinf, scenario = "expansion2", max_iter = 350, periods = 100, tol = 1e-08, method = "Gauss")
 
 plot_simulation(
-  model = model_DISINF, scenario = "expansion2", from = 1, to = 100,
+  model = model_disinf, scenario = "expansion2", from = 1, to = 100,
   expressions = c("ydhs_ss = alpha0 / (1 - alpha1 - alpha2*sigma_T * (UC/p))", "ydhs", "c", "s")
 )

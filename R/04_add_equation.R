@@ -35,7 +35,5 @@ add_equation <- function(model,
     }
   }
 
-  message("Added equation ", equation)
-
   return(model)
 }

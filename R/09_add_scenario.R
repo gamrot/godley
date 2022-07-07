@@ -48,7 +48,5 @@ Please simulate scenario before incorporating a shock")
 
   model[[name]]$initial_matrix <- sc
 
-  message("Added scenario ", name)
-
   return(model)
 }

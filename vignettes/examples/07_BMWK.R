@@ -1,10 +1,10 @@
 # model BMWK
 
 # Create empty model
-model_BMWK <- create_model(name = "SFC BMWK")
+model_bmwk <- create_model(name = "SFC BMWK")
 
 # Add variables
-model_BMWK <- model_BMWK %>%
+model_bmwk <- model_bmwk %>%
   add_variable("rl", init = 0.025) %>%
   add_variable("alpha0", init = 20) %>%
   add_variable("alpha2", init = 0.10) %>%
@@ -36,7 +36,7 @@ model_BMWK <- model_BMWK %>%
   add_variable("KT")
 
 # Add equations
-model_BMWK <- model_BMWK %>%
+model_bmwk <- model_bmwk %>%
   add_equation("Cs = Cd") %>%
   add_equation("Is = Id") %>%
   add_equation("Ns = Nd") %>%
@@ -60,11 +60,11 @@ model_BMWK <- model_BMWK %>%
   add_equation("Ms = Mh", hidden = T)
 
 # Simulate model
-model_BMWK <- simulate_scenario(model_BMWK, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_bmwk <- simulate_scenario(model_bmwk, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
 
 # Plot results
 plot_simulation(
-  model = model_BMWK, scenario = "baseline", from = 1, to = 100,
+  model = model_bmwk, scenario = "baseline", from = 1, to = 50,
   expressions = c("Y")
 )
 
@@ -72,26 +72,26 @@ plot_simulation(
 shock <- create_shock() %>%
   add_shock(equation = "rl = 0.035", desc = "Increase in autonomous consumption expenditures", start = 5, end = 100)
 
-model_BMWK <- model_BMWK %>%
+model_bmwk <- model_bmwk %>%
   add_scenario(name = "expansion", origin = "baseline", origin_period = 100, shock = shock)
 
-model_BMWK <- simulate_scenario(model_BMWK, scenario = "expansion", max_iter = 350, periods = 100, hidden_tol = 10, tol = 1e-08, method = "Newton")
+model_bmwk <- simulate_scenario(model_bmwk, scenario = "expansion", max_iter = 350, periods = 100, hidden_tol = 10, tol = 1e-08, method = "Gauss")
 
 plot_simulation(
-  model = model_BMWK, scenario = "expansion", from = 1, to = 100,
+  model = model_bmwk, scenario = "expansion", from = 1, to = 50,
   expressions = c("Y")
 )
 
 # Scenario 2: Increase in the propensity to save
 shock2 <- create_shock() %>%
-  add_shock(equation = "rl = 0.015", desc = "Increase in the propensity to save", start = 5, end = 200)
+  add_shock(equation = "rl = 0.015", desc = "Increase in the propensity to save", start = 5, end = 100)
 
-model_BMWK <- model_BMWK %>%
+model_bmwk <- model_bmwk %>%
   add_scenario(name = "expansion2", origin = "baseline", origin_period = 100, shock = shock2)
 
-model_BMWK <- simulate_scenario(model_BMWK, scenario = "expansion2", max_iter = 350, periods = 200, hidden_tol = .1, tol = 1e-08, method = "Gauss")
+model_bmwk <- simulate_scenario(model_bmwk, scenario = "expansion2", max_iter = 350, periods = 100, hidden_tol = .1, tol = 1e-08, method = "Gauss")
 
 plot_simulation(
-  model = model_BMWK, scenario = "expansion2", from = 1, to = 60,
+  model = model_bmwk, scenario = "expansion2", from = 1, to = 50,
   expressions = c("Y")
 )

@@ -1,10 +1,10 @@
 # model DIS
 
 # Create empty model
-model_DIS <- create_model(name = "SFC DIS")
+model_dis <- create_model(name = "SFC DIS")
 
 # Add variables
-model_DIS <- model_DIS %>%
+model_dis <- model_dis %>%
   add_variable("rl", init = 0.025) %>%
   add_variable("pr", init = 1) %>%
   add_variable("W", init = 0.75) %>%
@@ -45,7 +45,7 @@ model_DIS <- model_DIS %>%
   add_variable("ydhs_E")
 
 # Add equations
-model_DIS <- model_DIS %>%
+model_dis <- model_dis %>%
   add_equation("y = s_E + inv_E - inv[-1]") %>%
   add_equation("inv_T = sigma_T * s_E") %>%
   add_equation("inv_E = inv[-1] + gamma * (inv_T - inv[-1])") %>%
@@ -75,11 +75,11 @@ model_DIS <- model_DIS %>%
   add_equation("Mh = Ms", hidden = T)
 
 # Simulate model
-model_DIS <- simulate_scenario(model_DIS, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_dis <- simulate_scenario(model_dis, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
 
 # Plot results
 plot_simulation(
-  model = model_DIS, scenario = "baseline", from = 1, to = 100,
+  model = model_dis, scenario = "baseline", from = 1, to = 100,
   expressions = c("ydhs")
 )
 
@@ -87,13 +87,13 @@ plot_simulation(
 shock <- create_shock() %>%
   add_shock(equation = "phi = 0.35", desc = "One-shot increase in the costing margin", start = 5, end = 40)
 
-model_DIS <- model_DIS %>%
+model_dis <- model_dis %>%
   add_scenario(name = "expansion", origin = "baseline", origin_period = 100, shock = shock)
 
-model_DIS <- simulate_scenario(model_DIS, scenario = "expansion", max_iter = 350, periods = 40, hidden_tol = .1, tol = 1e-08, method = "Gauss")
+model_dis <- simulate_scenario(model_dis, scenario = "expansion", max_iter = 350, periods = 40, hidden_tol = .1, tol = 1e-08, method = "Gauss")
 
 plot_simulation(
-  model = model_DIS, scenario = "expansion", from = 1, to = 40,
+  model = model_dis, scenario = "expansion", from = 1, to = 40,
   expressions = c("c", "ydhs")
 )
 
@@ -101,17 +101,17 @@ plot_simulation(
 shock2 <- create_shock() %>%
   add_shock(equation = "sigma_T  = 0.25", desc = "Increase in the target inventories to sales ratio", start = 5, end = 50)
 
-model_DIS <- model_DIS %>%
+model_dis <- model_dis %>%
   add_scenario(name = "expansion2", origin = "baseline", origin_period = 100, shock = shock2)
 
-model_DIS <- simulate_scenario(model_DIS, scenario = "expansion2", max_iter = 350, periods = 50, hidden_tol = .1, tol = 1e-08, method = "Gauss")
+model_dis <- simulate_scenario(model_dis, scenario = "expansion2", max_iter = 350, periods = 50, hidden_tol = .1, tol = 1e-08, method = "Gauss")
 
 plot_simulation(
-  model = model_DIS, scenario = "expansion2", from = 1, to = 60,
+  model = model_dis, scenario = "expansion2", from = 1, to = 50,
   expressions = c("ydhs", "c")
 )
 
 plot_simulation(
-  model = model_DIS, scenario = "expansion2", from = 1, to = 60,
+  model = model_dis, scenario = "expansion2", from = 1, to = 50,
   expressions = c("delta_inv = inv - dplyr::lag(inv)", "delta_inv_E = inv_E - dplyr::lag(inv_E)")
 )

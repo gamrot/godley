@@ -1,0 +1,246 @@
+---
+title: "Model REG"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Model REG}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Please find below guidelines how godley package can be used to create model REG — model with two-region economy described by *Wynne Godley* and *Marc Lavoie* in Chapter 6 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+
+```{r setup}
+library(godley)
+```
+
+### Base scenario
+First you need to create empty SFC model:
+```{r}
+# Create empty model
+model_reg <- create_model(name = "SFC REG")
+```
+
+Next you have to add variables:
+```{r}
+# Add variables
+model_reg <- add_variable(model_reg,"r", init = 0.025) 
+model_reg <- add_variable(model_reg,"G_S", init = 20) 
+model_reg <- add_variable(model_reg,"G_N", init = 20) 
+model_reg <- add_variable(model_reg,"mu_N", init = 0.15) 
+model_reg <- add_variable(model_reg,"mu_S", init = 0.15) 
+model_reg <- add_variable(model_reg,"alpha1_N", init = 0.7) 
+model_reg <- add_variable(model_reg,"alpha1_S", init = 0.7) 
+model_reg <- add_variable(model_reg,"alpha2_N", init = 0.3) 
+model_reg <- add_variable(model_reg,"alpha2_S", init = 0.3) 
+model_reg <- add_variable(model_reg,"lambda0_N", init = 0.67) 
+model_reg <- add_variable(model_reg,"lambda0_S", init = 0.67) 
+model_reg <- add_variable(model_reg,"lambda1_N", init = 0.05) 
+model_reg <- add_variable(model_reg,"lambda1_S", init = 0.05) 
+model_reg <- add_variable(model_reg,"lambda2_N", init = 0.01) 
+model_reg <- add_variable(model_reg,"lambda2_S", init = 0.01) 
+model_reg <- add_variable(model_reg,"theta", init = 0.2) 
+model_reg <- add_variable(model_reg,"Y_N") 
+model_reg <- add_variable(model_reg,"C_N") 
+model_reg <- add_variable(model_reg,"X_N") 
+model_reg <- add_variable(model_reg,"IM_N") 
+model_reg <- add_variable(model_reg,"Y_S") 
+model_reg <- add_variable(model_reg,"C_S") 
+model_reg <- add_variable(model_reg,"X_S") 
+model_reg <- add_variable(model_reg,"IM_S") 
+model_reg <- add_variable(model_reg,"YD_N") 
+model_reg <- add_variable(model_reg,"TX_N") 
+model_reg <- add_variable(model_reg,"Bh_N") 
+model_reg <- add_variable(model_reg,"YD_S") 
+model_reg <- add_variable(model_reg,"TX_S") 
+model_reg <- add_variable(model_reg,"Bh_S") 
+model_reg <- add_variable(model_reg,"V_N") 
+model_reg <- add_variable(model_reg,"V_S") 
+model_reg <- add_variable(model_reg,"Hh_N") 
+model_reg <- add_variable(model_reg,"Hh_S") 
+model_reg <- add_variable(model_reg,"TX") 
+model_reg <- add_variable(model_reg,"G") 
+model_reg <- add_variable(model_reg,"Bh") 
+model_reg <- add_variable(model_reg,"Bs") 
+model_reg <- add_variable(model_reg,"Hh") 
+model_reg <- add_variable(model_reg,"Hs") 
+model_reg <- add_variable(model_reg,"Bcb")
+```
+
+You also have to add equations:
+```{r}
+# Add equations
+model_reg <- add_equation(model_reg,"Y_N = C_N + G_N + X_N - IM_N") 
+model_reg <- add_equation(model_reg,"Y_S = C_S + G_S + X_S - IM_S") 
+model_reg <- add_equation(model_reg,"IM_N = mu_N * Y_N") 
+model_reg <- add_equation(model_reg,"IM_S = mu_S * Y_S") 
+model_reg <- add_equation(model_reg,"X_N = IM_S") 
+model_reg <- add_equation(model_reg,"YD_N = Y_N - TX_N + r[-1] * Bh_N[-1]") 
+model_reg <- add_equation(model_reg,"YD_S = Y_S - TX_S + r[-1] * Bh_S[-1]") 
+model_reg <- add_equation(model_reg,"TX_N = theta * ( Y_N + r[-1] * Bh_N[-1])") 
+model_reg <- add_equation(model_reg,"X_S = IM_N") 
+model_reg <- add_equation(model_reg,"TX_S = theta * ( Y_S + r[-1] * Bh_S[-1])") 
+model_reg <- add_equation(model_reg,"V_N = V_N[-1] + ( YD_N - C_N )") 
+model_reg <- add_equation(model_reg,"V_S = V_S[-1] + ( YD_S - C_S )") 
+model_reg <- add_equation(model_reg,"C_N = alpha1_N * YD_N + alpha2_N * V_N[-1]") 
+model_reg <- add_equation(model_reg,"C_S = alpha1_S * YD_S + alpha2_S * V_S[-1]") 
+model_reg <- add_equation(model_reg,"Hh_N = V_N - Bh_N") 
+model_reg <- add_equation(model_reg,"Hh_S = V_S - Bh_S") 
+model_reg <- add_equation(model_reg,"Bh_N = V_N * ( lambda0_N + lambda1_N * r 
+                          - lambda2_N * ( YD_N/V_N ) )") 
+model_reg <- add_equation(model_reg,"Bh_S = V_S * ( lambda0_S + lambda1_S * r 
+                          - lambda2_S * ( YD_S/V_S ) )") 
+model_reg <- add_equation(model_reg,"TX = TX_N + TX_S") 
+model_reg <- add_equation(model_reg,"G = G_N + G_S") 
+model_reg <- add_equation(model_reg,"Bh = Bh_N + Bh_S") 
+model_reg <- add_equation(model_reg,"Hh = Hh_N + Hh_S") 
+model_reg <- add_equation(model_reg,"Bs = Bs[-1] + ( G + r[-1] * Bs[-1] ) - ( TX + r[-1] * Bcb[-1] )") 
+model_reg <- add_equation(model_reg,"Hs = Hs[-1] + Bcb - Bcb[-1]") 
+model_reg <- add_equation(model_reg,"Bcb = Bs - Bh") 
+model_reg <- add_equation(model_reg,"Hs = Hh", desc = "Money equilibrium", hidden = TRUE)
+```
+
+Now you can simulate model (in this example for the next 100 periods using Gauss method):
+```{r}
+# Simulate model
+model_reg <- simulate_scenario(model_reg, scenario = "baseline", max_iter = 350, periods = 100, 
+                               hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+```
+
+Based on calculated simulation you can display simulation results for desired set of variables:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_reg, scenario = "baseline", from = 1, to = 60, 
+                expressions = c("deltaV_S = V_S - dplyr::lag(V_S)", 
+                                "GB_S = TX_S - (G_S + dplyr::lag(r) * dplyr::lag(Bh_S))", 
+                                "TB_S = X_S - IM_S"))
+```
+
+### Shock scenarios 
+With godley package you can simulate how a shock will affect the base scenario. 
+
+#### Shock 1
+In this example you will implement an increase in the propensity to import of the South. \
+\
+First you need to create empty shock:
+```{r}
+# Create empty shock
+shock_reg <- create_shock()
+```
+
+Next you need to add appropriate equation:
+```{r}
+# Add shock equation with increased propensity to import of the South
+shock_reg <- add_shock(shock_reg, equation = "mu_S = 0.25", 
+                       desc = "An increase in the propensity to import of the South", 
+                       start = 5, end = 60)
+```
+
+Then you need to create new shock scenario:
+```{r}
+# Create new scenario with this shock
+model_reg <- add_scenario(model_reg, name = "expansion1", origin = "baseline", 
+                          origin_period = 1, shock = shock_reg)
+```
+
+Now you can simulate new shock scenario:
+```{r}
+# Simulate shock
+model_reg <- simulate_scenario(model_reg, scenario = "expansion1", max_iter = 350, periods = 100, 
+                               hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+```
+
+You can also display results from the shock scenario:
+```{r, out.width="100%"}
+plot_simulation(model = model_reg, scenario = "expansion1", from = 1, to = 60, 
+                expressions = c("deltaV_S = V_S - dplyr::lag(V_S)", 
+                                "GB_S = TX_S - (G_S + dplyr::lag(r) * dplyr::lag(Bh_S))", 
+                                "TB_S = X_S - IM_S"))
+```
+
+#### Shock 2
+In this example you will implement an increase in the government expenditures of the South. \
+\
+First you need to create empty shock:
+```{r}
+# Create empty shock
+shock_reg <- create_shock()
+```
+
+Next you need to add appropriate equation:
+```{r}
+# Add shock equation with increased government expenditures of the South
+shock_reg <- add_shock(shock_reg, equation = "G_S = 25", 
+                       desc = "An increase of government expenditures of the South", 
+                       start = 5, end = 50)
+```
+
+Later you need to create new shock scenario:
+```{r}
+# Create new scenario with this shock
+model_reg <- add_scenario(model_reg, name = "expansion2", origin = "baseline", 
+                          origin_period = 1, shock = shock_reg)
+```
+
+Now you can simulate new shock scenario:
+```{r}
+# Simulate shock
+model_reg <- simulate_scenario(model_reg, scenario = "expansion2", max_iter = 350, periods = 100, 
+                               hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+```
+
+You can also display results from the shock scenario:
+```{r, out.width="100%"}
+plot_simulation(model = model_reg, scenario = "expansion2", from = 1, to = 50,
+                expressions = c("deltaV_S = V_S - dplyr::lag(V_S)", 
+                                "GB_S = TX_S - (G_S + dplyr::lag(r) * dplyr::lag(Bh_S))", 
+                                "TB_S = X_S - IM_S"))
+```
+
+#### Shock 3
+In this example you will implement an increase in the propensity to save of the Southern households. \
+\
+First you need to create empty shock:
+```{r}
+# Create empty shock
+shock_reg <- create_shock()
+```
+
+Next you need to add appropriate equation:
+```{r}
+# Add shock equation with increased government expenditures of the South
+shock_reg <- add_shock(shock_reg, equation = "alpha1_S = .6", 
+                       desc = "Increased propensity to save of the Southern households", 
+                       start = 5, end = 50)
+```
+
+Later you need to create new shock scenario:
+```{r}
+# Create new scenario with this shock
+model_reg <- add_scenario(model_reg, name = "expansion3", origin = "baseline", 
+                          origin_period = 100, shock = shock_reg)
+```
+
+Now you can simulate new shock scenario:
+```{r}
+# Simulate shock
+model_reg <- simulate_scenario(model_reg, scenario = "expansion3", max_iter = 350, periods = 100, 
+                               hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+```
+
+You can also display results from the shock scenario:
+```{r, out.width="100%"}
+plot_simulation(model = model_reg, scenario = "expansion3", from = 1, to = 50,
+                expressions = c("deltaV_S = V_S - dplyr::lag(V_S)", 
+                                "GB_S = TX_S - (G_S + dplyr::lag(r) * dplyr::lag(Bh_S))", 
+                                "TB_S = X_S - IM_S"))
+```
+
+### References
+More information about model REG can be found in Chapter 6 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*

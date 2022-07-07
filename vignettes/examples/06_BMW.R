@@ -1,10 +1,10 @@
 # model BMW
 
 # Create empty model
-model_BMW <- create_model(name = "SFC BMW")
+model_bmw <- create_model(name = "SFC BMW")
 
 # Add variables
-model_BMW <- model_BMW %>%
+model_bmw <- model_bmw %>%
   add_variable("rl", init = 0.025) %>%
   add_variable("alpha0", init = 20) %>%
   add_variable("alpha1", init = 0.75) %>%
@@ -35,7 +35,7 @@ model_BMW <- model_BMW %>%
   add_variable("KT")
 
 # Add equations
-model_BMW <- model_BMW %>%
+model_bmw <- model_bmw %>%
   add_equation("Cs = Cd") %>%
   add_equation("Is = Id") %>%
   add_equation("Ns = Nd") %>%
@@ -59,45 +59,45 @@ model_BMW <- model_BMW %>%
   add_equation("Ms = Mh", hidden = T)
 
 # Simulate model
-model_BMW <- simulate_scenario(model_BMW, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_bmw <- simulate_scenario(model_bmw, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
 
 # Plot results
-plot_simulation(model = model_BMW, scenario = "baseline", from = 1, to = 100, expressions = c("Y"))
+plot_simulation(model = model_bmw, scenario = "baseline", from = 1, to = 50, expressions = c("Y"))
 
 # Scenario 1: Increase in autonomous consumption expenditures
 shock <- create_shock() %>%
-  add_shock(equation = "alpha0 = 30", desc = "Increase in autonomous consumption expenditures", start = 5, end = 60)
+  add_shock(equation = "alpha0 = 30", desc = "Increase in autonomous consumption expenditures", start = 5, end = 50)
 
-model_BMW <- model_BMW %>%
+model_bmw <- model_bmw %>%
   add_scenario(name = "expansion", origin = "baseline", origin_period = 100, shock = shock)
 
-model_BMW <- simulate_scenario(model_BMW, scenario = "expansion", max_iter = 350, periods = 60, hidden_tol = 10, tol = 1e-08, method = "Newton")
+model_bmw <- simulate_scenario(model_bmw, scenario = "expansion", max_iter = 350, periods = 100, hidden_tol = 10, tol = 1e-08, method = "Gauss")
 
 plot_simulation(
-  model = model_BMW, scenario = "expansion", from = 1, to = 60,
+  model = model_bmw, scenario = "expansion", from = 1, to = 50,
   expressions = c("Cd", "YD")
 )
 
 plot_simulation(
-  model = model_BMW, scenario = "expansion", from = 1, to = 60,
+  model = model_bmw, scenario = "expansion", from = 1, to = 50,
   expressions = c("Id", "AF")
 )
 
 # Scenario 2: Increase in the propensity to save
 shock2 <- create_shock() %>%
-  add_shock(equation = "alpha1 = 0.7", desc = "Increase in the propensity to save", start = 5, end = 60)
+  add_shock(equation = "alpha1 = 0.7", desc = "Increase in the propensity to save", start = 5, end = 50)
 
-model_BMW <- model_BMW %>%
+model_bmw <- model_bmw %>%
   add_scenario(name = "expansion2", origin = "baseline", origin_period = 100, shock = shock2)
 
-model_BMW <- simulate_scenario(model_BMW, scenario = "expansion2", max_iter = 350, periods = 60, hidden_tol = .1, tol = 1e-08, method = "Gauss")
+model_bmw <- simulate_scenario(model_bmw, scenario = "expansion2", max_iter = 350, periods = 100, hidden_tol = .1, tol = 1e-08, method = "Gauss")
 
 plot_simulation(
-  model = model_BMW, scenario = "expansion2", from = 1, to = 60,
+  model = model_bmw, scenario = "expansion2", from = 1, to = 50,
   expressions = c("Cd", "YD")
 )
 
 plot_simulation(
-  model = model_BMW, scenario = "expansion2", from = 1, to = 60,
+  model = model_bmw, scenario = "expansion2", from = 1, to = 50,
   expressions = c("YK = Y / dplyr::lag(K)")
 )

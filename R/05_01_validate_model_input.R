@@ -21,10 +21,10 @@ Please complete equations")
   # 3 Check if provided equations do not contains invalid characters
   equations <- model$equations$equation
   for (i in equations) {
-    is_invalid_name <- stringr::str_detect(i, "[!?~:;#``@$<>{}|]") # \\'[!?><,~:;#^``@$%}{|]')
+    is_invalid_name <- stringr::str_detect(i, "[§£@#${};:'\\\\~`?]")
     if (is_invalid_name == TRUE) {
       stop("Invalid character(s) in equation
-Please check ", i)
+Please check: ", i)
     }
   }
 
@@ -34,7 +34,7 @@ Please check ", i)
   for (i in c(1:length(var))) {
     if (duplication[i] == TRUE) {
       stop("Variable declared more than once
-Please check ", var[i])
+Please check: ", var[i])
     }
   }
 
@@ -43,16 +43,29 @@ Please check ", var[i])
     dplyr::filter(hidden == FALSE)
   all_eqs <- all_eqs$equation
   all_eqs <- paste(all_eqs, collapse = " ")
-  eqs_clean <- stringr::str_replace_all(all_eqs, "[-+=/*()\\[\\]]", " ")
+
+  # extract function names
+  funs <- stringr::str_replace_all(all_eqs, "[!%^&*)\\-+=\\[\\]|<,>/]", " ")
+  funs <- stringr::str_replace_all(funs, "[(]", "( ")
+  funs <- stringr::str_squish(funs)
+  funs <- stringr::str_split(funs, " ")
+  funs <- funs[[1]]
+  funs <- grep("\\(", funs, value = T)
+  funs <- stringr::str_replace_all(funs, "[(]", "")
+
+  eqs_clean <- stringr::str_replace_all(all_eqs, "[!%^&*()\\-+=\\[\\]|<,>/]", " ")
   eqs_clean <- stringr::str_squish(eqs_clean)
   eqs_clean <- stringr::str_split(eqs_clean, " ")
   eqs_clean <- eqs_clean[[1]]
+  eqs_clean <- vecsets::vsetdiff(eqs_clean, funs)
+  eqs_clean <- unique(eqs_clean)
+  eqs_clean <- eqs_clean[suppressWarnings(is.na(as.numeric(eqs_clean)))]
   var <- model$variables
   var <- var$name
   for (i in var) {
     if (!(i %in% eqs_clean)) {
       warning("Not all provided variables are used in equations
-Please check ", i)
+Please check: ", i)
     }
   }
 
@@ -86,7 +99,6 @@ Please check ", i)
       lhs = stringr::str_squish(lhs),
       rhs = stringr::str_squish(rhs)
     )
-
   egs_splitted <- dplyr::filter(egs_splitted, egs_splitted$lhs %in% model$variables$name)
 
   # 7 check if initial values for exogenous variables are provided. If not assign by default value 0.
@@ -112,34 +124,12 @@ Please remove one of the equations"), collapse = " "))
   }
 
   # 9 check if all variables from equations are defined
-  all_eqs <- model$equations %>%
-    dplyr::filter(hidden == FALSE)
-  all_eqs <- all_eqs$equation
-  all_eqs <- paste(all_eqs, collapse = " ")
-  eqs_clean <- stringr::str_replace_all(all_eqs, "[-+=/*()\\[\\]]", " ")
-  eqs_clean <- stringr::str_squish(eqs_clean)
-  eqs_clean <- stringr::str_split(eqs_clean, " ")
-  eqs_clean <- unique(eqs_clean[[1]])
-  eqs_clean <- eqs_clean[!stringr::str_detect(eqs_clean, "^[:digit:]+$")]
-
-  var <- model$variables$name
-
   for (i in eqs_clean) {
-    if (!(i %in% var)) {
+    if (!(i %in% model$variables$name)) {
       warning("Not all variables used in equations are defined
-Please check ", i)
+Please check: ", i)
     }
   }
 
-  # 10 Check if provided equations do not contains a comma
-  equations <- model$equations$equation
-  for (i in equations) {
-    is_invalid_name <- stringr::str_detect(i, "[,]")
-    if (is_invalid_name == TRUE) {
-      warning("Comma(s) found in equation
-Please check ", i)
-    }
-  }
-
-  return(list(eqs_separated, external_values))
+  return(list(eqs_separated, external_values, funs))
 }

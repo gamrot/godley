@@ -1,10 +1,10 @@
 # model REG
 
 # Create empty model
-model_REG <- create_model(name = "SFC REG")
+model_reg <- create_model(name = "SFC REG")
 
 # Add variables
-model_REG <- model_REG %>%
+model_reg <- model_reg %>%
   add_variable("r", init = 0.025) %>%
   add_variable("G_S", init = 20) %>%
   add_variable("G_N", init = 20) %>%
@@ -48,7 +48,7 @@ model_REG <- model_REG %>%
   add_variable("Bcb")
 
 # Add equations
-model_REG <- model_REG %>%
+model_reg <- model_reg %>%
   add_equation("Y_N = C_N + G_N + X_N - IM_N") %>%
   add_equation("Y_S = C_S + G_S + X_S - IM_S") %>%
   add_equation("IM_N = mu_N * Y_N") %>%
@@ -77,12 +77,19 @@ model_REG <- model_REG %>%
   add_equation("Hs = Hh", desc = "Money equilibrium", hidden = TRUE)
 
 # Simulate model
-model_REG <- simulate_scenario(model_REG, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_reg <- simulate_scenario(model_reg,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
 
 # Plot results
 plot_simulation(
-  model = model_REG, scenario = "baseline", from = 1, to = 60,
-  expressions = c("deltaV_S = V_S - dplyr::lag(V_S)", "GB_S = TX_S - (G_S + dplyr::lag(r) * dplyr::lag(Bh_S))", "TB_S = X_S - IM_S")
+  model = model_reg, scenario = "baseline", from = 1, to = 60,
+  expressions = c(
+    "deltaV_S = V_S - dplyr::lag(V_S)",
+    "GB_S = TX_S - (G_S + dplyr::lag(r) * dplyr::lag(Bh_S))",
+    "TB_S = X_S - IM_S"
+  )
 )
 
 # Scenario 1: An increase in the propensity to import of the South
@@ -90,18 +97,18 @@ plot_simulation(
 shock <- create_shock() %>%
   add_shock(equation = "mu_S = 0.25", desc = "An increase in the propensity to import of the South", start = 5, end = 60)
 
-model_REG <- model_REG %>%
+model_reg <- model_reg %>%
   add_scenario(name = "expansion", origin = "baseline", origin_period = 100, shock = shock)
 
-model_REG <- simulate_scenario(model_REG, scenario = "expansion", max_iter = 350, periods = 60, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_reg <- simulate_scenario(model_reg, scenario = "expansion", max_iter = 350, periods = 60, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
 
 plot_simulation(
-  model = model_REG, scenario = "expansion", from = 1, to = 60,
+  model = model_reg, scenario = "expansion", from = 1, to = 60,
   expressions = c("deltaV_S = V_S - dplyr::lag(V_S)", "GB_S = TX_S - (G_S + dplyr::lag(r) * dplyr::lag(Bh_S))", "TB_S = X_S - IM_S")
 )
 
 plot_simulation(
-  model = model_REG, scenario = "expansion", from = 1, to = 60,
+  model = model_reg, scenario = "expansion", from = 1, to = 60,
   expressions = c("Y_N", "Y_S")
 )
 
@@ -110,17 +117,17 @@ plot_simulation(
 shock2 <- create_shock() %>%
   add_shock(equation = "G_S = 25", desc = "An increase in the government expenditures of the South", start = 5, end = 60)
 
-model_REG <- model_REG %>%
+model_reg <- model_reg %>%
   add_scenario(name = "expansion2", origin = "baseline", origin_period = 100, shock = shock2)
 
-model_REG <- simulate_scenario(model_REG, scenario = "expansion2", max_iter = 350, periods = 60, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_reg <- simulate_scenario(model_reg, scenario = "expansion2", max_iter = 350, periods = 60, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
 
-plot_simulation(model_REG,
+plot_simulation(model_reg,
   scenario = "expansion2", from = 1, to = 60,
   expressions = c("Y_N", "Y_S")
 )
 
-plot_simulation(model_REG,
+plot_simulation(model_reg,
   scenario = "expansion2", from = 1, to = 60,
   expressions = c("deltaV_S = V_S - dplyr::lag(V_S)", "GB_S = TX_S - (G_S + dplyr::lag(r) * dplyr::lag(Bh_S))", "TB_S = X_S - IM_S")
 )
@@ -130,17 +137,17 @@ plot_simulation(model_REG,
 shock3 <- create_shock() %>%
   add_shock(equation = "alpha1_S = .6", desc = "", start = 5, end = 60)
 
-model_REG <- model_REG %>%
+model_reg <- model_reg %>%
   add_scenario(name = "expansion3", origin = "baseline", origin_period = 100, shock = shock3)
 
-model_REG <- simulate_scenario(model_REG, scenario = "expansion3", max_iter = 350, periods = 60, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_reg <- simulate_scenario(model_reg, scenario = "expansion3", max_iter = 350, periods = 60, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
 
-plot_simulation(model_REG,
+plot_simulation(model_reg,
   scenario = "expansion3", from = 1, to = 60,
   expressions = c("Y_N", "Y_S")
 )
 
-plot_simulation(model_REG,
+plot_simulation(model_reg,
   scenario = "expansion3", from = 1, to = 60,
   expressions = c("deltaV_S = V_S - dplyr::lag(V_S)", "GB_S = TX_S - (G_S + dplyr::lag(r) * dplyr::lag(Bh_S))", "TB_S = X_S - IM_S")
 )

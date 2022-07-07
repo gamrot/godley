@@ -1,3 +1,19 @@
+#' Calculate 1 order lag difference of a variable in model
+#'
+#' @export
+#'
+#' @param x variable name
+#'
+#' @details this is a special function to be used exclusively in model equation strings e.g. "x = d(y) + z"
+#'
+#' @return difference
+
+d <- function(x) {
+  x_lag <- deparse(substitute(x))
+  x_lag <- stringr::str_replace_all(x_lag, "i", "i-1")
+  return(x - eval(str2expression(x_lag), envir = parent.frame()))
+}
+
 #' Simulate scenario of SFC model object
 #'
 #' @export
@@ -92,8 +108,6 @@ simulate_scenario <- function(model,
     message("All scenarios in this model are already simulated")
     return(model)
   }
-
-  message("Simulating ", no_scenarios, " scenario(s)")
 
   # simulating scenarios
   i <- 1
