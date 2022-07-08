@@ -30,76 +30,78 @@ model_dis<- create_model(name = "SFC DIS")
 Next you have to add variables:
 ```{r}
 # Add variables
-model_dis <- add_variable(model_dis, "rl", init = 0.025)
-model_dis <- add_variable(model_dis, "pr", init = 1)
-model_dis <- add_variable(model_dis, "W", init = 0.75)
-model_dis <- add_variable(model_dis, "add", init = 0.02)
-model_dis <- add_variable(model_dis, "alpha0", init = 15)
-model_dis <- add_variable(model_dis, "alpha1", init = 0.8)
-model_dis <- add_variable(model_dis, "alpha2", init = 0.1)
-model_dis <- add_variable(model_dis, "beta", init = 0.75)
-model_dis <- add_variable(model_dis, "epsilon", init = 0.75)
-model_dis <- add_variable(model_dis, "gamma", init = 0.25)
-model_dis <- add_variable(model_dis, "phi", init = 0.25)
-model_dis <- add_variable(model_dis, "sigma_T", init = 0.15)
-model_dis <- add_variable(model_dis, "y", init = .001)
-model_dis <- add_variable(model_dis, "p", init = .001)
-model_dis <- add_variable(model_dis, "NHUC", init = .001)
-model_dis <- add_variable(model_dis, "s_E", init = .001)
-model_dis <- add_variable(model_dis, "inv_T")
-model_dis <- add_variable(model_dis, "inv_E")
-model_dis <- add_variable(model_dis, "inv")
-model_dis <- add_variable(model_dis, "s")
-model_dis <- add_variable(model_dis, "c")
-model_dis <- add_variable(model_dis, "N")
-model_dis <- add_variable(model_dis, "WB")
-model_dis <- add_variable(model_dis, "UC")
-model_dis <- add_variable(model_dis, "INV")
-model_dis <- add_variable(model_dis, "S")
-model_dis <- add_variable(model_dis, "EF")
-model_dis <- add_variable(model_dis, "Ld")
-model_dis <- add_variable(model_dis, "Ls")
-model_dis <- add_variable(model_dis, "Ms")
-model_dis <- add_variable(model_dis, "rm")
-model_dis <- add_variable(model_dis, "EFb")
-model_dis <- add_variable(model_dis, "Mh")
-model_dis <- add_variable(model_dis, "YD")
-model_dis <- add_variable(model_dis, "C")
-model_dis <- add_variable(model_dis, "ydhs")
-model_dis <- add_variable(model_dis, "mh")
-model_dis <- add_variable(model_dis, "ydhs_E")
+model_dis <- model_dis |>
+  add_variable("rl", init = 0.025) |>
+  add_variable("pr", init = 1) |>
+  add_variable("W", init = 0.75) |>
+  add_variable("add", init = 0.02) |>
+  add_variable("alpha0", init = 15) |>
+  add_variable("alpha1", init = 0.8) |>
+  add_variable("alpha2", init = 0.1) |>
+  add_variable("beta", init = 0.75) |>
+  add_variable("epsilon", init = 0.75) |>
+  add_variable("gamma", init = 0.25) |>
+  add_variable("phi", init = 0.25) |>
+  add_variable("sigma_T", init = 0.15) |>
+  add_variable("y", init = .001) |>
+  add_variable("p", init = .001) |>
+  add_variable("NHUC", init = .001) |>
+  add_variable("s_E", init = .001) |>
+  add_variable("inv_T") |>
+  add_variable("inv_E") |>
+  add_variable("inv") |>
+  add_variable("s") |>
+  add_variable("c") |>
+  add_variable("N") |>
+  add_variable("WB") |>
+  add_variable("UC") |>
+  add_variable("INV") |>
+  add_variable("S") |>
+  add_variable("EF") |>
+  add_variable("Ld") |>
+  add_variable("Ls") |>
+  add_variable("Ms") |>
+  add_variable("rm") |>
+  add_variable("EFb") |>
+  add_variable("Mh") |>
+  add_variable("YD") |>
+  add_variable("C") |>
+  add_variable("ydhs") |>
+  add_variable("mh") |>
+  add_variable("ydhs_E")
 ```
 
 You also have to add equations:
 ```{r}
 # Add equations
-model_dis <- add_equation(model_dis, "y = s_E + inv_E - inv[-1]")
-model_dis <- add_equation(model_dis, "inv_T = sigma_T * s_E")
-model_dis <- add_equation(model_dis, "inv_E = inv[-1] + gamma * (inv_T - inv[-1])")
-model_dis <- add_equation(model_dis, "inv = inv[-1] + (y - s)")
-model_dis <- add_equation(model_dis, "s_E = beta * s[-1] + (1 - beta) * s_E[-1]")
-model_dis <- add_equation(model_dis, "s = c")
-model_dis <- add_equation(model_dis, "N = y / pr")
-model_dis <- add_equation(model_dis, "WB = N * W")
-model_dis <- add_equation(model_dis, "UC = WB / y")
-model_dis <- add_equation(model_dis, "INV = inv * UC")
-model_dis <- add_equation(model_dis, "S = p * s")
-model_dis <- add_equation(model_dis, "p = (1 + phi) * NHUC")
-model_dis <- add_equation(model_dis, "NHUC = (1 - sigma_T) * UC + sigma_T * (1 + rl[-1]) * UC[-1]")
-model_dis <- add_equation(model_dis, "EF = S - WB + (INV - INV[-1]) - rl[-1] * INV[-1]")
-model_dis <- add_equation(model_dis, "Ld = INV")
-model_dis <- add_equation(model_dis, "Ls = Ld")
-model_dis <- add_equation(model_dis, "Ms = Ls")
-model_dis <- add_equation(model_dis, "rm = rl - add")
-model_dis <- add_equation(model_dis, "EFb = rl[-1] * Ls[-1] - rm[-1] * Mh[-1]")
-model_dis <- add_equation(model_dis, "YD = WB + EF + EFb + rm[-1] * Mh[-1]")
-model_dis <- add_equation(model_dis, "Mh = Mh[-1] + YD - C")
-model_dis <- add_equation(model_dis, "ydhs = c + (mh - mh[-1])")
-model_dis <- add_equation(model_dis, "C = c * p")
-model_dis <- add_equation(model_dis, "mh = Mh / p")
-model_dis <- add_equation(model_dis, "c = alpha0 + alpha1 * ydhs_E + alpha2 * mh[-1]")
-model_dis <- add_equation(model_dis, "ydhs_E = epsilon * ydhs[-1] + (1 - epsilon) * ydhs_E[-1]")
-model_dis <- add_equation(model_dis, "Mh = Ms", hidden = T)
+model_dis <- model_dis |>
+  add_equation("y = s_E + inv_E - inv[-1]") |>
+  add_equation("inv_T = sigma_T * s_E") |>
+  add_equation("inv_E = inv[-1] + gamma * (inv_T - inv[-1])") |>
+  add_equation("inv = inv[-1] + (y - s)") |>
+  add_equation("s_E = beta * s[-1] + (1 - beta) * s_E[-1]") |>
+  add_equation("s = c") |>
+  add_equation("N = y / pr") |>
+  add_equation("WB = N * W") |>
+  add_equation("UC = WB / y") |>
+  add_equation("INV = inv * UC") |>
+  add_equation("S = p * s") |>
+  add_equation("p = (1 + phi) * NHUC") |>
+  add_equation("NHUC = (1 - sigma_T) * UC + sigma_T * (1 + rl[-1]) * UC[-1]") |>
+  add_equation("EF = S - WB + (INV - INV[-1]) - rl[-1] * INV[-1]") |>
+  add_equation("Ld = INV") |>
+  add_equation("Ls = Ld") |>
+  add_equation("Ms = Ls") |>
+  add_equation("rm = rl - add") |>
+  add_equation("EFb = rl[-1] * Ls[-1] - rm[-1] * Mh[-1]") |>
+  add_equation("YD = WB + EF + EFb + rm[-1] * Mh[-1]") |>
+  add_equation("Mh = Mh[-1] + YD - C") |>
+  add_equation("ydhs = c + (mh - mh[-1])") |>
+  add_equation("C = c * p") |>
+  add_equation("mh = Mh / p") |>
+  add_equation("c = alpha0 + alpha1 * ydhs_E + alpha2 * mh[-1]") |>
+  add_equation("ydhs_E = epsilon * ydhs[-1] + (1 - epsilon) * ydhs_E[-1]") |>
+  add_equation("Mh = Ms", hidden = TRUE)
 ```
 
 Now you can simulate model (in this example for the next 100 periods using Gauss method):
@@ -112,16 +114,18 @@ model_dis<- simulate_scenario(model_dis, scenario = "baseline", max_iter = 350, 
 Based on calculated simulation you can display results for desired set of variables:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_dis, scenario = c("baseline"), from = 1, to = 50, 
+plot_simulation(model = model_dis, scenario = c("baseline"), from = 1, to = 40, 
                 expressions = c("ydhs", "c"))
 ```
 
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_dis, scenario = c("baseline"), from = 1, to = 50, 
+plot_simulation(model = model_dis, scenario = c("baseline"), from = 1, to = 40, 
                 expressions = c("delta_inv = inv - dplyr::lag(inv)", 
                                 "delta_inv_E = inv_E - dplyr::lag(inv_E)"))
 ```
+
+Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
 
 ### Shock scenario
 With godley package you can simulate how a shock will affect the base scenario. 
@@ -203,13 +207,13 @@ model_dis<- simulate_scenario(model_dis, scenario = "expansion2", max_iter = 350
 You can also display results on the plot:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_dis, scenario = c("expansion2"), from = 1, to = 50, 
+plot_simulation(model = model_dis, scenario = c("expansion2"), from = 1, to = 40, 
                 expressions = c("c", "ydhs"))
 ```
 
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_dis, scenario = c("expansion2"), from = 1, to = 50, 
+plot_simulation(model = model_dis, scenario = c("expansion2"), from = 1, to = 40, 
                 expressions = c("delta_inv = inv - dplyr::lag(inv)", 
                                 "delta_inv_E = inv_E - dplyr::lag(inv_E)"))
 ```

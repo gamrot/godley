@@ -30,96 +30,92 @@ model_open <- create_model(name = "SFC OPEN")
 Next you have to add variables:
 ```{r}
 # Add variables
-model_open <- add_variable(model_open, "xr", init = 1) 
-model_open <- add_variable(model_open, "pg_N", init = 1) 
-model_open <- add_variable(model_open, "r_N", init = 0.025) 
-model_open <- add_variable(model_open, "r_S", init = 0.025) 
-model_open <- add_variable(model_open, "G_S", init = 20) 
-model_open <- add_variable(model_open, "G_N", init = 20) 
-model_open <- add_variable(model_open, "mu_N", init = 0.15) 
-model_open <- add_variable(model_open, "mu_S", init = 0.15) 
-model_open <- add_variable(model_open, "alpha1_N", init = 0.7) 
-model_open <- add_variable(model_open, "alpha1_S", init = 0.8) 
-model_open <- add_variable(model_open, "alpha2_N", init = 0.3) 
-model_open <- add_variable(model_open, "alpha2_S", init = 0.2) 
-model_open <- add_variable(model_open, "lambda0_N", init = 0.67) 
-model_open <- add_variable(model_open, "lambda0_S", init = 0.67) 
-model_open <- add_variable(model_open, "lambda1_N", init = 0.05) 
-model_open <- add_variable(model_open, "lambda1_S", init = 0.05) 
-model_open <- add_variable(model_open, "lambda2_N", init = 0.01) 
-model_open <- add_variable(model_open, "lambda2_S", init = 0.01) 
-model_open <- add_variable(model_open, "theta_N", init = 0.2) 
-model_open <- add_variable(model_open, "theta_S", init = 0.2) 
-model_open <- add_variable(model_open, "Y_N") 
-model_open <- add_variable(model_open, "Y_S") 
-model_open <- add_variable(model_open, "C_N") 
-model_open <- add_variable(model_open, "X_N") 
-model_open <- add_variable(model_open, "IM_N") 
-model_open <- add_variable(model_open, "C_S") 
-model_open <- add_variable(model_open, "X_S") 
-model_open <- add_variable(model_open, "IM_S") 
-model_open <- add_variable(model_open, "YD_N") 
-model_open <- add_variable(model_open, "YD_S") 
-model_open <- add_variable(model_open, "TX_S") 
-model_open <- add_variable(model_open, "TX_N") 
-model_open <- add_variable(model_open, "Bh_S") 
-model_open <- add_variable(model_open, "Bh_N") 
-model_open <- add_variable(model_open, "V_N") 
-model_open <- add_variable(model_open, "V_S") 
-model_open <- add_variable(model_open, "Hh_N") 
-model_open <- add_variable(model_open, "Hh_S") 
-model_open <- add_variable(model_open, "Bs_N") 
-model_open <- add_variable(model_open, "Bs_S") 
-model_open <- add_variable(model_open, "Bcb_N") 
-model_open <- add_variable(model_open, "Bcb_S") 
-model_open <- add_variable(model_open, "or_N") 
-model_open <- add_variable(model_open, "or_S") 
-model_open <- add_variable(model_open, "Hs_N") 
-model_open <- add_variable(model_open, "Hs_S") 
-model_open <- add_variable(model_open, "pg_S") 
-model_open <- add_variable(model_open, "deltaor_S") 
-model_open <- add_variable(model_open, "deltaor_N")
+model_open <- model_open |>
+  add_variable("xr", init = 1) |>
+  add_variable("pg_N", init = 1) |>
+  add_variable("r_N", init = 0.025) |>
+  add_variable("r_S", init = 0.025) |>
+  add_variable("G_S", init = 20) |>
+  add_variable("G_N", init = 20) |>
+  add_variable("mu_N", init = 0.15) |>
+  add_variable("mu_S", init = 0.15) |>
+  add_variable("alpha1_N", init = 0.7) |>
+  add_variable("alpha1_S", init = 0.8) |>
+  add_variable("alpha2_N", init = 0.3) |>
+  add_variable("alpha2_S", init = 0.2) |>
+  add_variable("lambda0_N", init = 0.67) |>
+  add_variable("lambda0_S", init = 0.67) |>
+  add_variable("lambda1_N", init = 0.05) |>
+  add_variable("lambda1_S", init = 0.05) |>
+  add_variable("lambda2_N", init = 0.01) |>
+  add_variable("lambda2_S", init = 0.01) |>
+  add_variable("theta_N", init = 0.2) |>
+  add_variable("theta_S", init = 0.2) |>
+  add_variable("Y_N") |>
+  add_variable("Y_S") |>
+  add_variable("C_N") |>
+  add_variable("X_N") |>
+  add_variable("IM_N") |>
+  add_variable("C_S") |>
+  add_variable("X_S") |>
+  add_variable("IM_S") |>
+  add_variable("YD_N") |>
+  add_variable("YD_S") |>
+  add_variable("TX_S") |>
+  add_variable("TX_N") |>
+  add_variable("Bh_S") |>
+  add_variable("Bh_N") |>
+  add_variable("V_N") |>
+  add_variable("V_S") |>
+  add_variable("Hh_N") |>
+  add_variable("Hh_S") |>
+  add_variable("Bs_N") |>
+  add_variable("Bs_S") |>
+  add_variable("Bcb_N") |>
+  add_variable("Bcb_S") |>
+  add_variable("or_N") |>
+  add_variable("or_S") |>
+  add_variable("Hs_N") |>
+  add_variable("Hs_S") |>
+  add_variable("pg_S") |>
+  add_variable("deltaor_S") |>
+  add_variable("deltaor_N")
 ```
 
 You also have to add equations:
 ```{r}
 # Add equations
-model_open <- add_equation(model_open, "Y_N = C_N + G_N + X_N - IM_N") 
-model_open <- add_equation(model_open, "Y_S = C_S + G_S + X_S - IM_S") 
-model_open <- add_equation(model_open, "IM_N = mu_N * Y_N") 
-model_open <- add_equation(model_open, "IM_S = mu_S * Y_S") 
-model_open <- add_equation(model_open, "X_N = IM_S / xr") 
-model_open <- add_equation(model_open, "X_S = IM_N * xr") 
-model_open <- add_equation(model_open, "YD_N = Y_N - TX_N + r_N[-1] * Bh_N[-1]") 
-model_open <- add_equation(model_open, "YD_S = Y_S - TX_S + r_S[-1] * Bh_S[-1]") 
-model_open <- add_equation(model_open, "TX_N = theta_N * ( Y_N + r_N[-1] * Bh_N[-1])") 
-model_open <- add_equation(model_open, "TX_S = theta_S * ( Y_S + r_S[-1] * Bh_S[-1])") 
-model_open <- add_equation(model_open, "V_N = V_N[-1] + ( YD_N - C_N )") 
-model_open <- add_equation(model_open, "V_S = V_S[-1] + ( YD_S - C_S )") 
-model_open <- add_equation(model_open, "C_N = alpha1_N * YD_N + alpha2_N * V_N[-1]") 
-model_open <- add_equation(model_open, "C_S = alpha1_S * YD_S + alpha2_S * V_S[-1]") 
-model_open <- add_equation(model_open, "Hh_N = V_N - Bh_N") 
-model_open <- add_equation(model_open, "Hh_S = V_S - Bh_S") 
-model_open <- add_equation(model_open, "Bh_N = V_N * ( lambda0_N + lambda1_N * r_N 
-                           - lambda2_N * ( YD_N/V_N ) )") 
-model_open <- add_equation(model_open, "Bh_S = V_S * ( lambda0_S + lambda1_S * r_S 
-                           - lambda2_S * ( YD_S/V_S ) )") 
-model_open <- add_equation(model_open, "Bs_N = Bs_N[-1] + ( G_N + r_N[-1] * Bs_N[-1] ) 
-                           - ( TX_N + r_N[-1] * Bcb_N[-1] )") 
-model_open <- add_equation(model_open, "Bs_S = Bs_S[-1] + ( G_S + r_S[-1] * Bs_S[-1] ) 
-                           - ( TX_S + r_S[-1] * Bcb_S[-1] )") 
-model_open <- add_equation(model_open, "Bcb_N = Bs_N - Bh_N") 
-model_open <- add_equation(model_open, "Bcb_S = Bs_S - Bh_S") 
-model_open <- add_equation(model_open, "or_N = or_N[-1] + (( Hs_N - Hs_N[-1] 
-                           - ( Bcb_N - Bcb_N[-1] ) )/pg_N)") 
-model_open <- add_equation(model_open, "or_S = or_S[-1] + (( Hs_S - Hs_S[-1] 
-                           - ( Bcb_S - Bcb_S[-1] ) )/pg_S)") 
-model_open <- add_equation(model_open, "Hs_N = Hh_N") 
-model_open <- add_equation(model_open, "Hs_S = Hh_S") 
-model_open <- add_equation(model_open, "pg_S = pg_N * xr") 
-model_open <- add_equation(model_open, "deltaor_S = or_S - or_S[-1]") 
-model_open <- add_equation(model_open, "deltaor_N = - (or_N - or_N[-1])") 
-model_open <- add_equation(model_open, "deltaor_S = deltaor_N", hidden = TRUE)
+model_open <- model_open |>
+  add_equation("Y_N = C_N + G_N + X_N - IM_N") |>
+  add_equation("Y_S = C_S + G_S + X_S - IM_S") |>
+  add_equation("IM_N = mu_N * Y_N") |>
+  add_equation("IM_S = mu_S * Y_S") |>
+  add_equation("X_N = IM_S / xr") |>
+  add_equation("X_S = IM_N * xr") |>
+  add_equation("YD_N = Y_N - TX_N + r_N[-1] * Bh_N[-1]") |>
+  add_equation("YD_S = Y_S - TX_S + r_S[-1] * Bh_S[-1]") |>
+  add_equation("TX_N = theta_N * ( Y_N + r_N[-1] * Bh_N[-1])") |>
+  add_equation("TX_S = theta_S * ( Y_S + r_S[-1] * Bh_S[-1])") |>
+  add_equation("V_N = V_N[-1] + ( YD_N - C_N )") |>
+  add_equation("V_S = V_S[-1] + ( YD_S - C_S )") |>
+  add_equation("C_N = alpha1_N * YD_N + alpha2_N * V_N[-1]") |>
+  add_equation("C_S = alpha1_S * YD_S + alpha2_S * V_S[-1]") |>
+  add_equation("Hh_N = V_N - Bh_N") |>
+  add_equation("Hh_S = V_S - Bh_S") |>
+  add_equation("Bh_N = V_N * ( lambda0_N + lambda1_N * r_N - lambda2_N * ( YD_N/V_N ) )") |>
+  add_equation("Bh_S = V_S * ( lambda0_S + lambda1_S * r_S - lambda2_S * ( YD_S/V_S ) )") |>
+  add_equation("Bs_N = Bs_N[-1] + ( G_N + r_N[-1] * Bs_N[-1] ) - ( TX_N + r_N[-1] * Bcb_N[-1] )") |>
+  add_equation("Bs_S = Bs_S[-1] + ( G_S + r_S[-1] * Bs_S[-1] ) - ( TX_S + r_S[-1] * Bcb_S[-1] )") |>
+  add_equation("Bcb_N = Bs_N - Bh_N") |>
+  add_equation("Bcb_S = Bs_S - Bh_S") |>
+  add_equation("or_N = or_N[-1] + (( Hs_N - Hs_N[-1] - ( Bcb_N - Bcb_N[-1] ) )/pg_N)") |>
+  add_equation("or_S = or_S[-1] + (( Hs_S - Hs_S[-1] - ( Bcb_S - Bcb_S[-1] ) )/pg_S)") |>
+  add_equation("Hs_N = Hh_N") |>
+  add_equation("Hs_S = Hh_S") |>
+  add_equation("pg_S = pg_N * xr") |>
+  add_equation("deltaor_S = or_S - or_S[-1]") |>
+  add_equation("deltaor_N = - (or_N - or_N[-1])") |>
+  add_equation("deltaor_S = deltaor_N", hidden = TRUE)
 ```
 
 Now you can simulate model for the next 100 periods using Gauss method:
@@ -147,6 +143,8 @@ plot_simulation(model = model_open, scenario = "baseline", from = 1, to = 50,
 plot_simulation(model = model_open, scenario = "baseline", from = 1, to = 50,
                 expressions = c("or_S", "or_N"))
 ```
+
+Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
 
 ### Shock scenario
 With godley package you can simulate how a shock will affect the base scenario. In this example you will implement an ever-falling gold reserves. \

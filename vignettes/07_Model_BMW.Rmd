@@ -30,60 +30,62 @@ model_bmw <- create_model(name = "SFC BMW")
 Next you have to add variables:
 ```{r}
 # Add variables
-model_bmw <- add_variable(model_bmw, "rl", init = 0.025) 
-model_bmw <- add_variable(model_bmw, "alpha0", init = 20) 
-model_bmw <- add_variable(model_bmw, "alpha1", init = 0.75) 
-model_bmw <- add_variable(model_bmw, "alpha2", init = 0.10) 
-model_bmw <- add_variable(model_bmw, "delta", init = 0.10) 
-model_bmw <- add_variable(model_bmw, "gamma", init = 0.15) 
-model_bmw <- add_variable(model_bmw, "kappa", init = 1) 
-model_bmw <- add_variable(model_bmw, "pr", init = 1) 
-model_bmw <- add_variable(model_bmw, "Nd", init = .001) 
-model_bmw <- add_variable(model_bmw, "Ns", init = .001) 
-model_bmw <- add_variable(model_bmw, "Y", init = .001) 
-model_bmw <- add_variable(model_bmw, "Cs") 
-model_bmw <- add_variable(model_bmw, "Cd") 
-model_bmw <- add_variable(model_bmw, "Is") 
-model_bmw <- add_variable(model_bmw, "Id") 
-model_bmw <- add_variable(model_bmw, "Ls") 
-model_bmw <- add_variable(model_bmw, "Ld") 
-model_bmw <- add_variable(model_bmw, "WBd") 
-model_bmw <- add_variable(model_bmw, "AF") 
-model_bmw <- add_variable(model_bmw, "K") 
-model_bmw <- add_variable(model_bmw, "YD") 
-model_bmw <- add_variable(model_bmw, "WBs") 
-model_bmw <- add_variable(model_bmw, "rm") 
-model_bmw <- add_variable(model_bmw, "Mh") 
-model_bmw <- add_variable(model_bmw, "Ms") 
-model_bmw <- add_variable(model_bmw, "W") 
-model_bmw <- add_variable(model_bmw, "DA") 
-model_bmw <- add_variable(model_bmw, "KT")
+model_bmw <- model_bmw |>
+  add_variable("rl", init = 0.025) |>
+  add_variable("alpha0", init = 20) |>
+  add_variable("alpha1", init = 0.75) |>
+  add_variable("alpha2", init = 0.10) |>
+  add_variable("delta", init = 0.10) |>
+  add_variable("gamma", init = 0.15) |>
+  add_variable("kappa", init = 1) |>
+  add_variable("pr", init = 1) |>
+  add_variable("Nd", init = .001) |>
+  add_variable("Ns", init = .001) |>
+  add_variable("Y", init = .001) |>
+  add_variable("Cs") |>
+  add_variable("Cd") |>
+  add_variable("Is") |>
+  add_variable("Id") |>
+  add_variable("Ls") |>
+  add_variable("Ld") |>
+  add_variable("WBd") |>
+  add_variable("AF") |>
+  add_variable("K") |>
+  add_variable("YD") |>
+  add_variable("WBs") |>
+  add_variable("rm") |>
+  add_variable("Mh") |>
+  add_variable("Ms") |>
+  add_variable("W") |>
+  add_variable("DA") |>
+  add_variable("KT")
 ```
 
 You also have to add equations:
 ```{r}
 # Add equations
-model_bmw <- add_equation(model_bmw, "Cs = Cd") 
-model_bmw <- add_equation(model_bmw, "Is = Id") 
-model_bmw <- add_equation(model_bmw, "Ns = Nd") 
-model_bmw <- add_equation(model_bmw, "Ls = Ls[-1] + Ld - Ld[-1]") 
-model_bmw <- add_equation(model_bmw, "Y = Cs + Is") 
-model_bmw <- add_equation(model_bmw, "WBd = Y - rl[-1] * Ld[-1] - AF") 
-model_bmw <- add_equation(model_bmw, "AF = delta * K[-1]") 
-model_bmw <- add_equation(model_bmw, "Ld = Ld[-1] + Id - AF") 
-model_bmw <- add_equation(model_bmw, "YD = WBs + rm[-1] * Mh[-1]") 
-model_bmw <- add_equation(model_bmw, "Mh = Mh[-1] + YD - Cd") 
-model_bmw <- add_equation(model_bmw, "Ms = Ms[-1] + Ls - Ls[-1]") 
-model_bmw <- add_equation(model_bmw, "rm = rl") 
-model_bmw <- add_equation(model_bmw, "WBs = W * Ns") 
-model_bmw <- add_equation(model_bmw, "Nd = Y / pr") 
-model_bmw <- add_equation(model_bmw, "W = WBd / Nd") 
-model_bmw <- add_equation(model_bmw, "Cd = alpha0 + alpha1 * YD + alpha2 * Mh[-1]") 
-model_bmw <- add_equation(model_bmw, "K = K[-1] + Id - DA") 
-model_bmw <- add_equation(model_bmw, "DA = delta * K[-1]") 
-model_bmw <- add_equation(model_bmw, "KT = kappa * Y[-1]") 
-model_bmw <- add_equation(model_bmw, "Id = gamma * (KT - K[-1]) + DA") 
-model_bmw <- add_equation(model_bmw, "Ms = Mh", hidden = T)
+model_bmw <- model_bmw |>
+  add_equation("Cs = Cd") |>
+  add_equation("Is = Id") |>
+  add_equation("Ns = Nd") |>
+  add_equation("Ls = Ls[-1] + Ld - Ld[-1]") |>
+  add_equation("Y = Cs + Is") |>
+  add_equation("WBd = Y - rl[-1] * Ld[-1] - AF") |>
+  add_equation("AF = delta * K[-1]") |>
+  add_equation("Ld = Ld[-1] + Id - AF") |>
+  add_equation("YD = WBs + rm[-1] * Mh[-1]") |>
+  add_equation("Mh = Mh[-1] + YD - Cd") |>
+  add_equation("Ms = Ms[-1] + Ls - Ls[-1]") |>
+  add_equation("rm = rl") |>
+  add_equation("WBs = W * Ns") |>
+  add_equation("Nd = Y / pr") |>
+  add_equation("W = WBd / Nd") |>
+  add_equation("Cd = alpha0 + alpha1 * YD + alpha2 * Mh[-1]") |>
+  add_equation("K = K[-1] + Id - DA") |>
+  add_equation("DA = delta * K[-1]") |>
+  add_equation("KT = kappa * Y[-1]") |>
+  add_equation("Id = gamma * (KT - K[-1]) + DA") |>
+  add_equation("Ms = Mh", hidden = TRUE)
 ```
 
 Now you can simulate model (in this example for the next 100 periods using Gauss method):
@@ -99,6 +101,8 @@ Based on calculated simulation you can display results for desired set of variab
 plot_simulation(model = model_bmw, scenario = c("baseline"), from = 1, to = 50, 
                 expressions = c("Cd", "YD"))
 ```
+
+Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
 
 ### Shock scenarios
 With godley you can simulate how a shock will affect the base scenario. 
