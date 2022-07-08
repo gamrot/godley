@@ -1,7 +1,7 @@
 # godley
 ```godley``` is an R package for simulating SFC (stock-flow consistent) models. It can be used to create and simulate fully fledged post-keynesian / MMT models of the economy. It allows users to apply shocks, simulate effects of changing parameters, visualize different macro scenarios and much more.
 
-```godley``` is named after Wynne Godley (1926-2010), a famous British post-keynesian economist and a father of stock-flow consistent modeling.
+```godley``` is named after Wynne Godley (1926-2010), a famous British post-keynesian economist and a father of stock-flow consistent modelling.
 
 ## Installation ⚙️
 The best way to start using ```godley``` is to install it directly grom GitHub using the ```devtools``` package. 
