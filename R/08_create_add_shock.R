@@ -53,3 +53,41 @@ add_shock <- function(shock,
 
   return(shock)
 }
+
+#' Add vector as a shock to shock object
+#'
+#' @export
+#'
+#' @param shock tibble from \code{create_shock()}
+#' @param variable variable
+#' @param values values
+#' @param desc string variable description
+#' @param start numeric period number for the shock to take place, defaults to NA
+#' @param end numeric period number for the shock to take place, defaults to NA
+#'
+#' @return updated shock object containing added shock
+
+add_shock_vector <- function(shock,
+                             variable,
+                             values,
+                             desc = "",
+                             start = 1) {
+  # argument check
+  # type
+  checkmate::assert_string(variable)
+  checkmate::assert_vector(values)
+  checkmate::assert_string(desc)
+  checkmate::assert_int(start, lower = 0)
+
+  for (i in 1:length(values)) {
+    eq <- paste0(variable, "=", as.character(values[i]))
+    shock <- shock %>% godley:::add_shock(
+      equation = eq,
+      desc = desc,
+      start = start + i - 1,
+      end = start + i - 1
+    )
+  }
+
+  return(shock)
+}

@@ -135,7 +135,7 @@ plot_simulation(model = model_sim, scenario = "baseline", from = 1, to = 50,
 
 ![Scenario baseline](man/figures/images/Scenario_baseline.png)
 
-And one more thing (if you're lazy like me), you can create models using "templates" using ```create_model(template = "SIM")```. You can choose from ```SIM```, ```PC```, ```LP```, ```REG```, ```OPEN```, ```BMW```, ```BMWK```, ```DIS```, ```DISINF``` and ```SIMEX```. Basically all models from Godley & Lavoie (2007). 
+And one more thing (if you're lazy like me), you can create models using "templates" using ```create_model(template = "SIM")```. You can choose from ```SIM```, ```SIMEX```, ```PC```, ```PCEX```, ```LP```, ```REG```, ```OPEN```, ```BMW```, ```BMWK```, ```DIS``` and ```DISINF```. Basically all models from Godley & Lavoie (2007). 
 
 ### Shocks ⚡
 ```godley``` allows you to create and simulate shocks. Let's see what happens if we increase government spending.

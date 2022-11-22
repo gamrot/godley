@@ -1,9 +1,10 @@
 #' Create SFC model object
 #'
 #' @export
+#' @importFrom magrittr %>%
 #'
 #' @param name string name for created SFC model object
-#' @param template string name of model template chosen from: 'SIM', 'PC', 'LP', 'REG', 'OPEN', 'BMW', 'BMWK', 'DIS', 'DISINF', 'SIMEX'
+#' @param template string name of model template chosen from: 'SIM', 'PC', 'LP', 'REG', 'OPEN', 'BMW', 'BMWK', 'DIS', 'DISINF', 'SIMEX', 'PCEX'
 #' or user created SFC model object to be used as a template
 #'
 #' @return SFC model object
@@ -18,13 +19,13 @@ create_model <- function(name = "SFC model",
   # copying variables and equations if the name of an existing model was given
   if (!missing(template)) {
     if (is.character(template)) {
-      if (template %in% c("SIM", "PC", "LP", "REG", "OPEN", "BMW", "BMWK", "DIS", "DISINF", "SIMEX")) {
+      if (template %in% c("SIM", "PC", "PCEX", "LP", "REG", "OPEN", "BMW", "BMWK", "DIS", "DISINF", "SIMEX")) {
         # loading a model defined based on examples
         model <- suppressMessages(godley:::load_model_template(template))
         message("Model ", template, " loaded from template")
       } else {
         stop("There is no template named ", template, "
-Please choose from: SIM, PC, LP, REG, OPEN, BMW, BMWK, DIS, DISINF, SIMEX")
+Please choose from: SIM, SIMEX, PC, PCEX, LP, REG, OPEN, BMW, BMWK, DIS, DISINF")
       }
     } else {
       checkmate::assert_class(template, "SFC")

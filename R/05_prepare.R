@@ -76,18 +76,29 @@ prep_equations <- function(eqs_separated,
       rhs = gsub(godley:::.pvarlag(eqs_separated$lhs),
         "m\\[.i-1,'\\1'\\]", .data$rhs,
         perl = T
-      ),
-      rhs = gsub(godley:::.pvar(external_values$lhs),
-        "m\\[.i,'\\1'\\]", .data$rhs,
-        perl = T
-      ),
-      rhs = gsub(godley:::.pvarlag(external_values$lhs),
-        "m\\[.i-1,'\\1'\\]", .data$rhs,
-        perl = T
-      ),
+      )
+    )
+
+  if (!rlang::is_empty(external_values$lhs)) {
+    x <- x %>%
+      dplyr::mutate(
+        rhs = gsub(godley:::.pvar(external_values$lhs),
+          "m\\[.i,'\\1'\\]", .data$rhs,
+          perl = T
+        ),
+        rhs = gsub(godley:::.pvarlag(external_values$lhs),
+          "m\\[.i-1,'\\1'\\]", .data$rhs,
+          perl = T
+        )
+      )
+  }
+
+  x <- x %>%
+    dplyr::mutate(
       rhs = gsub("__", "", .data$rhs),
       id = dplyr::row_number()
     )
+
   return(x)
 }
 

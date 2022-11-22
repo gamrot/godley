@@ -1,0 +1,340 @@
+---
+title: "Model PCEX"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Model PCEX}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Please find below guidelines how godley package can be used to create models PCEX — models with government money and portfolio choice with expectations described by *Wynne Godley* and *Marc Lavoie* in Chapter 4 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+
+```{r setup}
+library(godley)
+```
+
+### Model PCEX - random shocks
+In this example expectations are subject to a random process, described in equation with a new variable "Ra" normally distributed with mean equal to 0: ```Yd_e = Yd * (1 + Ra)``` \
+To create this model first you need to create empty SFC model:
+```{r}
+# Create empty model
+model_pcex <- create_model(name = "SFC PCEX")
+```
+
+Next you have to add variables:
+```{r}
+# Add variables
+model_pcex <- model_pcex |>
+  add_variable("B_cb", desc = "") |>
+  add_variable("H_s", desc = "") |>
+  add_variable("B_s", desc = "") |>
+  add_variable("B_h", desc = "") |>
+  add_variable("H_d1", desc = "") |>
+  add_variable("H_d", desc = "") |>
+  add_variable("H_h", desc = "") |>
+  add_variable("C", desc = "") |>
+  add_variable("V", desc = "") |>
+  add_variable("T_x", desc = "") |>
+  add_variable("Y", desc = "Income = GDP") |>
+  add_variable("Yd", desc = "Disposable income of households") |>
+  add_variable("Yd_e") |>
+  add_variable("B_d") |>
+  add_variable("V_e") |>
+  add_variable("Ra") |>
+  add_variable("alpha1", init = 0.6, desc = "Propensity to consume out of income") |>
+  add_variable("alpha2", init = 0.4, desc = "Propensity to consume out of wealth") |>
+  add_variable("theta", init = 0.2, desc = "Tax rate") |>
+  add_variable("r", init = 0.025, desc = "") |>
+  add_variable("G", init = 20, desc = "Government demand") |>
+  add_variable("lambda0", init = 0.635, desc = "") |>
+  add_variable("lambda1", init = 0.05, desc = "") |>
+  add_variable("lambda2", init = 0.01, desc = "")
+```
+
+you also have to add equations:
+```{r}
+# Add equations
+model_pcex <- model_pcex |>
+  add_equation("Y = C + G", desc = "") |>
+  add_equation("Yd = Y - T_x + r[-1] * B_h[-1]") |>
+  add_equation("T_x = theta * (Y + r[-1] * B_h[-1])") |>
+  add_equation("V = V[-1] + (Yd - C)") |>
+  add_equation("C = alpha1 * Yd_e + alpha2 * V[-1]") |>
+  add_equation("B_d =  V_e * lambda0 + V_e * lambda1 * r - lambda2 * Yd_e") |>
+  add_equation("H_d1 = V_e * (1 - lambda0) - V_e * lambda1 * r + lambda2 * Yd_e") |>
+  add_equation("H_d = V_e - B_d") |>
+  add_equation("V_e = V[-1] + (Yd_e - C)") |>
+  add_equation("H_h = V - B_h") |>
+  add_equation("B_h = B_d") |>
+  add_equation("B_s = B_s[-1] + (G + r[-1] * B_s[-1]) - (T_x + r[-1] * B_cb[-1])") |>
+  add_equation("H_s = H_s[-1] + B_cb - B_cb[-1]") |>
+  add_equation("B_cb = B_s - B_h") |>
+  add_equation("Yd_e = Yd * (1 + Ra)") |>
+  add_equation("Ra = rnorm(1, 0, 0.05)") |>
+  add_equation("H_h = H_s", hidden = T)
+```
+
+Now you can simulate model (in this example for the next 100 periods using Newton method):
+```{r}
+# Simulate model
+model_pcex <- simulate_scenario(model_pcex, scenario = "baseline", max_iter = 350, periods = 100, 
+                                hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+```
+
+Based on calculated simulation you can display results for desired set of variables:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_pcex, scenario = c("baseline"), from = 1, to = 50,
+                expressions = c("H_h", 'H_d'))
+```
+
+Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
+
+### Model PCEX1 - adaptive expectations
+In this example we assume that expectations about current disposable income are based on actual disposable income from the previous period. \
+To apply this model first you need to create empty SFC model:
+```{r}
+# Create empty model
+model_pcex1 <- create_model(name = "SFC PCEX1")
+```
+
+Next you have to add variables:
+```{r}
+# Add variables
+model_pcex1 <- model_pcex1 |>
+  add_variable("B_cb", desc = "") |>
+  add_variable("H_s", desc = "") |>
+  add_variable("B_s", desc = "") |>
+  add_variable("B_h", desc = "") |>
+  add_variable("H_d1", desc = "") |>
+  add_variable("H_d", desc = "") |>
+  add_variable("H_h", desc = "") |>
+  add_variable("C", desc = "") |>
+  add_variable("V", desc = "") |>
+  add_variable("T_x", desc = "") |>
+  add_variable("Y", desc = "Income = GDP") |>
+  add_variable("Yd", desc = "Disposable income of households") |>
+  add_variable("Yd_e") |>
+  add_variable("B_d") |>
+  add_variable("V_e") |>
+  add_variable("alpha1", init = 0.6, desc = "Propensity to consume out of income") |>
+  add_variable("alpha2", init = 0.4, desc = "Propensity to consume out of wealth") |>
+  add_variable("theta", init = 0.2, desc = "Tax rate") |>
+  add_variable("r", init = 0.025, desc = "") |>
+  add_variable("G", init = 20, desc = "Government demand") |>
+  add_variable("lambda0", init = 0.635, desc = "") |>
+  add_variable("lambda1", init = 0.05, desc = "") |>
+  add_variable("lambda2", init = 0.01, desc = "")
+```
+
+you also have to change equation about expected disposable income from previous example to ```Yd_e = Yd[-1]```:
+```{r}
+# Add equations
+model_pcex1 <- model_pcex1 |>
+  add_equation("Y = C + G", desc = "") |>
+  add_equation("Yd = Y - T_x + r[-1] * B_h[-1]") |>
+  add_equation("T_x = theta * (Y + r[-1] * B_h[-1])") |>
+  add_equation("V = V[-1] + (Yd - C)") |>
+  add_equation("C = alpha1 * Yd_e + alpha2 * V[-1]") |>
+  add_equation("B_d =  V_e * lambda0 + V_e * lambda1 * r - lambda2 * Yd_e") |>
+  add_equation("H_d1 = V_e * (1 - lambda0) - V_e * lambda1 * r + lambda2 * Yd_e") |>
+  add_equation("H_d = V_e - B_d") |>
+  add_equation("V_e = V[-1] + (Yd_e - C)") |>
+  add_equation("H_h = V - B_h") |>
+  add_equation("B_h = B_d") |>
+  add_equation("B_s = B_s[-1] + (G + r[-1] * B_s[-1]) - (T_x + r[-1] * B_cb[-1])") |>
+  add_equation("H_s = H_s[-1] + B_cb - B_cb[-1]") |>
+  add_equation("B_cb = B_s - B_h") |>
+  add_equation("Yd_e = Yd[-1]") |>
+  add_equation("H_h = H_s", hidden = T)
+```
+
+Now you can simulate model (in this example for the next 100 periods using Newton method):
+```{r}
+# Simulate model
+model_pcex1 <- simulate_scenario(model_pcex1, scenario = "baseline", max_iter = 350, 
+                                 periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+```
+
+Based on calculated simulation you can display results for desired set of variables:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_pcex1, scenario = c("baseline"), from = 1, to = 50,
+                expressions = c("Y"))
+```
+
+Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1).
+
+#### Shock - increase in the propensity to consume out of disposable income
+
+Now you can simulate what will happen with economy if the propensity to consume out of disposable income increase to 0.7.\
+First you need to create empty shock object and add new equation for ```alpha1```:
+```{r}
+# Create empty shock
+shock_pcex1 <- create_shock()
+
+# Add shock equation with increased government expenditures
+shock_pcex1 <- add_shock(shock_pcex1,
+                         equation = "alpha1 = 0.7",
+                         desc = "Increase in the propensity to consume out of disposable income", start = 5, end = 50
+)
+
+# Create new scenario with this shock
+model_pcex1 <- add_scenario(model_pcex1,
+                            name = "expansion", origin = "baseline",
+                            origin_period = 100, shock = shock_pcex1
+)
+```
+
+Now you can simulate shock scenario:
+```{r}
+# Simulate shock
+model_pcex1 <- simulate_scenario(model_pcex1,
+                                 scenario = "expansion", max_iter = 350, periods = 100,
+                                 hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+)
+```
+
+Based on results you can plot national income, evolution of consumption, expected disposable income and lagged wealth:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_pcex1, scenario = c("expansion"), from = 1, to = 50,
+                expressions = c("Y"))
+```
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_pcex1, scenario = c("expansion"), from = 1, to = 50,
+                expressions = c("Yd_e", "C", "V"))
+```
+
+### Model PCEX2 - where the propensity to consume reacts negatively to higher interest rates
+In this example we assume that expectations about current disposable income are based on actual disposable income from the previous period like in previous example but the propensity to consume reacts negatively to higher interest rates. To apply this model we need to add two new variables ```iota``` and ```alpha10``` to variables used in PCEX1 and add one additional equation ```alpha1 = alpha10 - iota * r[-1]```.\
+To apply this model first you need to create empty SFC model:
+```{r}
+# Create empty model
+model_pcex2 <- create_model(name = "SFC PCEX2")
+```
+
+Next you have to add variables:
+```{r}
+# Add variables
+model_pcex2 <- model_pcex2 |>
+  add_variable("B_cb", desc = "") |>
+  add_variable("H_s", desc = "") |>
+  add_variable("B_s", desc = "") |>
+  add_variable("B_h", desc = "") |>
+  add_variable("H_d1", desc = "") |>
+  add_variable("H_d", desc = "") |>
+  add_variable("H_h", desc = "") |>
+  add_variable("C", desc = "") |>
+  add_variable("V", desc = "") |>
+  add_variable("T_x", desc = "") |>
+  add_variable("Y", desc = "Income = GDP") |>
+  add_variable("Yd", desc = "Disposable income of households") |>
+  add_variable("Yd_e") |>
+  add_variable("B_d") |>
+  add_variable("V_e") |>
+  add_variable("iota", init = 4) |>
+  add_variable("alpha10", init = 0.7) |>
+  add_variable("alpha1", init = 0.6, desc = "Propensity to consume out of income") |>
+  add_variable("alpha2", init = 0.4, desc = "Propensity to consume out of wealth") |>
+  add_variable("theta", init = 0.2, desc = "Tax rate") |>
+  add_variable("r", init = 0.025, desc = "") |>
+  add_variable("G", init = 20, desc = "Government demand") |>
+  add_variable("lambda0", init = 0.635, desc = "") |>
+  add_variable("lambda1", init = 0.05, desc = "") |>
+  add_variable("lambda2", init = 0.01, desc = "")
+```
+
+You also have to add equations: 
+```{r}
+# Add equations
+model_pcex2 <- model_pcex2 |>
+  add_equation("Y = C + G", desc = "") |>
+  add_equation("Yd = Y - T_x + r[-1] * B_h[-1]") |>
+  add_equation("T_x = theta * (Y + r[-1] * B_h[-1])") |>
+  add_equation("V = V[-1] + (Yd - C)") |>
+  add_equation("C = alpha1 * Yd_e + alpha2 * V[-1]") |>
+  add_equation("B_d =  V_e * lambda0 + V_e * lambda1 * r - lambda2 * Yd_e") |>
+  add_equation("H_d1 = V_e * (1 - lambda0) - V_e * lambda1 * r + lambda2 * Yd_e") |>
+  add_equation("H_d = V_e - B_d") |>
+  add_equation("V_e = V[-1] + (Yd_e - C)") |>
+  add_equation("H_h = V - B_h") |>
+  add_equation("B_h = B_d") |>
+  add_equation("B_s = B_s[-1] + (G + r[-1] * B_s[-1]) - (T_x + r[-1] * B_cb[-1])") |>
+  add_equation("H_s = H_s[-1] + B_cb - B_cb[-1]") |>
+  add_equation("B_cb = B_s - B_h") |>
+  add_equation("Yd_e = Yd[-1]") |>
+  add_equation("alpha1 = alpha10 - iota * r[-1]") |>
+  add_equation("H_h = H_s", hidden = T)
+```
+
+Now you can simulate model (in this example for the next 100 periods using Newton method):
+```{r}
+# Simulate model
+model_pcex2 <- simulate_scenario(model_pcex2, scenario = "baseline", max_iter = 350, 
+                                 periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+```
+
+Based on calculated simulation you can display results for desired set of variables:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_pcex2, scenario = c("baseline"), from = 1, to = 50,
+                expressions = c("Y"))
+```
+
+Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
+
+#### Shock - increase in the rate of interest on bills
+
+Now you can simulate what will happen with the economy if the rate of interest on bills increase by 100 points.\
+First you need to create empty shock object and add new equation for ```r```:
+```{r}
+# Create empty shock
+shock_pcex2 <- create_shock()
+
+# Add shock equation with increased government expenditures
+shock_pcex2 <- add_shock(shock_pcex2,
+                         equation = "r = 0.035",
+                         desc = "Increase in the rate of interest on bills", start = 5, end = 50
+)
+
+# Create new scenario with this shock
+model_pcex2 <- add_scenario(model_pcex2,
+                            name = "expansion", origin = "baseline",
+                            origin_period = 100, shock = shock_pcex2
+)
+```
+
+Now you can simulate shock scenario:
+```{r}
+# Simulate shock
+model_pcex2 <- simulate_scenario(model_pcex2,
+                                 scenario = "expansion", max_iter = 350, periods = 100,
+                                 hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+)
+```
+
+Based on results you can plot national income, evolution of consumption, expected disposable income and lagged wealth:
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_pcex2, scenario = c("expansion"), from = 1, to = 50,
+                expressions = c("Y"))
+```
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(model = model_pcex2, scenario = c("expansion"), from = 1, to = 50,
+                expressions = c("Yd", "C", "V"))
+```
+
+### References
+More information about models PC with expectations can be found in Chapter 4 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
