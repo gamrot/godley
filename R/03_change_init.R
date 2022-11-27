@@ -26,16 +26,14 @@ change_init <- function(model,
   eqs <- model$equations %>%
     dplyr::filter(hidden == FALSE)
   eqs <- eqs$equation
-  eqs_separated <- tibble::tibble(eqs) %>%
+  equations_sep <- tibble::tibble(eqs) %>%
     tidyr::separate(.data$eqs, c("lhs", "rhs"), "=") %>%
     dplyr::mutate(
       lhs = stringr::str_squish(lhs),
       rhs = stringr::str_squish(rhs)
     )
-  eqs_separated <- eqs_separated %>%
-    dplyr::mutate(rhs = godley:::add_lag_info(.data$rhs))
 
-  if (name %in% eqs_separated$lhs) {
+  if (name %in% equations_sep$lhs) {
     stop(name, " is endogenous ", "
 Changing initial value is invalid for endogenous variables")
   }

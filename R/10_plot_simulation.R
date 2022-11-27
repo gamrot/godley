@@ -38,12 +38,12 @@ plot_simulation <- function(model,
     scenario <- scenarios
 
     if (is.null(scenario)) {
-      stop(paste(c("There is/ are no scenario(s) named: ", scenario_pass, "in the model"), collapse = " "))
+      stop(paste(c("There is/ are no scenario(s) named: ", scenario_pass, "in the model"), collapse = ", "))
     }
   }
 
   if (!(all(scenario %in% names(model)))) {
-    stop(paste(c("There is/ are no scenario(s) named: ", scenario[!(scenario %in% names(model))], "in the model"), collapse = " "))
+    stop(paste(c("There is/ are no scenario(s) named: ", scenario[!(scenario %in% names(model))], "in the model"), collapse = ", "))
   }
 
   if (is.na(to)) {

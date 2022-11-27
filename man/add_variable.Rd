@@ -2,9 +2,9 @@
 % Please edit documentation in R/02_add_variable.R
 \name{add_variable}
 \alias{add_variable}
-\title{Add variable to the model}
+\title{Add variables to the model}
 \usage{
-add_variable(model, name, init = 0, desc = "")
+add_variable(model, ...)
 }
 \arguments{
 \item{model}{SFC model object}
@@ -19,5 +19,5 @@ add_variable(model, name, init = 0, desc = "")
 updated SFC model object containing added variable
 }
 \description{
-Add variable to the model
+Add variables to the model
 }

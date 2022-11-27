@@ -6,130 +6,137 @@
 
 validate_model_input <- function(model) {
 
-  # 1 Check if there are no variables in the model
-  if (is.null(model$variables)) {
-    stop("List model$variables is empty
-Please complete exogenous variables and initial values")
-  }
-
-  # 2 Check if there are no equations in the model
+  # 1 Check if there are no equations in the model
   if (is.null(model$equations)) {
     stop("List model$equations is empty
 Please complete equations")
   }
 
-  # 3 Check if provided equations do not contains invalid characters
-  equations <- model$equations$equation
-  for (i in equations) {
-    is_invalid_name <- stringr::str_detect(i, "[§£@#${};:'\\\\~`?]")
-    if (is_invalid_name == TRUE) {
+  # 2 Check if there are no variables in the model
+  if (is.null(model$variables)) {
+    stop("List model$variables is empty
+Please complete exogenous variables and initial values")
+  }
+
+  # 3 Check if provided equations do not contain invalid characters
+  all_equations <- model$equations$equation
+  for (i in all_equations) {
+    if (stringr::str_detect(i, "[§£@#${};:'\\\\~`?]")) {
       stop("Invalid character(s) in equation
 Please check: ", i)
     }
   }
 
-  # 4 Check if variable is declared more than once
-  var <- model$variables$name
-  duplication <- duplicated(var)
-  for (i in c(1:length(var))) {
+  # 4 Check if equation is declared more than once
+  duplication <- duplicated(all_equations)
+  for (i in c(1:length(all_equations))) {
+    if (duplication[i] == TRUE) {
+      stop("Equation declared more than once
+Please check: ", all_equations[i])
+    }
+  }
+
+  # 5 Check if variable is declared more than once
+  variables_user <- model$variables$name
+  duplication <- duplicated(variables_user)
+  for (i in c(1:length(variables_user))) {
     if (duplication[i] == TRUE) {
       stop("Variable declared more than once
-Please check: ", var[i])
+Please check: ", variables_user[i])
     }
   }
 
-  # 5 check if all provided variables are used in created equations
-  all_eqs <- model$equations %>%
-    dplyr::filter(hidden == FALSE)
-  all_eqs <- all_eqs$equation
-  all_eqs <- paste(all_eqs, collapse = " ")
-
-  # extract function names
-  funs <- stringr::str_replace_all(all_eqs, "[!%^&*)\\-+=\\[\\]|<,>/]", " ")
-  funs <- stringr::str_replace_all(funs, "[(]", "( ")
-  funs <- stringr::str_squish(funs)
-  funs <- stringr::str_split(funs, " ")
-  funs <- funs[[1]]
-  funs <- grep("\\(", funs, value = T)
-  funs <- stringr::str_replace_all(funs, "[(]", "")
-
-  eqs_clean <- stringr::str_replace_all(all_eqs, "[!%^&*()\\-+=\\[\\]|<,>/]", " ")
-  eqs_clean <- stringr::str_squish(eqs_clean)
-  eqs_clean <- stringr::str_split(eqs_clean, " ")
-  eqs_clean <- eqs_clean[[1]]
-  eqs_clean <- vecsets::vsetdiff(eqs_clean, funs)
-  eqs_clean <- unique(eqs_clean)
-  eqs_clean <- eqs_clean[suppressWarnings(is.na(as.numeric(eqs_clean)))]
-  var <- model$variables
-  var <- var$name
-  for (i in var) {
-    if (!(i %in% eqs_clean)) {
-      warning("Not all provided variables are used in equations
-Please check: ", i)
-    }
-  }
-
-  # divide equations into rhs lhs (endogenous)
-  eqs <- model$equations %>%
-    dplyr::filter(hidden == FALSE)
-  eqs <- eqs$equation
-  eqs_separated <- tibble::tibble(eqs) %>%
-    tidyr::separate(.data$eqs, c("lhs", "rhs"), "=") %>%
+  ### define sets
+  ## equations
+  # all equations
+  all_equations <- model$equations$equation
+  # not-hidden equations
+  equations <- model$equations %>%
+    dplyr::filter(hidden == FALSE) %>%
+    dplyr::pull(equation)
+  # not-hidden equations in one string
+  equations_glued <- paste(equations, collapse = " ")
+  # functions
+  functions <- stringr::str_replace_all(equations_glued, "[!%^&*)\\-+=\\[\\]|<,>/]", " ")
+  functions <- stringr::str_replace_all(functions, "[(]", "( ")
+  functions <- stringr::str_squish(functions)
+  functions <- stringr::str_split(functions, " ")
+  functions <- functions[[1]]
+  functions <- grep("\\(", functions, value = T)
+  functions <- stringr::str_replace_all(functions, "[(]", "")
+  # equations divided into lhs and rhs
+  equations_sep <- tibble::tibble(equations) %>%
+    tidyr::separate(.data$equations, c("lhs", "rhs"), "=") %>%
     dplyr::mutate(
       lhs = stringr::str_squish(lhs),
       rhs = stringr::str_squish(rhs)
     )
-  eqs_separated <- eqs_separated %>%
-    dplyr::mutate(rhs = godley:::add_lag_info(.data$rhs))
 
-  # extract exogenous
-  external_values <- setdiff(model$variables$name, eqs_separated$lhs)
-  external_values <- model$variables %>%
-    dplyr::filter(name %in% external_values) %>%
+  ## variables
+  # user defined variables
+  variables_user <- model$variables$name
+  # variables from visible equations
+  variables_eqs <- stringr::str_replace_all(equations_glued, "[!%^&*()\\-+=\\[\\]|<,>/]", " ")
+  variables_eqs <- stringr::str_squish(variables_eqs)
+  variables_eqs <- stringr::str_split(variables_eqs, " ")[[1]]
+  variables_eqs <- vecsets::vsetdiff(variables_eqs, functions)
+  variables_eqs <- unique(variables_eqs)
+  variables_eqs <- variables_eqs[suppressWarnings(is.na(as.numeric(variables_eqs)))]
+  # variables not-defined by the user but present in equations
+  variables_not_user <- vecsets::vsetdiff(variables_eqs, variables_user)
+  # final variable list
+  variables <- c(variables_user, variables_not_user)
+  # endogenous variables
+  variables_endo <- equations_sep$lhs
+  # exogenous variables
+  variables_exo <- setdiff(variables, variables_endo)
+  variables_exo_tbl <- model$variables %>%
+    dplyr::filter(name %in% variables_exo) %>%
     dplyr::select(c("name", "init")) %>%
     dplyr::rename(
       lhs = name,
       rhs = init
     )
 
-  # 6 check if there is description for all endogenous variables
-  egs_splitted <- tidyr::separate(model$equations, equation, c("lhs", "rhs"), "=") %>%
-    dplyr::filter(hidden == FALSE) %>%
-    dplyr::mutate(
-      lhs = stringr::str_squish(lhs),
-      rhs = stringr::str_squish(rhs)
-    )
-  egs_splitted <- dplyr::filter(egs_splitted, egs_splitted$lhs %in% model$variables$name)
-
-  # 7 check if initial values for exogenous variables are provided. If not assign by default value 0.
-  if (sum(external_values$rhs == 0)) {
-    d <- external_values[which(external_values$rhs == 0), ]$lhs
-    message(paste(c("Exogenous variable(s):", d, "take(s) default 0 value"), collapse = " "))
-  }
-
-  # 8 check if endogenous variables are explained by the model only once
-  end_v <- tidyr::separate(model$equations, equation, c("lhs", "rhs"), "=") %>%
-    dplyr::filter(hidden == FALSE) %>%
-    dplyr::mutate(
-      lhs = stringr::str_squish(lhs),
-      rhs = stringr::str_squish(rhs)
-    )
-
-  end_v <- end_v$lhs
-  len_endo <- length(end_v[duplicated(end_v)])
-
-  if (len_endo > 0) {
-    stop(paste(c("Endogenous variable(s):", end_v[duplicated(end_v)], "is/ are explained by the model more than once
-Please remove one of the equations"), collapse = " "))
-  }
-
-  # 9 check if all variables from equations are defined
-  for (i in eqs_clean) {
-    if (!(i %in% model$variables$name)) {
-      warning("Not all variables used in equations are defined
-Please check: ", i)
+  # 5 check for ".i" in variable names
+  for (v in variables) {
+    if (stringr::str_detect(v, "\\.i")) {
+      stop("Expression .i can not be used in variable names
+Please check: ", v)
     }
   }
 
-  return(list(eqs_separated, external_values, funs))
+  # 6 check if there are endogenous variables not defined by the user
+  v <- vecsets::vsetdiff(variables_not_user, variables_exo)
+  if (length(v) != 0) {
+    stop(paste0(c("These endogenous variables are not defined
+Please add them to the model:", v), collapse = ", "))
+  }
+
+  # 7 check if endogenous variables are explained by the model only once
+  if (length(variables_endo[duplicated(variables_endo)]) > 0) {
+    stop(paste(c("Endogenous variable(s):", variables_endo[duplicated(variables_endo)], "is/ are explained by the model more than once
+Please remove one of the equations"), collapse = ", "))
+  }
+
+  # 8 check if there are exogenous variables not defined by the user
+  v <- vecsets::vsetdiff(variables_not_user, variables_endo)
+  if (length(v) != 0) {
+    stop(paste0(c("These exogenous variables are not defined
+Please add them to the model:", v), collapse = ", "))
+  }
+
+  # 9 check if all exogenous variables have init values defined by the user
+  v <- model$variables[(model$variables$name %in% variables_exo) & is.na(model$variables$init), ]$name
+  if (length(v) != 0) {
+    stop(paste0(c("These variables are exogenous and require an initial value:", v), collapse = ", "))
+  }
+
+  # 10 check if all provided variables are used in created equations
+  v <- vecsets::vsetdiff(variables_user, variables_eqs)
+  if (length(v) != 0) {
+    message(paste0(c("These user defined variables are not used in equations:", v), collapse = ", "))
+  }
+
+  return(list(equations_sep, variables_exo_tbl, functions))
 }

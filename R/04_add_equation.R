@@ -1,18 +1,51 @@
-#' Add equation to the model
+#' Add equations to the model
 #'
 #' @export
 #'
 #' @param model SFC model object
 #' @param equation string equation in format: 'x = y + z - a * b + (c + d) / e + f[-1]'
-#' @param desc string equation description
 #' @param hidden logical, indicates if equation should be written as hidden, defaults to FALSE
+#' @param desc string equation description
 #'
 #' @return updated SFC model object containing added equation
 
-add_equation <- function(model,
-                         equation,
-                         desc = "",
-                         hidden = FALSE) {
+add_equation <- function(model, ...) {
+  l <- list(...)
+  t <- tibble::tibble(
+    equation = character(),
+    hidden = logical(),
+    desc = character()
+  )
+
+  if (is.null(names(l))) names(l) <- rep("", length(l))
+
+  for (i in 1:length(l)) {
+    if ((checkmate::test_character(l[[i]]) | names(l[i]) == "equation") & names(l[i]) != "desc") {
+      t <- rbind(t, c(equation = l[i], hidden = FALSE, desc = ""))
+    }
+    if (checkmate::test_logical(l[[i]]) | names(l[i]) == "hidden") {
+      t$hidden[nrow(t)] <- l[i]
+    }
+    if (names(l[i]) == "desc") {
+      t$desc[nrow(t)] <- l[i]
+    }
+  }
+
+  for (i in 1:nrow(t)) {
+    model <- godley:::add_equation_single(model, equation = t$equation[[i]], hidden = t$hidden[[i]], desc = t$desc[[i]])
+  }
+
+  return(model)
+}
+
+#' Add single equation to the model
+#'
+#' helper for add_equation()
+
+add_equation_single <- function(model,
+                                equation,
+                                hidden = FALSE,
+                                desc = "") {
 
   # argument check
   # type

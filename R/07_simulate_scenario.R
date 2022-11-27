@@ -10,7 +10,7 @@
 
 d <- function(x) {
   x_lag <- deparse(substitute(x))
-  x_lag <- stringr::str_replace_all(x_lag, "i", "i-1")
+  x_lag <- stringr::str_replace_all(x_lag, "\\.i", ".i-1")
   return(x - eval(str2expression(x_lag), envir = parent.frame()))
 }
 
@@ -22,8 +22,9 @@ d <- function(x) {
 #' @param scenario vector of strings or single string name of scenario(s) to simulate
 #' @param max_iter numeric maximum iterations allowed per period, defaults to 350
 #' @param periods numeric total number of rows (periods) in the model, defaults to 100
-#' @param hidden_tol numeric error tolerance to accept the equality of hidden equations, defaults to 0.1.
+#' @param start_date character date to begin the simulation in the format "yyyy-mm-dd", defaults to "2000-01-01"
 #' @param tol numeric tolerance accepted to determine convergence, defaults to 1e-08
+#' @param hidden_tol numeric error tolerance to accept the equality of hidden equations, defaults to 0.1.
 #' @param method string name of method used to find solution chosen from: 'Gauss', 'Newton', defaults to 'Gauss'
 #'
 #' @return updated model containing simulated scenario(s)
@@ -32,8 +33,9 @@ simulate_scenario <- function(model,
                               scenario,
                               max_iter = 350,
                               periods = 100,
-                              hidden_tol = 0.1,
+                              start_date = "2000-01-01",
                               tol = 1e-08,
+                              hidden_tol = 0.1,
                               method = "Gauss") {
 
   # argument check
@@ -155,6 +157,12 @@ If the problem persists, try `hidden = FALSE` or change the tolerance level")
     m <- tibble::tibble(data.frame(m))
     m <- m[, !grepl("block", colnames(m))]
     model[[scenario]]$result <- m
+
+    # add period date
+    model[[scenario]]$result <- cbind(
+      tibble(period = seq(as.Date(start_date), by = "quarter", length.out = periods)),
+      model[[scenario]]$result
+    )
 
     i <- i + 1
   }

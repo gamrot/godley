@@ -2,22 +2,22 @@
 % Please edit documentation in R/04_add_equation.R
 \name{add_equation}
 \alias{add_equation}
-\title{Add equation to the model}
+\title{Add equations to the model}
 \usage{
-add_equation(model, equation, desc = "", hidden = FALSE)
+add_equation(model, ...)
 }
 \arguments{
 \item{model}{SFC model object}
 
 \item{equation}{string equation in format: 'x = y + z - a * b + (c + d) / e + f[-1]'}
 
-\item{desc}{string equation description}
-
 \item{hidden}{logical, indicates if equation should be written as hidden, defaults to FALSE}
+
+\item{desc}{string equation description}
 }
 \value{
 updated SFC model object containing added equation
 }
 \description{
-Add equation to the model
+Add equations to the model
 }

@@ -33,19 +33,17 @@ create_sensitivity <- function(model_pass,
   eqs <- model$equations %>%
     dplyr::filter(hidden == FALSE)
   eqs <- eqs$equation
-  eqs_separated <- tibble::tibble(eqs) %>%
+  equations_sep <- tibble::tibble(eqs) %>%
     tidyr::separate(.data$eqs, c("lhs", "rhs"), "=") %>%
     dplyr::mutate(
       lhs = stringr::str_squish(lhs),
       rhs = stringr::str_squish(rhs)
     )
-  eqs_separated <- eqs_separated %>%
-    dplyr::mutate(rhs = godley:::add_lag_info(.data$rhs))
 
   ## extract exogenous
-  external_values <- setdiff(model$variables$name, eqs_separated$lhs)
-  external_values <- model$variables %>%
-    dplyr::filter(name %in% external_values) %>%
+  variables_exo <- setdiff(model$variables$name, equations_sep$lhs)
+  variables_exo <- model$variables %>%
+    dplyr::filter(name %in% variables_exo) %>%
     dplyr::select(c("name", "init")) %>%
     dplyr::rename(
       lhs = name,
@@ -53,9 +51,9 @@ create_sensitivity <- function(model_pass,
     )
 
   ## check if provided variable is exogenous
-  if ((variable %in% external_values$lhs == F) & (variable %in% eqs_separated$lhs == F)) {
+  if ((variable %in% variables_exo$lhs == F) & (variable %in% equations_sep$lhs == F)) {
     stop("There is no variable named ", variable, " in the model")
-  } else if (variable %in% external_values$lhs == F) {
+  } else if (variable %in% variables_exo$lhs == F) {
     stop(variable, " is endogenous ", "
 Sensitivity calculation is invalid for endogenous variables")
   }
