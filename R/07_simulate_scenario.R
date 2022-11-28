@@ -160,7 +160,7 @@ If the problem persists, try `hidden = FALSE` or change the tolerance level")
 
     # add period date
     model[[scenario]]$result <- cbind(
-      tibble(period = seq(as.Date(start_date), by = "quarter", length.out = periods)),
+      tibble::tibble(period = seq(as.Date(start_date), by = "quarter", length.out = periods)),
       model[[scenario]]$result
     )
 

@@ -4,7 +4,7 @@
 \alias{add_shock_vector}
 \title{Add vector as a shock to shock object}
 \usage{
-add_shock_vector(shock, variable, values, desc = "", start = 1)
+add_shock_vector(shock, variable, values, start = 1, desc = "")
 }
 \arguments{
 \item{shock}{tibble from \code{create_shock()}}
@@ -13,9 +13,9 @@ add_shock_vector(shock, variable, values, desc = "", start = 1)
 
 \item{values}{values}
 
-\item{desc}{string variable description}
-
 \item{start}{numeric period number for the shock to take place, defaults to NA}
+
+\item{desc}{string variable description}
 
 \item{end}{numeric period number for the shock to take place, defaults to NA}
 }

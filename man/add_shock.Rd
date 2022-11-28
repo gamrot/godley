@@ -4,18 +4,18 @@
 \alias{add_shock}
 \title{Add shock to shock object}
 \usage{
-add_shock(shock, equation, desc = "", start = NA, end = NA)
+add_shock(shock, equation, start = NA, end = NA, desc = "")
 }
 \arguments{
 \item{shock}{tibble from \code{create_shock()}}
 
 \item{equation}{string equation in format: 'x = 2'}
 
-\item{desc}{string variable description}
-
 \item{start}{numeric period number for the shock to take place, defaults to NA}
 
 \item{end}{numeric period number for the shock to take place, defaults to NA}
+
+\item{desc}{string variable description}
 }
 \value{
 updated shock object containing added shock

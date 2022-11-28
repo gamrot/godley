@@ -33,6 +33,9 @@ Please simulate scenario before incorporating a shock")
   }
 
   initial_matrix <- model[[origin]]$result[origin_period, ]
+  if (!is.null(initial_matrix$period)) {
+    initial_matrix <- dplyr::select(initial_matrix, -period)
+  }
 
   sh <- shock %>%
     dplyr::select("equation", "start", "end") %>%

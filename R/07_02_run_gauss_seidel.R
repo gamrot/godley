@@ -60,11 +60,11 @@ Please check if equations are correctly specified or change initial values")
           for (.v in .id) {
             if (!(.i == 2 & stringr::str_detect(gsub(" ", "", as.character(exprs[[.v]])), "\\Qm[.i-2,\\E"))) {
               m[.i, .v] <- suppressMessages(eval(exprs[[.v]]))
-              # if(is.na(m[.i, .v])){
-              #  stop(message = paste('Gauss-Seidel algorithm failed.
-              # During computation NaN was obtained in ', .v , ' equation ',
-              # 'Check if equations are correctly specified or change initial values.'))
-              # }
+              if (is.na(m[.i, .v]) | !is.finite(m[.i, .v])) {
+                stop(message = paste("Gauss-Seidel algorithm failed.
+During computation NaN or Inf was obtained in ", .v, " equation
+Check if equations are correctly specified or change initial values."))
+              }
 
               checks[[.v]] <- suppressMessages(abs(m[.i, .v] - holdouts[[.v]]) / (holdouts[[.v]] + 1e-15))
             }

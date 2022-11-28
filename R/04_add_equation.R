@@ -51,10 +51,10 @@ add_equation_single <- function(model,
   # type
   checkmate::assert_class(model, "SFC")
   checkmate::assert_string(equation)
-  checkmate::assert_string(desc)
   checkmate::assert_flag(hidden)
+  checkmate::assert_string(desc)
 
-  new_eq <- tibble::tibble("equation" = equation, "desc" = desc, "hidden" = hidden)
+  new_eq <- tibble::tibble("equation" = equation, "hidden" = hidden, "desc" = desc)
   if (is.null(model$equations)) {
     model$equations <- new_eq
   } else {

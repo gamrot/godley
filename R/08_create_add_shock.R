@@ -7,8 +7,8 @@
 
 create_shock <- function() {
   shock <- tibble::tibble(
-    "equation" = character(), "desc" = character(),
-    "start" = numeric(), "end" = numeric()
+    "equation" = character(), "start" = numeric(),
+    "end" = numeric(), "desc" = character()
   )
 
   message("Shock object created")
@@ -22,32 +22,32 @@ create_shock <- function() {
 #'
 #' @param shock tibble from \code{create_shock()}
 #' @param equation string equation in format: 'x = 2'
-#' @param desc string variable description
 #' @param start numeric period number for the shock to take place, defaults to NA
 #' @param end numeric period number for the shock to take place, defaults to NA
+#' @param desc string variable description
 #'
 #' @return updated shock object containing added shock
 
 add_shock <- function(shock,
                       equation,
-                      desc = "",
                       start = NA,
-                      end = NA) {
+                      end = NA,
+                      desc = "") {
 
   # argument check
   # type
   checkmate::assert_string(equation)
-  checkmate::assert_string(desc)
   checkmate::assert_int(start, na.ok = T, lower = 0)
   checkmate::assert_int(end, na.ok = T, lower = 0)
+  checkmate::assert_string(desc)
   # conditions
   if (!is.na(start) & !is.na(end) & start > end) {
     stop("Start cannot be after end")
   }
 
   new_row <- tibble::tibble(
-    "equation" = equation, "desc" = desc, "start" = start,
-    "end" = end
+    "equation" = equation, "start" = start,
+    "end" = end, "desc" = desc
   )
   shock <- tibble::add_row(shock, new_row)
 
@@ -61,31 +61,31 @@ add_shock <- function(shock,
 #' @param shock tibble from \code{create_shock()}
 #' @param variable variable
 #' @param values values
-#' @param desc string variable description
 #' @param start numeric period number for the shock to take place, defaults to NA
 #' @param end numeric period number for the shock to take place, defaults to NA
+#' @param desc string variable description
 #'
 #' @return updated shock object containing added shock
 
 add_shock_vector <- function(shock,
                              variable,
                              values,
-                             desc = "",
-                             start = 1) {
+                             start = 1,
+                             desc = "") {
   # argument check
   # type
   checkmate::assert_string(variable)
   checkmate::assert_vector(values)
-  checkmate::assert_string(desc)
   checkmate::assert_int(start, lower = 0)
+  checkmate::assert_string(desc)
 
   for (i in 1:length(values)) {
     eq <- paste0(variable, "=", as.character(values[i]))
     shock <- shock %>% godley:::add_shock(
       equation = eq,
-      desc = desc,
       start = start + i - 1,
-      end = start + i - 1
+      end = start + i - 1,
+      desc = desc
     )
   }
 
