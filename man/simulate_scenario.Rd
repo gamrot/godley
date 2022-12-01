@@ -12,7 +12,8 @@ simulate_scenario(
   start_date = "2000-01-01",
   tol = 1e-08,
   hidden_tol = 0.1,
-  method = "Gauss"
+  method = "Gauss",
+  info = FALSE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ simulate_scenario(
 \item{hidden_tol}{numeric error tolerance to accept the equality of hidden equations, defaults to 0.1.}
 
 \item{method}{string name of method used to find solution chosen from: 'Gauss', 'Newton', defaults to 'Gauss'}
+
+\item{info}{logical to tell if additional model info should be displayed}
 }
 \value{
 updated model containing simulated scenario(s)

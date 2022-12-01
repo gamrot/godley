@@ -73,10 +73,10 @@ Check if equations are correctly specified or change initial values."))
           # m[.i, block_names[[.block]]] <- .ite
 
           if (any(!is.finite(checks[.id]) | is.na(checks[.id]))) {
-            stop(paste(c("Gauss-Seidel algorithm failed to converge
+            stop(paste0("Gauss-Seidel algorithm failed to converge
 Please check the initial values to exclude any division by zero or other invalid operations
-Problem occured in", .id, "equations block
-If the problem persists, try a different method"), collapse = ", "))
+Problem occured in ", paste0(.id, collapse = ", "), " equations block
+If the problem persists, try a different method"))
           }
 
           if (all(checks[.id] < tol)) {

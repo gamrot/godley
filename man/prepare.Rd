@@ -4,10 +4,12 @@
 \alias{prepare}
 \title{Make initial matrix row for baseline scenario and prepare equations for \code{simulate_scenario()}}
 \usage{
-prepare(model)
+prepare(model, info = FALSE)
 }
 \arguments{
 \item{model}{SFC model object}
+
+\item{info}{logical to tell if additional model info should be displayed}
 }
 \value{
 verified and prepared SFC model object

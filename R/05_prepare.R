@@ -116,17 +116,19 @@ prep_equations <- function(equations_sep,
 #' @export
 #'
 #' @param model SFC model object
+#' @param info logical to tell if additional model info should be displayed
 #'
 #' @return verified and prepared SFC model object
 
-prepare <- function(model) {
+prepare <- function(model, info = FALSE) {
 
   # argument check
   # type
   checkmate::assert_class(model, "SFC")
+  checkmate::assert_logical(info)
 
   # Check correctness of equations entered by the user
-  res <- godley:::validate_model_input(model)
+  res <- godley:::validate_model_input(model, info)
   equations_sep <- res[[1]]
   variables_exo <- res[[2]]
   functions <- res[[3]]
@@ -151,7 +153,7 @@ prepare <- function(model) {
   var <- var[all_var]
   names(var) <- all_var
 
-  if (any(is.na(var))) var[is.na(var)] <- 1e-10 # default init value
+  if (any(is.na(var))) var[is.na(var)] <- 0 # default init value
 
   m1 <- tibble::tibble(as.data.frame(t(x = var)))
   prepared <- structure(tibble::tibble(prepared = T),

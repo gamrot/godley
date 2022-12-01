@@ -26,6 +26,7 @@ d <- function(x) {
 #' @param tol numeric tolerance accepted to determine convergence, defaults to 1e-08
 #' @param hidden_tol numeric error tolerance to accept the equality of hidden equations, defaults to 0.1.
 #' @param method string name of method used to find solution chosen from: 'Gauss', 'Newton', defaults to 'Gauss'
+#' @param info logical to tell if additional model info should be displayed
 #'
 #' @return updated model containing simulated scenario(s)
 
@@ -36,7 +37,8 @@ simulate_scenario <- function(model,
                               start_date = "2000-01-01",
                               tol = 1e-08,
                               hidden_tol = 0.1,
-                              method = "Gauss") {
+                              method = "Gauss",
+                              info = FALSE) {
 
   # argument check
   # type
@@ -47,6 +49,7 @@ simulate_scenario <- function(model,
   checkmate::assert_number(hidden_tol, lower = 0)
   checkmate::assert_number(tol, lower = 0)
   checkmate::assert_string(method)
+  checkmate::assert_logical(info)
   # conditions
   if (!(method %in% c("Gauss", "Newton"))) {
     stop(
@@ -57,9 +60,9 @@ simulate_scenario <- function(model,
 
   # prepare if unprepared
   if (is.null(model$prepared)) {
-    model <- godley:::prepare(model)
+    model <- godley:::prepare(model, info)
   } else if (model$prepared[[1]] == F) {
-    model <- godley:::prepare(model)
+    model <- godley:::prepare(model, info)
   }
 
   # create list of all scenarios
