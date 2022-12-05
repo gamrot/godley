@@ -153,7 +153,7 @@ prepare <- function(model, info = FALSE) {
   var <- var[all_var]
   names(var) <- all_var
 
-  if (any(is.na(var))) var[is.na(var)] <- 0 # default init value
+  if (any(is.na(var))) var[is.na(var)] <- 0.001 # default init value
 
   m1 <- tibble::tibble(as.data.frame(t(x = var)))
   prepared <- structure(tibble::tibble(prepared = T),
