@@ -155,7 +155,7 @@ prepare <- function(model, info = FALSE) {
 
   if (any(is.na(var))) var[is.na(var)] <- 0.001 # default init value
 
-  m1 <- tibble::tibble(as.data.frame(t(x = var)))
+  m1 <- do.call(cbind, var)
   prepared <- structure(tibble::tibble(prepared = T),
     calls = calls
   )

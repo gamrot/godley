@@ -30,7 +30,7 @@ Please choose from: SIM, SIMEX, PC, PCEX, LP, REG, OPEN, BMW, BMWK, DIS, DISINF"
     } else {
       checkmate::assert_class(template, "SFC")
       model <- template
-      model <- model[names(model) %in% c("variables", "equations") == TRUE]
+      model <- model[names(model) %in% c("variables", "equations")]
       message("Model loaded from environment")
     }
   } else {

@@ -37,6 +37,9 @@ Please simulate scenario before incorporating a shock")
     initial_matrix <- dplyr::select(initial_matrix, -period)
   }
 
+  initial_matrix <- data.matrix(initial_matrix)
+  rownames(initial_matrix) <- NULL
+  
   sh <- shock %>%
     dplyr::select("equation", "start", "end") %>%
     tidyr::separate(.data$equation, c("lhs", "rhs"), "=") %>%

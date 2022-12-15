@@ -23,7 +23,7 @@ add_variable <- function(model, ...) {
     if ((checkmate::test_character(l[[i]]) | names(l[i]) == "name") & names(l[i]) != "desc") {
       t <- rbind(t, c(name = l[i], init = NA, desc = ""))
     }
-    if (checkmate::test_number(l[[i]]) | names(l[i]) == "init") {
+    if (checkmate::test_numeric(l[[i]]) | names(l[i]) == "init") {
       t$init[nrow(t)] <- l[i]
     }
     if (names(l[i]) == "desc") {
@@ -51,10 +51,10 @@ add_variable_single <- function(model,
   # type
   checkmate::assert_class(model, "SFC")
   checkmate::assert_string(name)
-  if (!is.na(init)) checkmate::assert_number(init)
+  checkmate::assert_numeric(init)
   checkmate::assert_string(desc)
 
-  new_row <- tibble::tibble("name" = name, "init" = init, "desc" = desc)
+  new_row <- tibble::tibble("name" = name, "init" = list(init), "desc" = desc)
   if (is.null(model$variables)) {
     model$variables <- new_row
   } else {

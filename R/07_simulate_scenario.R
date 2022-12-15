@@ -121,11 +121,13 @@ simulate_scenario <- function(model,
     origin <- model[[scenario]]$initial_matrix
     shock <- attr(origin, "shock")
     calls <- attr(model$prepared, "calls")
-    m <- as.matrix(origin)
-    m <- matrix(m,
-      nrow = periods, ncol = length(origin), byrow = TRUE,
-      dimnames = list(c(1:periods), names(origin))
+    m <- origin
+    m_len <- dim(m)[1]
+    m <- rbind(
+      m,
+      matrix(rep(m[m_len,], periods-m_len), nrow = periods-m_len, byrow = T)
     )
+    dimnames(m) <- list(c(1:periods), colnames(origin))
 
     if (!is.null(shock)) {
       shock[is.na(shock$end), ]$end <- periods

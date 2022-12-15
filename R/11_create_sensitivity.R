@@ -63,7 +63,7 @@ Sensitivity calculation is invalid for endogenous variables")
     # create temp initial matrix
     tmp <- model$baseline
     # change variable value
-    tmp$initial_matrix[variable] <- i
+    tmp$initial_matrix[colnames(tmp$initial_matrix) == variable] <- i
     # save initial matrix with new variable value as new scenario
     model[paste("sensitivity", variable, i, sep = "_")] <- list(tmp)
   }

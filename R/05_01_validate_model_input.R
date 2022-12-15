@@ -150,13 +150,25 @@ Please add them to the model: ", paste0(v, collapse = ", "), "
 "))
   }
 
-  # 10 check if all provided variables are used in created equations
+  # 10 check init values
+  len <- c()
+  for (i in model$variables$init){
+    len <- c(len, length(i))
+  }
+  len_i <- which(!(len == max(len) | len == 1))
+  if(!(identical(len_i, integer(0)))){
+    v <- model$variables$name[c(len_i)]
+    stop(paste0("Please provide either single values or same lenght vectors for init values. Problem with inits in variable(s): ", paste0(v, collapse = ", "), "
+"))
+  }
+  
+  # 11 check if all provided variables are used in created equations
   v <- vecsets::vsetdiff(variables_user, variables_eqs)
   if (length(v) != 0) {
     message(paste0("These user defined variables are not used in equations: ", paste0(v, collapse = ", "), "
 "))
   }
-
+  
   # info
   if (info) {
     v <- vecsets::vsetdiff(variables_endo, variables_rhs)

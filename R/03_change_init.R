@@ -16,7 +16,7 @@ change_init <- function(model,
   # type
   checkmate::assert_class(model, "SFC")
   checkmate::assert_string(name)
-  checkmate::assert_number(value)
+  checkmate::assert_numeric(value)
   # conditions
   if (!(name %in% model$variables$name)) {
     stop("There is no variable named ", name, " in the model")
