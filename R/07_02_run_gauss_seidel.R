@@ -43,7 +43,7 @@ run_gauss_seidel <- function(m,
 
       # If 1 variable in the block, it is deterministic and no iteration is required.
       if (length(.id) == 1) {
-        if (!(.i == 2 & stringr::str_detect(gsub(" ", "", as.character(exprs[[.id]])), "\\Qm[.i-2,\\E"))) {
+        if (!(.i == 2 & stringr::str_detect(gsub(" ", "", as.character(exprs[[.id]])), "\\Qm[.i-2,\\E|\\Qd(m[.i-1,\\E"))) {
           m[.i, .id] <- eval(exprs[[.id]])
           # m[.i, block_names[[.block]]] <- 1
           if (is.na(m[.i, .id]) | !is.finite(m[.i, .id])) {

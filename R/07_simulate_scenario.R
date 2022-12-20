@@ -9,8 +9,17 @@
 #' @return difference
 
 d <- function(x) {
+  
   x_lag <- deparse(substitute(x))
-  x_lag <- stringr::str_replace_all(x_lag, "\\.i", ".i-1")
+  
+  if (grepl("\\Qm[.i - 1,\\E", x_lag)){
+    x_lag <- stringr::str_replace_all(x_lag, "\\Q.i - 1\\E", ".i-2")
+  }
+  
+  if (grepl("\\Qm[.i,\\E", x_lag)){
+    x_lag <- stringr::str_replace_all(x_lag, "\\Q.i\\E", ".i-1")
+  }
+  
   return(x - eval(str2expression(x_lag), envir = parent.frame()))
 }
 
