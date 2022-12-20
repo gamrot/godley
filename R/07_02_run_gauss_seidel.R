@@ -58,7 +58,7 @@ Please check if equations are correctly specified or change initial values")
       else {
         for (.ite in 1:max_iter) {
           for (.v in .id) {
-            if (!(.i == 2 & stringr::str_detect(gsub(" ", "", as.character(exprs[[.v]])), "\\Qm[.i-2,\\E"))) {
+            if (!(.i == 2 & stringr::str_detect(gsub(" ", "", as.character(exprs[[.v]])), "\\Qm[.i-2,\\E|\\Qd(m[.i-1,\\E"))) {
               m[.i, .v] <- suppressMessages(eval(exprs[[.v]]))
               if (is.na(m[.i, .v]) | !is.finite(m[.i, .v])) {
                 stop(message = paste("Gauss-Seidel algorithm failed.
