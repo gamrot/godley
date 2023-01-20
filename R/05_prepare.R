@@ -46,6 +46,22 @@ find_adjacency <- function(equations) {
   paste0("(?<![[:alnum:]]|\\.|\\_)(", paste0(x, collapse = "|"), ")(?=\\[-2\\])")
 }
 
+# ' Pattern replacement lag 3
+# '
+# ' @param x vector of variables
+
+.pvarlag_3 <- function(x) {
+  paste0("(?<![[:alnum:]]|\\.|\\_)(", paste0(x, collapse = "|"), ")(?=\\[-3\\])")
+}
+
+# ' Pattern replacement lag 4
+# '
+# ' @param x vector of variables
+
+.pvarlag_4 <- function(x) {
+  paste0("(?<![[:alnum:]]|\\.|\\_)(", paste0(x, collapse = "|"), ")(?=\\[-4\\])")
+}
+
 # ' Find blocks of independent equations (using \code{igraph} functions)
 # '
 # ' @author João Macalós
@@ -74,11 +90,19 @@ prep_equations <- function(equations_sep,
         perl = T
       ),
       rhs = gsub(godley:::.pvarlag_1(equations_sep$lhs),
-        "m\\[.i-1,'\\1'\\]", .data$rhs,
+        "m\\[.i - 1,'\\1'\\]", .data$rhs,
         perl = T
       ),
       rhs = gsub(godley:::.pvarlag_2(equations_sep$lhs),
-        "m\\[.i-2,'\\1'\\]", .data$rhs,
+        "m\\[.i - 2,'\\1'\\]", .data$rhs,
+        perl = T
+      ),
+      rhs = gsub(godley:::.pvarlag_3(equations_sep$lhs),
+        "m\\[.i - 3,'\\1'\\]", .data$rhs,
+        perl = T
+      ),
+      rhs = gsub(godley:::.pvarlag_4(equations_sep$lhs),
+        "m\\[.i - 4,'\\1'\\]", .data$rhs,
         perl = T
       )
     )
@@ -91,11 +115,19 @@ prep_equations <- function(equations_sep,
           perl = T
         ),
         rhs = gsub(godley:::.pvarlag_1(variables_exo$lhs),
-          "m\\[.i-1,'\\1'\\]", .data$rhs,
+          "m\\[.i - 1,'\\1'\\]", .data$rhs,
           perl = T
         ),
         rhs = gsub(godley:::.pvarlag_2(variables_exo$lhs),
-          "m\\[.i-2,'\\1'\\]", .data$rhs,
+          "m\\[.i - 2,'\\1'\\]", .data$rhs,
+          perl = T
+        ),
+        rhs = gsub(godley:::.pvarlag_3(variables_exo$lhs),
+          "m\\[.i - 3,'\\1'\\]", .data$rhs,
+          perl = T
+        ),
+        rhs = gsub(godley:::.pvarlag_4(variables_exo$lhs),
+          "m\\[.i - 4,'\\1'\\]", .data$rhs,
           perl = T
         )
       )
@@ -105,6 +137,8 @@ prep_equations <- function(equations_sep,
     dplyr::mutate(
       rhs = gsub("\\[-1\\]", "", .data$rhs),
       rhs = gsub("\\[-2\\]", "", .data$rhs),
+      rhs = gsub("\\[-3\\]", "", .data$rhs),
+      rhs = gsub("\\[-4\\]", "", .data$rhs),
       id = dplyr::row_number()
     )
 
@@ -121,7 +155,6 @@ prep_equations <- function(equations_sep,
 #' @return verified and prepared SFC model object
 
 prepare <- function(model, info = FALSE) {
-
   # argument check
   # type
   checkmate::assert_class(model, "SFC")

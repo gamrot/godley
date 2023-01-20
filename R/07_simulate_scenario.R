@@ -11,13 +11,25 @@
 d <- function(x) {
   
   x_lag <- deparse(substitute(x))
+
+  if (grepl("\\Qm[.i - 4,\\E", x_lag)){
+    x_lag <- stringr::str_replace_all(x_lag, "\\Q.i - 4\\E", ".i - 5")
+  }
+    
+  if (grepl("\\Qm[.i - 3,\\E", x_lag)){
+    x_lag <- stringr::str_replace_all(x_lag, "\\Q.i - 3\\E", ".i - 4")
+  }
+  
+  if (grepl("\\Qm[.i - 2,\\E", x_lag)){
+    x_lag <- stringr::str_replace_all(x_lag, "\\Q.i - 2\\E", ".i - 3")
+  }
   
   if (grepl("\\Qm[.i - 1,\\E", x_lag)){
-    x_lag <- stringr::str_replace_all(x_lag, "\\Q.i - 1\\E", ".i-2")
+    x_lag <- stringr::str_replace_all(x_lag, "\\Q.i - 1\\E", ".i - 2")
   }
   
   if (grepl("\\Qm[.i,\\E", x_lag)){
-    x_lag <- stringr::str_replace_all(x_lag, "\\Q.i\\E", ".i-1")
+    x_lag <- stringr::str_replace_all(x_lag, "\\Q.i\\E", ".i - 1")
   }
   
   return(x - eval(str2expression(x_lag), envir = parent.frame()))

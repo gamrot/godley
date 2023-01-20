@@ -43,31 +43,29 @@ run_gauss_seidel <- function(m,
 
       # If 1 variable in the block, it is deterministic and no iteration is required.
       if (length(.id) == 1) {
-        if (!(.i == 2 & stringr::str_detect(gsub(" ", "", as.character(exprs[[.id]])), "\\Qm[.i-2,\\E|\\Qd(m[.i-1,\\E|\\Qd(log(m[.i-1,\\E"))) {
-          m[.i, .id] <- eval(exprs[[.id]])
-          # m[.i, block_names[[.block]]] <- 1
-          if (is.na(m[.i, .id]) | !is.finite(m[.i, .id])) {
-            stop("Gauss-Seidel algorithm failed
+        if (!checkmate::test_number(eval(exprs[[.id]]), na.ok = T)) next
+
+        m[.i, .id] <- eval(exprs[[.id]])
+        # m[.i, block_names[[.block]]] <- 1
+
+        if (is.na(m[.i, .id]) | !is.finite(m[.i, .id])) {
+          stop("Gauss-Seidel algorithm failed
 During computation NaN or Inf was obtained in ", .id, " equation
 Please check if equations are correctly specified or change initial values")
-          }
         }
-      }
-
-      # If cyclical block, use Gauss-Seidel algorithm
-      else {
+      } else { # If cyclical block, use Gauss-Seidel algorithm
         for (.ite in 1:max_iter) {
           for (.v in .id) {
-            if (!(.i == 2 & stringr::str_detect(gsub(" ", "", as.character(exprs[[.v]])), "\\Qm[.i-2,\\E|\\Qd(m[.i-1,\\E|\\Qd(log(m[.i-1,\\E"))) {
-              m[.i, .v] <- suppressMessages(eval(exprs[[.v]]))
-              if (is.na(m[.i, .v]) | !is.finite(m[.i, .v])) {
-                stop(message = paste("Gauss-Seidel algorithm failed.
+            if (!checkmate::test_number(suppressMessages(eval(exprs[[.v]])), na.ok = T)) next
+
+            m[.i, .v] <- suppressMessages(eval(exprs[[.v]]))
+
+            if (is.na(m[.i, .v]) | !is.finite(m[.i, .v])) {
+              stop(message = paste("Gauss-Seidel algorithm failed.
 During computation NaN or Inf was obtained in ", .v, " equation
 Check if equations are correctly specified or change initial values."))
-              }
-
-              checks[[.v]] <- suppressMessages(abs(m[.i, .v] - holdouts[[.v]]) / (holdouts[[.v]] + 1e-15))
             }
+            checks[[.v]] <- suppressMessages(abs(m[.i, .v] - holdouts[[.v]]) / (holdouts[[.v]] + 1e-15))
           }
 
           # m[.i, block_names[[.block]]] <- .ite
