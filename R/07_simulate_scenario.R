@@ -10,7 +10,7 @@
 
 d <- function(x) {
   
-  x_lag <- deparse(substitute(x))
+  x_lag <- deparse(substitute(x), width.cutoff = 100)
 
   if (grepl("\\Qm[.i - 4,\\E", x_lag)){
     x_lag <- stringr::str_replace_all(x_lag, "\\Q.i - 4\\E", ".i - 5")
