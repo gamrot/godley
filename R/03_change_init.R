@@ -11,7 +11,6 @@
 change_init <- function(model,
                         name,
                         value) {
-
   # argument check
   # type
   checkmate::assert_class(model, "SFC")

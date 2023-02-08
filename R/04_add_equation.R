@@ -46,7 +46,6 @@ add_equation_single <- function(model,
                                 equation,
                                 hidden = FALSE,
                                 desc = "") {
-
   # argument check
   # type
   checkmate::assert_class(model, "SFC")

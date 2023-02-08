@@ -46,7 +46,6 @@ add_variable_single <- function(model,
                                 name,
                                 init = NA,
                                 desc = "") {
-
   # argument check
   # type
   checkmate::assert_class(model, "SFC")

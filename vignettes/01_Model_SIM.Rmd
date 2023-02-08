@@ -72,15 +72,19 @@ model_sim <- model_sim |>
 Now you can simulate model (in this example for the next 100 periods using Newton method):
 ```{r}
 # Simulate model
-model_sim <- simulate_scenario(model_sim, scenario = "baseline", max_iter = 350, periods = 100, 
-                               hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+model_sim <- simulate_scenario(model_sim,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+)
 ```
 
 Based on calculated simulation you can display results for desired set of variables:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_sim, scenario = c("baseline"), from = 1, to = 50, 
-                expressions = c("Y", "C_d", "G_s"))
+plot_simulation(
+  model = model_sim, scenario = c("baseline"), from = 1, to = 50,
+  expressions = c("Y", "C_d", "G_s")
+)
 ```
 
 Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
@@ -97,39 +101,51 @@ shock_sim <- create_shock()
 Next you need to add appropriate equation:
 ```{r}
 # Add shock equation with increased government expenditures
-shock_sim <- add_shock(shock_sim, equation = "G_d = 25", 
-                       desc = "Increase in government expenditures", start = 5, end = 50)
+shock_sim <- add_shock(shock_sim,
+  equation = "G_d = 25",
+  desc = "Increase in government expenditures", start = 5, end = 50
+)
 ```
 
 Later you need to create the shock scenario:
 ```{r}
 # Create new scenario with this shock
-model_sim <- add_scenario(model_sim, name = "expansion", origin = "baseline", 
-                          origin_period = 1, shock = shock_sim)
+model_sim <- add_scenario(model_sim,
+  name = "expansion", origin = "baseline",
+  origin_period = 1, shock = shock_sim
+)
 ```
 
 Now you can simulate new shock scenario:
 ```{r}
 # Simulate shock
-model_sim <- simulate_scenario(model_sim, scenario = "expansion", max_iter = 350, periods = 100, 
-                               hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+model_sim <- simulate_scenario(model_sim,
+  scenario = "expansion", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+)
 ```
 
 You can also compare results from shock and base scenarios:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_sim, scenario = c("baseline", "expansion"), from = 1, to = 50, 
-                expressions = c("Y"))
+plot_simulation(
+  model = model_sim, scenario = c("baseline", "expansion"), from = 1, to = 50,
+  expressions = c("Y")
+)
 ```
 
 ```{r, out.width="100%"}
-plot_simulation(model = model_sim, scenario = c("baseline", "expansion"), from = 1, to = 50, 
-                expressions = c("C_d"))
+plot_simulation(
+  model = model_sim, scenario = c("baseline", "expansion"), from = 1, to = 50,
+  expressions = c("C_d")
+)
 ```
 
 ```{r, out.width="100%"}
-plot_simulation(model = model_sim, scenario = c("baseline", "expansion"), from = 1, to = 50, 
-                expressions = c("G_s"))
+plot_simulation(
+  model = model_sim, scenario = c("baseline", "expansion"), from = 1, to = 50,
+  expressions = c("G_s")
+)
 ```
 
 ### References

@@ -39,7 +39,7 @@ model_simex <- model_simex |>
   add_equation("Y = C_s + G_s") |>
   add_equation("N_d = Y/W") |>
   add_equation("H_d = Yd_e - C_d + H_h[-1]") |>
-  add_equation("Yd[-1] = Yd_e") |>
+  add_equation("Yd_e = Yd[-1]") |>
   add_equation("H_s = H_h", desc = "Money equilibrium", hidden = TRUE)
 
 # Simulate model

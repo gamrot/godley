@@ -73,21 +73,27 @@ model_pc <- model_pc |>
 Now you can simulate model (in this example for the next 100 periods using Newton method):
 ```{r}
 # Simulate model
-model_pc <- simulate_scenario(model_pc, scenario = "baseline", max_iter = 350, periods = 100, 
-                              hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+model_pc <- simulate_scenario(model_pc,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+)
 ```
 
 Based on calculated simulation you can display results for desired set of variables:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_pc, scenario = c("baseline"), from = 1, to = 100, 
-                expressions = c("B_h / V"))
+plot_simulation(
+  model = model_pc, scenario = c("baseline"), from = 1, to = 100,
+  expressions = c("B_h / V")
+)
 ```
 
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_pc, scenario = c("baseline"), from = 1, to = 100, 
-                expressions = c("H_h / V"))
+plot_simulation(
+  model = model_pc, scenario = c("baseline"), from = 1, to = 100,
+  expressions = c("H_h / V")
+)
 ```
 
 Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
@@ -104,35 +110,45 @@ shock_pc <- create_shock()
 Next you need to add appropriate equation:
 ```{r}
 # Add shock equation with increased rate of interest on bills
-shock_pc <- add_shock(shock_pc, equation = "r = 0.035", 
-                      desc = "Increase in the rate of interest on bills", start = 5, end = 50)
+shock_pc <- add_shock(shock_pc,
+  equation = "r = 0.035",
+  desc = "Increase in the rate of interest on bills", start = 5, end = 50
+)
 ```
 
 Then you need to create new shock scenario:
 ```{r}
 # Create new scenario with this shock
-model_pc <- add_scenario(model_pc, name = "expansion", origin = "baseline", 
-                         origin_period = 100, shock = shock_pc)
+model_pc <- add_scenario(model_pc,
+  name = "expansion", origin = "baseline",
+  origin_period = 100, shock = shock_pc
+)
 ```
 
 Now you can simulate new shock scenario:
 ```{r}
 # Simulate shock
-model_pc <- simulate_scenario(model_pc, scenario = "expansion", max_iter = 350, periods = 100, 
-                              hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+model_pc <- simulate_scenario(model_pc,
+  scenario = "expansion", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+)
 ```
 
 You can also display results from shock scenario:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_pc, scenario = c("expansion"), from = 1, to = 50, 
-                expressions = c("B_h / V"))
+plot_simulation(
+  model = model_pc, scenario = c("expansion"), from = 1, to = 50,
+  expressions = c("B_h / V")
+)
 ```
 
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_pc, scenario = c("expansion"), from = 1, to = 50, 
-                expressions = c("H_h / V"))
+plot_simulation(
+  model = model_pc, scenario = c("expansion"), from = 1, to = 50,
+  expressions = c("H_h / V")
+)
 ```
 
 ### References

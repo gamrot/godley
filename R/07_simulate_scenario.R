@@ -9,29 +9,28 @@
 #' @return difference
 
 d <- function(x) {
-  
   x_lag <- deparse(substitute(x), width.cutoff = 100)
 
-  if (grepl("\\Qm[.i - 4,\\E", x_lag)){
+  if (grepl("\\Qm[.i - 4,\\E", x_lag)) {
     x_lag <- stringr::str_replace_all(x_lag, "\\Q.i - 4\\E", ".i - 5")
   }
-    
-  if (grepl("\\Qm[.i - 3,\\E", x_lag)){
+
+  if (grepl("\\Qm[.i - 3,\\E", x_lag)) {
     x_lag <- stringr::str_replace_all(x_lag, "\\Q.i - 3\\E", ".i - 4")
   }
-  
-  if (grepl("\\Qm[.i - 2,\\E", x_lag)){
+
+  if (grepl("\\Qm[.i - 2,\\E", x_lag)) {
     x_lag <- stringr::str_replace_all(x_lag, "\\Q.i - 2\\E", ".i - 3")
   }
-  
-  if (grepl("\\Qm[.i - 1,\\E", x_lag)){
+
+  if (grepl("\\Qm[.i - 1,\\E", x_lag)) {
     x_lag <- stringr::str_replace_all(x_lag, "\\Q.i - 1\\E", ".i - 2")
   }
-  
-  if (grepl("\\Qm[.i,\\E", x_lag)){
+
+  if (grepl("\\Qm[.i,\\E", x_lag)) {
     x_lag <- stringr::str_replace_all(x_lag, "\\Q.i\\E", ".i - 1")
   }
-  
+
   return(x - eval(str2expression(x_lag), envir = parent.frame()))
 }
 
@@ -60,7 +59,6 @@ simulate_scenario <- function(model,
                               hidden_tol = 0.1,
                               method = "Gauss",
                               info = FALSE) {
-
   # argument check
   # type
   checkmate::assert_class(model, "SFC")
@@ -146,7 +144,7 @@ simulate_scenario <- function(model,
     m_len <- dim(m)[1]
     m <- rbind(
       m,
-      matrix(rep(m[m_len,], periods-m_len), nrow = periods-m_len, byrow = T)
+      matrix(rep(m[m_len, ], periods - m_len), nrow = periods - m_len, byrow = T)
     )
     dimnames(m) <- list(c(1:periods), colnames(origin))
 

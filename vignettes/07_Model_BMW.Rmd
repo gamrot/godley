@@ -91,15 +91,19 @@ model_bmw <- model_bmw |>
 Now you can simulate model (in this example for the next 100 periods using Gauss method):
 ```{r}
 # Simulate model
-model_bmw <- simulate_scenario(model_bmw, scenario = "baseline", max_iter = 350, periods = 100, 
-                               hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_bmw <- simulate_scenario(model_bmw,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
 ```
 
 Based on calculated simulation you can display results for desired set of variables:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_bmw, scenario = c("baseline"), from = 1, to = 50, 
-                expressions = c("Cd", "YD"))
+plot_simulation(
+  model = model_bmw, scenario = c("baseline"), from = 1, to = 50,
+  expressions = c("Cd", "YD")
+)
 ```
 
 Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
@@ -119,29 +123,37 @@ shock_bmw <- create_shock()
 Next you need to add appropriate equation:
 ```{r}
 # Add shock equation with increase in autonomous consumption expenditures
-shock_bmw <- add_shock(shock_bmw, equation = "alpha0 = 30", 
-                       desc = "Increase in autonomous consumption expenditures", start = 5, end = 50)
+shock_bmw <- add_shock(shock_bmw,
+  equation = "alpha0 = 30",
+  desc = "Increase in autonomous consumption expenditures", start = 5, end = 50
+)
 ```
 
 Then you need to create new shock scenario:
 ```{r}
 # Create new scenario with this shock
-model_bmw <- add_scenario(model_bmw, name = "expansion1", origin = "baseline", 
-                          origin_period = 100, shock = shock_bmw)
+model_bmw <- add_scenario(model_bmw,
+  name = "expansion1", origin = "baseline",
+  origin_period = 100, shock = shock_bmw
+)
 ```
 
 Now you can simulate new shock scenario:
 ```{r}
 # Simulate shock
-model_bmw <- simulate_scenario(model_bmw, scenario = "expansion1", max_iter = 350, periods = 100, 
-                               hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+model_bmw <- simulate_scenario(model_bmw,
+  scenario = "expansion1", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+)
 ```
 
 You can also plot results from the shock scenarios:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_bmw, scenario = c("expansion1"), from = 1, to = 50, 
-                expressions = c("Cd", "YD"))
+plot_simulation(
+  model = model_bmw, scenario = c("expansion1"), from = 1, to = 50,
+  expressions = c("Cd", "YD")
+)
 ```
 
 #### Shock 2
@@ -156,29 +168,37 @@ shock_bmw <- create_shock()
 Next you need to add appropriate equation:
 ```{r}
 # Add shock equation with increased propensity to save
-shock_bmw <- add_shock(shock_bmw, equation = "alpha1 = 0.7", 
-                       desc = "Increase in the propensity to save", start = 5, end = 50)
+shock_bmw <- add_shock(shock_bmw,
+  equation = "alpha1 = 0.7",
+  desc = "Increase in the propensity to save", start = 5, end = 50
+)
 ```
 
 Later you need to create new shock scenario:
 ```{r}
 # Create new scenario with this shock
-model_bmw <- add_scenario(model_bmw, name = "expansion2", origin = "baseline", 
-                          origin_period = 100, shock = shock_bmw)
+model_bmw <- add_scenario(model_bmw,
+  name = "expansion2", origin = "baseline",
+  origin_period = 100, shock = shock_bmw
+)
 ```
 
 Now you can simulate new shock scenario:
 ```{r}
 # Simulate shock
-model_bmw <- simulate_scenario(model_bmw, scenario = "expansion2", max_iter = 350, periods = 100, 
-                               hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+model_bmw <- simulate_scenario(model_bmw,
+  scenario = "expansion2", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+)
 ```
 
 You can also plot results from the shock scenarios:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_bmw, scenario = c("expansion2"), from = 1, to = 50, 
-                expressions = c("Cd", "YD"))
+plot_simulation(
+  model = model_bmw, scenario = c("expansion2"), from = 1, to = 50,
+  expressions = c("Cd", "YD")
+)
 ```
 
 ### References

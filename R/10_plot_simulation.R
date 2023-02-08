@@ -17,7 +17,6 @@ plot_simulation <- function(model,
                             from = 1,
                             to = NA,
                             expressions = "Y") {
-
   # argument check
   # type
   checkmate::assert_class(model, "SFC")
@@ -69,8 +68,8 @@ plot_simulation <- function(model,
     result_var <- tibble::tibble(periods = 1:nrow(model[[scenario[1]]]$result))
     for (n in 1:length(expressions)) {
       result <- eval(exprs[[n]])
-      names(result) <- paste0(i, ": ", stringr::str_trim(stringr::str_split(expressions[[n]], "=")[[1]][1]))
-      result_var <- result_var %>% tibble::add_column(result)
+      name <- paste0(i, ": ", stringr::str_trim(stringr::str_split(expressions[[n]], "=")[[1]][1]))
+      result_var <- result_var %>% tibble::add_column(!!name := result)
     }
     result_var <- result_var[from:to, ]
     result_var <- result_var %>% dplyr::select(-c(periods))

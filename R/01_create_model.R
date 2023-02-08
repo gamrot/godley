@@ -11,7 +11,6 @@
 
 create_model <- function(name = "SFC model",
                          template) {
-
   # argument check
   # type
   checkmate::assert_string(name)

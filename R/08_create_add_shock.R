@@ -33,7 +33,6 @@ add_shock <- function(shock,
                       start = NA,
                       end = NA,
                       desc = "") {
-
   # argument check
   # type
   checkmate::assert_string(equation)

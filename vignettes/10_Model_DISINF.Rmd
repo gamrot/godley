@@ -121,28 +121,38 @@ model_disinf <- model_disinf |>
 Now you can simulate model (in this example for the next 100 periods using Gauss method):
 ```{r}
 # Simulate model
-model_disinf<- simulate_scenario(model_disinf, scenario = "baseline", max_iter = 350, periods = 100, 
-                                 hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_disinf <- simulate_scenario(model_disinf,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
 ```
 
 Based on calculated simulation you can display results for desired set of variables:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_disinf, scenario = c("baseline"), from = 1, to = 40, 
-                expressions = c("p", "UC", "UCp = UC/p"))
+plot_simulation(
+  model = model_disinf, scenario = c("baseline"), from = 1, to = 40,
+  expressions = c("p", "UC", "UCp = UC/p")
+)
 ```
 
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_disinf, scenario = c("baseline"), from = 1, to = 40, 
-                expressions = c("inflation = (p - dplyr::lag(p)) / dplyr::lag(p)"))
+plot_simulation(
+  model = model_disinf, scenario = c("baseline"), from = 1, to = 40,
+  expressions = c("inflation = (p - dplyr::lag(p)) / dplyr::lag(p)")
+)
 ```
 
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_disinf, scenario = c("baseline"), from = 1, to = 40, 
-                expressions = c("ydhs_ss = alpha0 / (1 - alpha1 - alpha2*sigma_T * (UC/p))", 
-                                "ydhs", "c", "s"))
+plot_simulation(
+  model = model_disinf, scenario = c("baseline"), from = 1, to = 40,
+  expressions = c(
+    "ydhs_ss = alpha0 / (1 - alpha1 - alpha2*sigma_T * (UC/p))",
+    "ydhs", "c", "s"
+  )
+)
 ```
 
 Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
@@ -162,42 +172,56 @@ shock_disinf <- create_shock()
 Next you need to add appropriate equation:
 ```{r}
 # Add shock equation
-shock_disinf <- add_shock(shock_disinf, equation = "phi = 0.3", 
-                          desc = "Increase in the costing margins", start = 5, end = 50)
+shock_disinf <- add_shock(shock_disinf,
+  equation = "phi = 0.3",
+  desc = "Increase in the costing margins", start = 5, end = 50
+)
 ```
 
 Then you need to create new shock scenario:
 ```{r}
 # Create new scenario with this shock
-model_disinf <- add_scenario(model_disinf, name = "expansion1", origin = "baseline", 
-                         origin_period = 100, shock = shock_disinf)
+model_disinf <- add_scenario(model_disinf,
+  name = "expansion1", origin = "baseline",
+  origin_period = 100, shock = shock_disinf
+)
 ```
 
 Now you can simulate new shock scenario:
 ```{r}
 # Simulate shock
-model_disinf <- simulate_scenario(model_disinf, scenario = "expansion1", max_iter = 350, periods = 100, 
-                              hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_disinf <- simulate_scenario(model_disinf,
+  scenario = "expansion1", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
 ```
 
 You can also display simulation results on the plots:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_disinf, scenario = c("expansion1"), from = 1, to = 40, 
-                expressions = c("p", "UC", "UCp = UC/p"))
+plot_simulation(
+  model = model_disinf, scenario = c("expansion1"), from = 1, to = 40,
+  expressions = c("p", "UC", "UCp = UC/p")
+)
 ```
 
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_disinf, scenario = c("expansion1"), from = 1, to = 40, 
-                expressions = c("inflation = (p - dplyr::lag(p)) / dplyr::lag(p)"))
+plot_simulation(
+  model = model_disinf, scenario = c("expansion1"), from = 1, to = 40,
+  expressions = c("inflation = (p - dplyr::lag(p)) / dplyr::lag(p)")
+)
 ```
 
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_disinf, scenario = c("expansion1"), from = 1, to = 40, 
-                expressions = c("ydhs_ss = alpha0 / (1 - alpha1 - alpha2*sigma_T * (UC/p))", 
-                                "ydhs", "c", "s"))
+plot_simulation(
+  model = model_disinf, scenario = c("expansion1"), from = 1, to = 40,
+  expressions = c(
+    "ydhs_ss = alpha0 / (1 - alpha1 - alpha2*sigma_T * (UC/p))",
+    "ydhs", "c", "s"
+  )
+)
 ```
 
 #### Shock 2
@@ -212,42 +236,56 @@ shock_disinf <- create_shock()
 Next you need to add appropriate equation:
 ```{r}
 # Add shock equation
-shock_disinf <- add_shock(shock_disinf, equation = "Omega0   = -1", 
-                          desc = "Increase in the target real wage", start = 5, end = 100)
+shock_disinf <- add_shock(shock_disinf,
+  equation = "Omega0   = -1",
+  desc = "Increase in the target real wage", start = 5, end = 100
+)
 ```
 
 Then you need to create new shock scenario:
 ```{r}
 # Create new scenario with this shock
-model_disinf <- add_scenario(model_disinf, name = "expansion2", origin = "baseline", 
-                             origin_period = 100, shock = shock_disinf)
+model_disinf <- add_scenario(model_disinf,
+  name = "expansion2", origin = "baseline",
+  origin_period = 100, shock = shock_disinf
+)
 ```
 
 Now you can simulate new shock scenario:
 ```{r}
 # Simulate shock
-model_disinf <- simulate_scenario(model_disinf, scenario = "expansion2", max_iter = 350, periods = 100, 
-                                  hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_disinf <- simulate_scenario(model_disinf,
+  scenario = "expansion2", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
 ```
 
 You can also display simulation results on the plots:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_disinf, scenario = c("expansion2"), from = 1, to = 40, 
-                expressions = c("p", "UC", "UCp = UC/p"))
+plot_simulation(
+  model = model_disinf, scenario = c("expansion2"), from = 1, to = 40,
+  expressions = c("p", "UC", "UCp = UC/p")
+)
 ```
 
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_disinf, scenario = c("expansion2"), from = 1, to = 40, 
-                expressions = c("inflation = (p - dplyr::lag(p)) / dplyr::lag(p)"))
+plot_simulation(
+  model = model_disinf, scenario = c("expansion2"), from = 1, to = 40,
+  expressions = c("inflation = (p - dplyr::lag(p)) / dplyr::lag(p)")
+)
 ```
 
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_disinf, scenario = c("expansion2"), from = 1, to = 40, 
-                expressions = c("ydhs_ss = alpha0 / (1 - alpha1 - alpha2*sigma_T * (UC/p))", 
-                                "ydhs", "c", "s"))
+plot_simulation(
+  model = model_disinf, scenario = c("expansion2"), from = 1, to = 40,
+  expressions = c(
+    "ydhs_ss = alpha0 / (1 - alpha1 - alpha2*sigma_T * (UC/p))",
+    "ydhs", "c", "s"
+  )
+)
 ```
 
 ### References

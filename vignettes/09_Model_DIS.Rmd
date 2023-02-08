@@ -24,7 +24,7 @@ library(godley)
 First you need to create empty SFC model:
 ```{r}
 # Create empty model
-model_dis<- create_model(name = "SFC DIS")
+model_dis <- create_model(name = "SFC DIS")
 ```
 
 Next you have to add variables:
@@ -107,22 +107,30 @@ model_dis <- model_dis |>
 Now you can simulate model (in this example for the next 100 periods using Gauss method):
 ```{r}
 # Simulate model
-model_dis<- simulate_scenario(model_dis, scenario = "baseline", max_iter = 350, periods = 100, 
-                              hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_dis <- simulate_scenario(model_dis,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
 ```
 
 Based on calculated simulation you can display results for desired set of variables:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_dis, scenario = c("baseline"), from = 1, to = 40, 
-                expressions = c("ydhs", "c"))
+plot_simulation(
+  model = model_dis, scenario = c("baseline"), from = 1, to = 40,
+  expressions = c("ydhs", "c")
+)
 ```
 
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_dis, scenario = c("baseline"), from = 1, to = 40, 
-                expressions = c("delta_inv = inv - dplyr::lag(inv)", 
-                                "delta_inv_E = inv_E - dplyr::lag(inv_E)"))
+plot_simulation(
+  model = model_dis, scenario = c("baseline"), from = 1, to = 40,
+  expressions = c(
+    "delta_inv = inv - dplyr::lag(inv)",
+    "delta_inv_E = inv_E - dplyr::lag(inv_E)"
+  )
+)
 ```
 
 Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
@@ -142,36 +150,48 @@ shock_dis <- create_shock()
 Next you need to add appropriate equation:
 ```{r}
 # Add shock equation
-shock_dis <- add_shock(shock_dis, equation = "phi = 0.35", 
-                       desc = "One-shot increase in the costing margin", start = 5, end = 40)
+shock_dis <- add_shock(shock_dis,
+  equation = "phi = 0.35",
+  desc = "One-shot increase in the costing margin", start = 5, end = 40
+)
 ```
 
 Then you need to create new shock scenario:
 ```{r}
 # Create new scenario with this shock
-model_dis<- add_scenario(model_dis, name = "expansion1", origin = "baseline", 
-                         origin_period = 100, shock = shock_dis)
+model_dis <- add_scenario(model_dis,
+  name = "expansion1", origin = "baseline",
+  origin_period = 100, shock = shock_dis
+)
 ```
 
 Now you can simulate new shock scenario:
 ```{r}
 # Simulate shock
-model_dis<- simulate_scenario(model_dis, scenario = "expansion1", max_iter = 350, periods = 100, 
-                              hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_dis <- simulate_scenario(model_dis,
+  scenario = "expansion1", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
 ```
 
 You can also display results on the plot:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_dis, scenario = c("expansion1"), from = 1, to = 40, 
-                expressions = c("c", "ydhs"))
+plot_simulation(
+  model = model_dis, scenario = c("expansion1"), from = 1, to = 40,
+  expressions = c("c", "ydhs")
+)
 ```
 
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_dis, scenario = c("expansion1"), from = 1, to = 40, 
-                expressions = c("delta_inv = inv - dplyr::lag(inv)", 
-                                "delta_inv_E = inv_E - dplyr::lag(inv_E)"))
+plot_simulation(
+  model = model_dis, scenario = c("expansion1"), from = 1, to = 40,
+  expressions = c(
+    "delta_inv = inv - dplyr::lag(inv)",
+    "delta_inv_E = inv_E - dplyr::lag(inv_E)"
+  )
+)
 ```
 
 #### Shock 2
@@ -186,36 +206,48 @@ shock_dis <- create_shock()
 Next you need to add appropriate equation:
 ```{r}
 # Add shock equation
-shock_dis <- add_shock(shock_dis, equation = "sigma_T  = 0.25", 
-                       desc = "Increase in the target inventories to sales ratio", start = 5, end = 50)
+shock_dis <- add_shock(shock_dis,
+  equation = "sigma_T  = 0.25",
+  desc = "Increase in the target inventories to sales ratio", start = 5, end = 50
+)
 ```
 
 Later you need to create new shock scenario:
 ```{r}
 # Create new scenario with this shock
-model_dis<- add_scenario(model_dis, name = "expansion2", origin = "baseline", 
-                         origin_period = 100, shock = shock_dis)
+model_dis <- add_scenario(model_dis,
+  name = "expansion2", origin = "baseline",
+  origin_period = 100, shock = shock_dis
+)
 ```
 
 Now you can simulate new shock scenario:
 ```{r}
 # Simulate shock
-model_dis<- simulate_scenario(model_dis, scenario = "expansion2", max_iter = 350, periods = 100, 
-                              hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_dis <- simulate_scenario(model_dis,
+  scenario = "expansion2", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
 ```
 
 You can also display results on the plot:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_dis, scenario = c("expansion2"), from = 1, to = 40, 
-                expressions = c("c", "ydhs"))
+plot_simulation(
+  model = model_dis, scenario = c("expansion2"), from = 1, to = 40,
+  expressions = c("c", "ydhs")
+)
 ```
 
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_dis, scenario = c("expansion2"), from = 1, to = 40, 
-                expressions = c("delta_inv = inv - dplyr::lag(inv)", 
-                                "delta_inv_E = inv_E - dplyr::lag(inv_E)"))
+plot_simulation(
+  model = model_dis, scenario = c("expansion2"), from = 1, to = 40,
+  expressions = c(
+    "delta_inv = inv - dplyr::lag(inv)",
+    "delta_inv_E = inv_E - dplyr::lag(inv_E)"
+  )
+)
 ```
 
 ### References

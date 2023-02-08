@@ -15,7 +15,6 @@ create_sensitivity <- function(model_pass,
                                lower = 0,
                                upper = 1,
                                step = 0.1) {
-
   # arguments check
   # type
   checkmate::assert_class(model_pass, "SFC")

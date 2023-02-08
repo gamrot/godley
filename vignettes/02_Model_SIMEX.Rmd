@@ -67,22 +67,26 @@ model_simex <- model_simex |>
   add_equation("Y = C_s + G_s") |>
   add_equation("N_d = Y/W") |>
   add_equation("H_d = Yd_e - C_d + H_h[-1]") |>
-  add_equation("Yd[-1] = Yd_e") |>
+  add_equation("Yd_e = Yd[-1]") |>
   add_equation("H_s = H_h", desc = "Money equilibrium", hidden = TRUE)
 ```
 
 Now you can simulate model (in this example for the next 100 periods using Newton method):
 ```{r}
 # Simulate model
-model_simex <- simulate_scenario(model_simex, scenario = "baseline", max_iter = 350, periods = 100, 
-                                 hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+model_simex <- simulate_scenario(model_simex,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+)
 ```
 
 Based on calculated simulation you can display results for desired set of variables:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_simex, scenario = c("baseline"), from = 1, to = 50, 
-                expressions = c("Y", "C_d", "C_s / alpha1"))
+plot_simulation(
+  model = model_simex, scenario = c("baseline"), from = 1, to = 50,
+  expressions = c("Y", "C_d", "C_s / alpha1")
+)
 ```
 
 Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
@@ -99,29 +103,37 @@ shock_simex <- create_shock()
 Next you need to add appropriate equation:
 ```{r}
 # Add shock equation with increased government expenditures
-shock_simex <- add_shock(shock_simex, equation = "G_d = 25", 
-                         desc = "Increase in government expenditures", start = 5, end = 50)
+shock_simex <- add_shock(shock_simex,
+  equation = "G_d = 25",
+  desc = "Increase in government expenditures", start = 5, end = 50
+)
 ```
 
 Then you need to create new shock scenario:
 ```{r}
 # Create new scenario with this shock
-model_simex <- add_scenario(model_simex, name = "expansion", origin = "baseline", 
-                            origin_period = 100, shock = shock_simex)
+model_simex <- add_scenario(model_simex,
+  name = "expansion", origin = "baseline",
+  origin_period = 100, shock = shock_simex
+)
 ```
 
 Now you can simulate new shock scenario:
 ```{r}
 # Simulate shock
-model_simex <- simulate_scenario(model_simex, scenario = "expansion", max_iter = 350, periods = 100, 
-                                 hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+model_simex <- simulate_scenario(model_simex,
+  scenario = "expansion", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+)
 ```
 
 You can also display results from the shock scenario:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_simex, scenario = c("expansion"), from = 1, to = 50, 
-                expressions = c("Y", "C_d", "C_s / alpha1"))
+plot_simulation(
+  model = model_simex, scenario = c("expansion"), from = 1, to = 50,
+  expressions = c("Y", "C_d", "C_s / alpha1")
+)
 ```
 
 ### References

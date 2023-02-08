@@ -15,7 +15,6 @@ add_scenario <- function(model,
                          origin = "baseline",
                          origin_period = 1,
                          shock) {
-
   # argument check
   # type
   checkmate::assert_class(model, "SFC")
@@ -39,7 +38,7 @@ Please simulate scenario before incorporating a shock")
 
   initial_matrix <- data.matrix(initial_matrix)
   rownames(initial_matrix) <- NULL
-  
+
   sh <- shock %>%
     dplyr::select("equation", "start", "end") %>%
     tidyr::separate(.data$equation, c("lhs", "rhs"), "=") %>%

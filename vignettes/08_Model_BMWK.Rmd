@@ -92,15 +92,19 @@ model_bmwk <- model_bmwk |>
 Now you can simulate model (in this example for the next 100 periods using Gauss method):
 ```{r}
 # Simulate model
-model_bmwk <- simulate_scenario(model_bmwk, scenario = "baseline", max_iter = 350, periods = 100, 
-                               hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_bmwk <- simulate_scenario(model_bmwk,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
 ```
 
 Based on calculated simulation you can display results for desired set of variables:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_bmwk, scenario = c("baseline"), from = 1, to = 50, 
-                expressions = c("Y"))
+plot_simulation(
+  model = model_bmwk, scenario = c("baseline"), from = 1, to = 50,
+  expressions = c("Y")
+)
 ```
 
 Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
@@ -117,29 +121,37 @@ shock_bmwk <- create_shock()
 Next you need to add appropriate equation:
 ```{r}
 # Add shock equation
-shock_bmwk <- add_shock(shock_bmwk, equation = "rl = 0.035", 
-                       desc = "Increase in the interest rate", start = 5, end = 50)
+shock_bmwk <- add_shock(shock_bmwk,
+  equation = "rl = 0.035",
+  desc = "Increase in the interest rate", start = 5, end = 50
+)
 ```
 
 Then you need to create new shock scenario:
 ```{r}
 # Create new scenario with this shock
-model_bmwk <- add_scenario(model_bmwk, name = "expansion", origin = "baseline", 
-                          origin_period = 100, shock = shock_bmwk)
+model_bmwk <- add_scenario(model_bmwk,
+  name = "expansion", origin = "baseline",
+  origin_period = 100, shock = shock_bmwk
+)
 ```
 
 Now you can simulate new shock scenario:
 ```{r}
 # Simulate shock
-model_bmwk <- simulate_scenario(model_bmwk, scenario = "expansion", max_iter = 350, periods = 100, 
-                               hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_bmwk <- simulate_scenario(model_bmwk,
+  scenario = "expansion", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
 ```
 
 You can also plot simulation results from the shock scenario:
 ```{r, out.width="100%"}
 # Plot results
-plot_simulation(model = model_bmwk, scenario = c("expansion"), from = 1, to = 50, 
-                expressions = c("Y"))
+plot_simulation(
+  model = model_bmwk, scenario = c("expansion"), from = 1, to = 50,
+  expressions = c("Y")
+)
 ```
 
 ### References

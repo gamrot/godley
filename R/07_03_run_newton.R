@@ -86,7 +86,6 @@ During computation NaN or Inf was obtained in ", idvar_, " equation
 Please check if equations are correctly specified or change initial values")
         }
       } else {
-
         # If acyclical block --> deterministic
         if (vctrs::vec_size(block) == 1) {
           m[.i, idvar_] <- eval(exs_l[[.b]][[1]])

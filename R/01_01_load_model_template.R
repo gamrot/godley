@@ -255,7 +255,6 @@ load_model_template <- function(model_template_name) {
       add_equation("Bcb = Bs - Bh") %>%
       add_equation("Hs = Hh", desc = "Money equilibrium", hidden = TRUE)
   } else if (model_template_name == "OPEN") {
-
     # parameters
     model <- model %>%
       add_variable("xr", init = 1) %>%
@@ -391,7 +390,6 @@ load_model_template <- function(model_template_name) {
       add_equation("Id = gamma * (KT - K[-1]) + DA") %>%
       add_equation("Ms = Mh", hidden = T)
   } else if (model_template_name == "DIS") {
-
     # parameteres
     model <- model %>%
       add_variable("rl", init = 0.025) %>%
@@ -441,7 +439,6 @@ load_model_template <- function(model_template_name) {
       add_equation("ydhs_E = epsilon * ydhs[-1] + (1 - epsilon) * ydhs_E[-1]") %>%
       add_equation("Mh = Ms", hidden = T)
   } else if (model_template_name == "DISINF") {
-
     # variables
     model <- model %>%
       add_variable("rrc", init = 0.025) %>%

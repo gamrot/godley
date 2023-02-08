@@ -22,7 +22,7 @@ model_lp <- model_lp |>
   add_variable("Bcb", desc = "") |>
   add_variable("BLs", desc = "") |>
   add_variable("ERrbl", desc = "") |>
-  add_variable("rbl", desc = "", ) |>
+  add_variable("rbl", desc = "") |>
   add_variable("CGE", desc = "") |>
   add_variable("YDEr", desc = "") |>
   add_variable("pebl", desc = "") |>
