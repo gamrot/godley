@@ -53,7 +53,7 @@ add_variable_single <- function(model,
   checkmate::assert_numeric(init)
   checkmate::assert_string(desc)
 
-  new_row <- tibble::tibble("name" = name, "init" = list(init), "desc" = desc)
+  new_row <- tibble::tibble(name = name, init = list(init), desc = desc)
   if (is.null(model$variables)) {
     model$variables <- new_row
   } else {

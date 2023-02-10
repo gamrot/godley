@@ -4,16 +4,31 @@
 \alias{add_shock}
 \title{Add shock to shock object}
 \usage{
-add_shock(shock, equation, start = NA, end = NA, desc = "")
+add_shock(
+  shock,
+  variable,
+  value = NA,
+  rate = NA,
+  absolute = NA,
+  start = NA,
+  end = NA,
+  desc = ""
+)
 }
 \arguments{
 \item{shock}{tibble from \code{create_shock()}}
 
-\item{equation}{string equation in format: 'x = 2'}
+\item{variable}{string variable name}
 
-\item{start}{numeric period number for the shock to take place, defaults to NA}
+\item{value}{numeric, an explicit value or values for the variable, will be extended with last value}
 
-\item{end}{numeric period number for the shock to take place, defaults to NA}
+\item{rate}{numeric, multiplier to influence the original value of the variable}
+
+\item{absolute}{numeric, absolute value to influence the original value of the variable}
+
+\item{start}{numeric or date period number for the shock to take place, defaults to NA}
+
+\item{end}{numeric or date period number for the shock to take place, defaults to NA}
 
 \item{desc}{string variable description}
 }

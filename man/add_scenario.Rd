@@ -8,7 +8,8 @@ add_scenario(
   model,
   name = "expansion",
   origin = "baseline",
-  origin_period = 1,
+  origin_start = NA,
+  origin_end = NA,
   shock
 )
 }
@@ -19,7 +20,9 @@ add_scenario(
 
 \item{origin}{string name of origin scenario, from which the new scenario will be created, defaults to 'baseline'}
 
-\item{origin_period}{numeric period number from origin scenario from which the new scenario will begin, defaults to 1}
+\item{origin_start}{numeric period number from origin scenario from which the new scenario will begin}
+
+\item{origin_end}{numeric period number from origin scenario on which the new scenario will end}
 
 \item{shock}{shock object from \code{create_shock()} and \code{add_shock()}}
 }

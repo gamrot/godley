@@ -3,7 +3,6 @@
 export(add_equation)
 export(add_scenario)
 export(add_shock)
-export(add_shock_vector)
 export(add_variable)
 export(change_init)
 export(create_model)

@@ -9,7 +9,7 @@ simulate_scenario(
   scenario,
   max_iter = 350,
   periods = 100,
-  start_date = "2000-01-01",
+  start_date = NA,
   tol = 1e-08,
   hidden_tol = 0.1,
   method = "Gauss",
@@ -25,7 +25,7 @@ simulate_scenario(
 
 \item{periods}{numeric total number of rows (periods) in the model, defaults to 100}
 
-\item{start_date}{character date to begin the simulation in the format "yyyy-mm-dd", defaults to "2000-01-01"}
+\item{start_date}{character date to begin the simulation in the format "yyyy-mm-dd"}
 
 \item{tol}{numeric tolerance accepted to determine convergence, defaults to 1e-08}
 

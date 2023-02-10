@@ -6,10 +6,7 @@
 #'
 
 create_shock <- function() {
-  shock <- tibble::tibble(
-    "equation" = character(), "start" = numeric(),
-    "end" = numeric(), "desc" = character()
-  )
+  shock <- structure(list(), class = "SFC_shock")
 
   message("Shock object created")
 
@@ -21,72 +18,89 @@ create_shock <- function() {
 #' @export
 #'
 #' @param shock tibble from \code{create_shock()}
-#' @param equation string equation in format: 'x = 2'
-#' @param start numeric period number for the shock to take place, defaults to NA
-#' @param end numeric period number for the shock to take place, defaults to NA
+#' @param variable string variable name
+#' @param value numeric, an explicit value or values for the variable, will be extended with last value
+#' @param rate numeric, multiplier to influence the original value of the variable
+#' @param absolute numeric, absolute value to influence the original value of the variable
+#' @param start numeric or date period number for the shock to take place, defaults to NA
+#' @param end numeric or date period number for the shock to take place, defaults to NA
 #' @param desc string variable description
 #'
 #' @return updated shock object containing added shock
 
 add_shock <- function(shock,
-                      equation,
+                      variable,
+                      value = NA,
+                      rate = NA,
+                      absolute = NA,
                       start = NA,
                       end = NA,
                       desc = "") {
   # argument check
   # type
-  checkmate::assert_string(equation)
-  checkmate::assert_int(start, na.ok = T, lower = 0)
-  checkmate::assert_int(end, na.ok = T, lower = 0)
-  checkmate::assert_string(desc)
-  # conditions
-  if (!is.na(start) & !is.na(end) & start > end) {
-    stop("Start cannot be after end")
-  }
-
-  new_row <- tibble::tibble(
-    "equation" = equation, "start" = start,
-    "end" = end, "desc" = desc
-  )
-  shock <- tibble::add_row(shock, new_row)
-
-  return(shock)
-}
-
-#' Add vector as a shock to shock object
-#'
-#' @export
-#'
-#' @param shock tibble from \code{create_shock()}
-#' @param variable variable
-#' @param values values
-#' @param start numeric period number for the shock to take place, defaults to NA
-#' @param end numeric period number for the shock to take place, defaults to NA
-#' @param desc string variable description
-#'
-#' @return updated shock object containing added shock
-
-add_shock_vector <- function(shock,
-                             variable,
-                             values,
-                             start = 1,
-                             desc = "") {
-  # argument check
-  # type
+  checkmate::assert_class(shock, "SFC_shock")
   checkmate::assert_string(variable)
-  checkmate::assert_vector(values)
-  checkmate::assert_int(start, lower = 0)
+  checkmate::assert_numeric(value)
+  checkmate::assert_number(rate, na.ok = T)
+  checkmate::assert_number(absolute, na.ok = T)
+
+  checkmate::assert(
+    checkmate::check_int(start, na.ok = T, lower = 0),
+    checkmate::check_string(start, na.ok = T, pattern = "\\d{4}-\\d{2}-\\d{2}"),
+    checkmate::check_date(start)
+  )
+  if (
+    checkmate::test_string(start, na.ok = T, pattern = "\\d{4}-\\d{2}-\\d{2}") |
+      checkmate::test_date(start)
+  ) {
+    checkmate::assert_date(as.Date(start))
+    start <- as.Date(start)
+  }
+
+  checkmate::assert(
+    checkmate::check_int(end, na.ok = T, lower = 0),
+    checkmate::check_string(end, na.ok = T, pattern = "\\d{4}-\\d{2}-\\d{2}"),
+    checkmate::check_date(end)
+  )
+  if (
+    checkmate::test_string(end, na.ok = T, pattern = "\\d{4}-\\d{2}-\\d{2}") |
+      checkmate::test_date(end)
+  ) {
+    checkmate::assert_date(as.Date(end))
+    end <- as.Date(end)
+  }
+
   checkmate::assert_string(desc)
 
-  for (i in 1:length(values)) {
-    eq <- paste0(variable, "=", as.character(values[i]))
-    shock <- shock %>% godley:::add_shock(
-      equation = eq,
-      start = start + i - 1,
-      end = start + i - 1,
-      desc = desc
-    )
+  # conditions
+  if (all(!is.na(c(start, end)))) {
+    if (class(start) != class(end)) {
+      stop("Start and end are not of the same class, choose either numeric or Date")
+    }
+    if (start > end) {
+      stop("Start cannot be after end")
+    }
   }
+
+  if (all(is.na(c(start, end)))) {
+    time_class_shock <- NA
+  } else if (class(start) == "numeric" | class(end) == "numeric") {
+    time_class_shock <- "numeric"
+  } else {
+    time_class_shock <- "Date"
+  }
+
+  shock_type <- list(value = value, rate = rate, absolute = absolute)
+  if (sum(!is.na(shock_type)) != 1) {
+    stop("Exactly one of the following must be specified: value, rate, absolute")
+  }
+  values <- shock_type[which(!is.na(shock_type))]
+
+  times <- list(start = start, end = end)
+
+  shock[[variable]] <- list(values = values, times = times)
+
+  shock <- structure(shock, time_class_shock = time_class_shock)
 
   return(shock)
 }

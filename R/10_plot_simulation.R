@@ -46,9 +46,9 @@ plot_simulation <- function(model,
   }
 
   if (is.na(to)) {
-    results <- tibble::tibble(periods = from:nrow(model[[scenario[1]]]$result))
+    results <- tibble::tibble(times = from:nrow(model[[scenario[1]]]$result))
   } else {
-    results <- tibble::tibble(periods = from:to)
+    results <- tibble::tibble(times = from:to)
   }
 
   for (i in scenario) {
@@ -65,14 +65,14 @@ plot_simulation <- function(model,
     })
     exprs <- purrr::map(exprs, function(x) parse(text = x))
 
-    result_var <- tibble::tibble(periods = 1:nrow(model[[scenario[1]]]$result))
+    result_var <- tibble::tibble(times = 1:nrow(model[[scenario[1]]]$result))
     for (n in 1:length(expressions)) {
       result <- eval(exprs[[n]])
       name <- paste0(i, ": ", stringr::str_trim(stringr::str_split(expressions[[n]], "=")[[1]][1]))
       result_var <- result_var %>% tibble::add_column(!!name := result)
     }
     result_var <- result_var[from:to, ]
-    result_var <- result_var %>% dplyr::select(-c(periods))
+    result_var <- result_var %>% dplyr::select(-c(times))
 
     results <- results %>% tibble::add_column(result_var)
   }
@@ -83,9 +83,9 @@ plot_simulation <- function(model,
     legend <- paste(colnames(results)[i])
 
     fig <- plotly::add_trace(fig,
-      y = results[[i]], x = results$periods,
+      y = results[[i]], x = results$times,
       name = legend,
-      hovertemplate = paste("Period: %{x: 0f} <br> Value %{y:0f}"),
+      hovertemplate = paste("Time: %{x: 0f} <br> Value %{y:0f}"),
       type = "scatter", mode = "lines+markers",
       line = list(width = 2),
       marker = list(size = 3)
@@ -98,7 +98,7 @@ plot_simulation <- function(model,
     #    height = 500,
     spikedistance = 1000,
     hovermode = "spikers",
-    xaxis = list(title = "period"),
+    xaxis = list(title = "time"),
     showlegend = TRUE,
     legend = list(xanchor = "left", x = 1.02, y = 0.92)
   )

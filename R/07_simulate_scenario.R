@@ -42,7 +42,7 @@ d <- function(x) {
 #' @param scenario vector of strings or single string name of scenario(s) to simulate
 #' @param max_iter numeric maximum iterations allowed per period, defaults to 350
 #' @param periods numeric total number of rows (periods) in the model, defaults to 100
-#' @param start_date character date to begin the simulation in the format "yyyy-mm-dd", defaults to "2000-01-01"
+#' @param start_date character date to begin the simulation in the format "yyyy-mm-dd"
 #' @param tol numeric tolerance accepted to determine convergence, defaults to 1e-08
 #' @param hidden_tol numeric error tolerance to accept the equality of hidden equations, defaults to 0.1.
 #' @param method string name of method used to find solution chosen from: 'Gauss', 'Newton', defaults to 'Gauss'
@@ -54,7 +54,7 @@ simulate_scenario <- function(model,
                               scenario,
                               max_iter = 350,
                               periods = 100,
-                              start_date = "2000-01-01",
+                              start_date = NA,
                               tol = 1e-08,
                               hidden_tol = 0.1,
                               method = "Gauss",
@@ -65,6 +65,11 @@ simulate_scenario <- function(model,
   if (!missing(scenario)) checkmate::assert_character(scenario)
   checkmate::assert_int(max_iter, lower = 0)
   checkmate::assert_int(periods, lower = 0)
+  checkmate::assert(
+    checkmate::check_string(start_date, na.ok = T, pattern = "\\d{4}-\\d{2}-\\d{2}"),
+    checkmate::check_date(start_date)
+  )
+  start_date <- as.Date(start_date)
   checkmate::assert_number(hidden_tol, lower = 0)
   checkmate::assert_number(tol, lower = 0)
   checkmate::assert_string(method)
@@ -137,22 +142,26 @@ simulate_scenario <- function(model,
   i <- 1
   for (scenario in scenarios_to_simulate) {
     message("Simulating scenario ", scenario, " (", i, " of ", no_scenarios, ")")
+
+    if (!is.null(model[[scenario]]$shock)) {
+      model <- godley:::prepare_scenario_matrix(model, scenario, periods)
+    }
+
     origin <- model[[scenario]]$initial_matrix
-    shock <- attr(origin, "shock")
     calls <- attr(model$prepared, "calls")
     m <- origin
     m_len <- dim(m)[1]
-    m <- rbind(
-      m,
-      matrix(rep(m[m_len, ], periods - m_len), nrow = periods - m_len, byrow = T)
-    )
-    dimnames(m) <- list(c(1:periods), colnames(origin))
 
-    if (!is.null(shock)) {
-      shock[is.na(shock$end), ]$end <- periods
-      shock[is.na(shock$start), ]$start <- 1
-      m <- godley:::prepare_scenario_matrix(m, shock)
+    if (m_len > periods) {
+      m <- m[1:periods, ]
+    } else if (m_len < periods) {
+      m <- rbind(
+        m,
+        matrix(rep(m[m_len, ], periods - m_len), nrow = periods - m_len, byrow = T)
+      )
     }
+
+    dimnames(m) <- list(c(1:periods), colnames(origin))
 
     if (method == "Gauss") {
       m <- godley:::run_gauss_seidel(m, calls, periods, max_iter, tol)
@@ -182,11 +191,18 @@ If the problem persists, try `hidden = FALSE` or change the tolerance level")
     m <- m[, !grepl("block", colnames(m))]
     model[[scenario]]$result <- m
 
-    # add period date
-    model[[scenario]]$result <- cbind(
-      tibble::tibble(period = seq(as.Date(start_date), by = "quarter", length.out = periods)),
-      model[[scenario]]$result
-    )
+    # add time
+    if (!is.na(start_date)) {
+      model[[scenario]]$result <- cbind(
+        tibble::tibble(time = seq(as.Date(start_date), by = "quarter", length.out = periods)),
+        model[[scenario]]$result
+      )
+    } else {
+      model[[scenario]]$result <- cbind(
+        tibble::tibble(time = as.numeric(c(1:periods))),
+        model[[scenario]]$result
+      )
+    }
 
     i <- i + 1
   }
