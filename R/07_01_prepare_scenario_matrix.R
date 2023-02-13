@@ -13,17 +13,17 @@ prepare_scenario_matrix <- function(model, scenario, periods) {
       initial_times <- initial_matrix$time
     }
     initial_matrix <- dplyr::select(initial_matrix, -time)
-    initial_matrix <- rbind(
+    initial_matrix <- tibble::add_row(
       initial_matrix,
       tibble::tibble(initial_matrix[rep(m_len, periods - m_len), ])
     )
     if (time_class == "numeric") {
-      initial_matrix <- cbind(
+      initial_matrix <- tibble::add_column(
         time = c(1:periods),
         initial_matrix
       )
     } else if (time_class == "Date") {
-      initial_matrix <- cbind(
+      initial_matrix <- tibble::add_column(
         time = c(
           initial_times,
           seq(as.Date(tail(initial_times, 1)), by = "quarter", length.out = periods - m_len)
@@ -34,12 +34,6 @@ prepare_scenario_matrix <- function(model, scenario, periods) {
   }
 
   # create shock data frame
-  if (time_class == "numeric") {
-    shock_tbl <- tibble::tibble(time = numeric(0))
-  } else if (time_class == "Date") {
-    shock_tbl <- tibble::tibble(time = as.Date(character(0)))
-  }
-
   for (s in names(shock)) {
     shock_start <- shock[[s]]$times$start
     shock_end <- shock[[s]]$times$end
@@ -56,10 +50,10 @@ prepare_scenario_matrix <- function(model, scenario, periods) {
       if (shock_type == "value") {
         values <- shock[[s]]$values$value
       } else if (shock_type == "rate") {
-        values <- initial_matrix[, s][c(shock_start:shock_end)] *
+        values <- initial_matrix[, s][[1]][c(shock_start:shock_end)] *
           (1 + shock[[s]]$values$rate)
       } else if (shock_type == "absolute") {
-        values <- initial_matrix[, s][c(shock_start:shock_end)] +
+        values <- initial_matrix[, s][[1]][c(shock_start:shock_end)] +
           shock[[s]]$values$absolute
       }
 
@@ -69,9 +63,7 @@ prepare_scenario_matrix <- function(model, scenario, periods) {
         values <- c(values, rep(tail(values, 1), length(times) - length(values)))
       }
 
-      shock_tbl_i <- tibble(time = times, !!shock_name := values)
-      shock_tbl <- dplyr::full_join(shock_tbl, shock_tbl_i, by = "time") %>%
-        dplyr::arrange(time)
+      shock_tbl_s <- tibble(time = times, !!shock_name := values)
     } else if (time_class == "Date") {
       if (is.na(shock_start)) shock_start <- min(initial_matrix$time)
       if (is.na(shock_end)) shock_end <- max(initial_matrix$time)
@@ -83,10 +75,10 @@ prepare_scenario_matrix <- function(model, scenario, periods) {
       if (shock_type == "value") {
         values <- shock[[s]]$values$value
       } else if (shock_type == "rate") {
-        values <- initial_matrix[initial_matrix$time %in% times, ][, s] *
+        values <- initial_matrix[initial_matrix$time %in% times, ][, s][[1]] *
           (1 + shock[[s]]$values$rate)
       } else if (shock_type == "absolute") {
-        values <- initial_matrix[initial_matrix$time %in% times, ][, s] +
+        values <- initial_matrix[initial_matrix$time %in% times, ][, s][[1]] +
           shock[[s]]$values$absolute
       }
 
@@ -96,19 +88,19 @@ prepare_scenario_matrix <- function(model, scenario, periods) {
         values <- c(values, rep(tail(values, 1), length(times) - length(values)))
       }
 
-      shock_tbl_i <- tibble::tibble(time = times, !!shock_name := values)
-      shock_tbl <- dplyr::full_join(shock_tbl, shock_tbl_i, by = "time") %>%
-        dplyr::arrange(time)
+      shock_tbl_s <- tibble::tibble(time = times, !!shock_name := values)
     }
 
-    initial_matrix <- dplyr::full_join(shock_tbl, initial_matrix, by = "time") %>%
-      dplyr::mutate(!!s := ifelse(is.na(get(shock_name)), get(s), get(shock_name))) %>%
+    initial_matrix <- dplyr::full_join(shock_tbl_s, initial_matrix, by = "time") %>%
+      dplyr::mutate(
+        !!s := as.numeric(ifelse(is.na(get(shock_name)), get(s), get(shock_name)))
+      ) %>%
       dplyr::arrange(time) %>%
       dplyr::select(-dplyr::all_of(shock_name))
   }
 
   initial_matrix <- dplyr::select(initial_matrix, -time)
-  initial_matrix <- data.matrix(initial_matrix)
+  initial_matrix <- as.matrix(initial_matrix)
   rownames(initial_matrix) <- NULL
   initial_matrix <- initial_matrix[1:periods, ]
   model[[scenario]] <- list(initial_matrix = initial_matrix)

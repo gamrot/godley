@@ -39,7 +39,10 @@ add_shock <- function(shock,
   # argument check
   # type
   checkmate::assert_class(shock, "SFC_shock")
-  checkmate::assert_string(variable)
+  checkmate::assert_character(variable,
+    any.missing = F, all.missing = F,
+    unique = T
+  )
   checkmate::assert_numeric(value)
   checkmate::assert_number(rate, na.ok = T)
   checkmate::assert_number(absolute, na.ok = T)
@@ -98,7 +101,9 @@ add_shock <- function(shock,
 
   times <- list(start = start, end = end)
 
-  shock[[variable]] <- list(values = values, times = times)
+  for (v in variable) {
+    shock[[v]] <- list(values = values, times = times)
+  }
 
   shock <- structure(shock, time_class_shock = time_class_shock)
 

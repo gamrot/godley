@@ -193,12 +193,12 @@ If the problem persists, try `hidden = FALSE` or change the tolerance level")
 
     # add time
     if (!is.na(start_date)) {
-      model[[scenario]]$result <- cbind(
+      model[[scenario]]$result <- tibble::add_column(
         tibble::tibble(time = seq(as.Date(start_date), by = "quarter", length.out = periods)),
         model[[scenario]]$result
       )
     } else {
-      model[[scenario]]$result <- cbind(
+      model[[scenario]]$result <- tibble::add_column(
         tibble::tibble(time = as.numeric(c(1:periods))),
         model[[scenario]]$result
       )

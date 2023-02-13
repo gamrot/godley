@@ -8,7 +8,7 @@ plot_simulation(
   model,
   scenario = "baseline",
   take_all = FALSE,
-  from = 1,
+  from = NA,
   to = NA,
   expressions = "Y"
 )
@@ -20,9 +20,9 @@ plot_simulation(
 
 \item{take_all}{logical indicating whether all scenarios containing the given scenario name string(s) should be used, defaults to FALSE}
 
-\item{from}{numeric period number from which the plot should start, defaults to 1}
+\item{from}{numeric period number from which the plot should start, defaults to maximum value}
 
-\item{to}{numeric period number on which the plot should end, defaults to NA}
+\item{to}{numeric period number on which the plot should end, defaults to minimum value}
 
 \item{expressions}{vector of strings or single string name of variable(s) expression(s) to plot, defaults to 'Y'}
 }

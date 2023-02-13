@@ -60,6 +60,11 @@ add_scenario <- function(model,
 Please simulate scenario before incorporating a shock")
   }
 
+  no_names <- lubridate::setdiff(names(shock), model$variables$name)
+  if (length(no_names) > 0) {
+    stop(paste0("There is no variable named ", paste0(no_names, collapse = ", "), " in the model"))
+  }
+
   if (all(!is.na(c(origin_start, origin_end)))) {
     if (class(origin_start) != class(origin_end)) {
       stop("Start and end are not of the same class, choose either numeric or Date")
@@ -122,8 +127,7 @@ Please simulate scenario before incorporating a shock")
 
   attr(shock, "time_class_shock") <- time_class
 
-  model[[name]]$initial_matrix <- initial_matrix
-  model[[name]]$shock <- shock
+  model[[name]] <- list(initial_matrix = initial_matrix, shock = shock)
 
   return(model)
 }
