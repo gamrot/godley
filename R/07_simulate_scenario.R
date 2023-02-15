@@ -52,19 +52,19 @@ d <- function(x) {
 
 simulate_scenario <- function(model,
                               scenario,
-                              max_iter = 350,
-                              periods = 100,
+                              periods = NA,
                               start_date = NA,
+                              method = "Gauss",
+                              max_iter = 350,
                               tol = 1e-08,
                               hidden_tol = 0.1,
-                              method = "Gauss",
                               info = FALSE) {
   # argument check
   # type
   checkmate::assert_class(model, "SFC")
   if (!missing(scenario)) checkmate::assert_character(scenario)
   checkmate::assert_int(max_iter, lower = 0)
-  checkmate::assert_int(periods, lower = 0)
+  checkmate::assert_int(periods, lower = 0, na.ok = T)
   checkmate::assert(
     checkmate::check_string(start_date, na.ok = T, pattern = "\\d{4}-\\d{2}-\\d{2}"),
     checkmate::check_date(start_date)
@@ -139,14 +139,28 @@ simulate_scenario <- function(model,
   }
 
   # simulating scenarios
+  periods_user <- periods
+  start_date_user <- start_date
   i <- 1
   for (scenario in scenarios_to_simulate) {
     message("Simulating scenario ", scenario, " (", i, " of ", no_scenarios, ")")
+    
+    periods <- periods_user
+    start_date <- start_date_user
 
     if (!is.null(model[[scenario]]$shock)) {
+      if (is.na(periods)) {
+        periods <- nrow(model[[model[[scenario]]$origin]]$result)
+      }
+      if (is.na(start_date) & 
+          class(model[[model[[scenario]]$origin]]$result$time) == "Date") {
+        start_date <- min(model[[model[[scenario]]$origin]]$result$time)
+      }
       model <- godley:::prepare_scenario_matrix(model, scenario, periods)
     }
-
+    
+    if (is.na(periods)) periods <- 100
+    
     origin <- model[[scenario]]$initial_matrix
     calls <- attr(model$prepared, "calls")
     m <- origin

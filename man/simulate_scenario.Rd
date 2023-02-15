@@ -7,12 +7,12 @@
 simulate_scenario(
   model,
   scenario,
-  max_iter = 350,
-  periods = 100,
+  periods = NA,
   start_date = NA,
+  method = "Gauss",
+  max_iter = 350,
   tol = 1e-08,
   hidden_tol = 0.1,
-  method = "Gauss",
   info = FALSE
 )
 }
@@ -21,17 +21,17 @@ simulate_scenario(
 
 \item{scenario}{vector of strings or single string name of scenario(s) to simulate}
 
-\item{max_iter}{numeric maximum iterations allowed per period, defaults to 350}
-
 \item{periods}{numeric total number of rows (periods) in the model, defaults to 100}
 
 \item{start_date}{character date to begin the simulation in the format "yyyy-mm-dd"}
 
+\item{method}{string name of method used to find solution chosen from: 'Gauss', 'Newton', defaults to 'Gauss'}
+
+\item{max_iter}{numeric maximum iterations allowed per period, defaults to 350}
+
 \item{tol}{numeric tolerance accepted to determine convergence, defaults to 1e-08}
 
 \item{hidden_tol}{numeric error tolerance to accept the equality of hidden equations, defaults to 0.1.}
-
-\item{method}{string name of method used to find solution chosen from: 'Gauss', 'Newton', defaults to 'Gauss'}
 
 \item{info}{logical to tell if additional model info should be displayed}
 }

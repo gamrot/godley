@@ -127,7 +127,7 @@ Please simulate scenario before incorporating a shock")
 
   attr(shock, "time_class_shock") <- time_class
 
-  model[[name]] <- list(initial_matrix = initial_matrix, shock = shock)
+  model[[name]] <- list(initial_matrix = initial_matrix, shock = shock, origin = origin)
 
   return(model)
 }
