@@ -25,7 +25,7 @@ create_sensitivity <- function(model_pass,
 
   # create new model as a copy of provided model
   model <- create_model(name = paste("Sensitivity", variable, sep = "_"), template = model_pass)
-  model <- godley:::prepare(model)
+  model <- prepare(model)
 
   # check if provided variable is exogenous
   ## split equations into two columns

@@ -89,19 +89,19 @@ model_disinf <- model_disinf |>
   add_equation("Nfe = s / pr")
 
 # Simulate model
-model_disinf <- simulate_scenario(model_disinf, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-20, method = "Gauss")
+model_disinf <- simulate_scenario(model_disinf, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-05, method = "Gauss")
 
 # Plot results
 plot_simulation(model = model_disinf, scenario = "baseline", from = 1, to = 100, expressions = c("y"))
 
 # Scenario 1: Increase in the costing margins
 shock <- create_shock() |>
-  add_shock(equation = "phi = 0.3", desc = "Increase in the costing margins", start = 5, end = 100)
+  add_shock(variable = "phi", value = 0.3, desc = "Increase in the costing margins", start = 5, end = 100)
 
 model_disinf <- model_disinf |>
-  add_scenario(name = "expansion", origin = "baseline", origin_period = 100, shock = shock)
+  add_scenario(name = "expansion", origin = "baseline", origin_start = 1, origin_end = 100, shock = shock)
 
-model_disinf <- simulate_scenario(model_disinf, scenario = "expansion", max_iter = 350, periods = 100, hidden_tol = .1, tol = 1e-15, method = "Gauss")
+model_disinf <- simulate_scenario(model_disinf, scenario = "expansion", max_iter = 350, periods = 100, hidden_tol = .1, tol = 1e-05, method = "Gauss")
 
 plot_simulation(
   model = model_disinf, scenario = "expansion", from = 1, to = 100,
@@ -120,12 +120,12 @@ plot_simulation(
 
 # Scenario 2: Increase in the target real wage
 shock2 <- create_shock() |>
-  add_shock(equation = "Omega0   = -1", desc = "Increase in the target real wage", start = 5, end = 100)
+  add_shock(variable = "Omega0", value = -1, desc = "Increase in the target real wage", start = 5, end = 100)
 
 model_disinf <- model_disinf |>
-  add_scenario(name = "expansion2", origin = "baseline", origin_period = 100, shock = shock2)
+  add_scenario(name = "expansion2", origin = "baseline", origin_start = 1, origin_end = 100, shock = shock2)
 
-model_disinf <- simulate_scenario(model_disinf, scenario = "expansion2", max_iter = 350, periods = 100, tol = 1e-08, method = "Gauss")
+model_disinf <- simulate_scenario(model_disinf, scenario = "expansion2", max_iter = 350, periods = 100, tol = 1e-05, method = "Gauss")
 
 plot_simulation(
   model = model_disinf, scenario = "expansion2", from = 1, to = 100,

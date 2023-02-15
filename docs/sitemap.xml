@@ -1,87 +1,38 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://gamrot.github.io/godley/404.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/articles/01_Model_SIM.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/articles/02_Model_SIMEX.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/articles/03_Model_PC.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/articles/04_Model_LP.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/articles/05_Model_REG.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/articles/06_Model_OPEN.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/articles/07_Model_BMW.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/articles/08_Model_BMWK.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/articles/09_Model_DIS.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/articles/10_Model_DISINF.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/index.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/reference/add_equation.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/reference/add_scenario.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/reference/add_shock.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/reference/add_variable.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/reference/change_init.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/reference/create_model.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/reference/create_sensitivity.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/reference/create_shock.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/reference/d.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/reference/plot_simulation.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/reference/prepare.html</loc>
-  </url>
-  <url>
-    <loc>https://gamrot.github.io/godley/reference/simulate_scenario.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://gamrot.github.io/godley/404.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/LICENSE.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/articles/Model_BMW.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/articles/Model_BMWK.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/articles/Model_DIS.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/articles/Model_DISINF.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/articles/Model_LP.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/articles/Model_OPEN.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/articles/Model_PC.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/articles/Model_PCEX.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/articles/Model_REG.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/articles/Model_SIM.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/articles/Model_SIMEX.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/articles/index.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/articles/package_outline.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/authors.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/index.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/add_equation.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/add_equation_single.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/add_scenario.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/add_shock.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/add_variable.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/add_variable_single.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/change_init.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/check_parentheses_balance.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/create_model.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/create_sensitivity.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/create_shock.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/d.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/index.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/plot_cycles.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/plot_simulation.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/prepare.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/restore_equation.html</loc></url>
+<url><loc>https://gamrot.github.io/godley/reference/simulate_scenario.html</loc></url>
 </urlset>
+

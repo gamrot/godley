@@ -1,0 +1,171 @@
+---
+title: "Model PC"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Model PC}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This guide explains how to use the `godley` package to create the PC model — a model with government money and portfolio choice, as described by *Wynne Godley* and *Marc Lavoie* in Chapter 4 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+
+```{r setup}
+library(godley)
+```
+
+### Base scenario
+Start by initializing an empty SFC (Stock-Flow Consistent) model:
+
+```{r}
+# Create empty model
+model_pc <- create_model(name = "SFC PC")
+```
+
+Define the variables for the model:
+
+```{r}
+# Add variables
+model_pc <- model_pc |>
+  add_variable("B_cb", desc = "") |>
+  add_variable("H_s", desc = "") |>
+  add_variable("B_s", desc = "") |>
+  add_variable("B_h", desc = "") |>
+  add_variable("H_h1", desc = "") |>
+  add_variable("H_h", desc = "") |>
+  add_variable("C", desc = "") |>
+  add_variable("V", desc = "") |>
+  add_variable("T_x", desc = "") |>
+  add_variable("Y", desc = "Income = GDP") |>
+  add_variable("Yd", desc = "Disposable income of households") |>
+  add_variable("alpha1", init = 0.6, desc = "Propensity to consume out of income") |>
+  add_variable("alpha2", init = 0.4, desc = "Propensity to consume out of wealth") |>
+  add_variable("theta", init = 0.2, desc = "Tax rate") |>
+  add_variable("r", init = 0.025, desc = "") |>
+  add_variable("G", init = 20, desc = "Government demand") |>
+  add_variable("lambda0", init = 0.635, desc = "") |>
+  add_variable("lambda1", init = 0.05, desc = "") |>
+  add_variable("lambda2", init = 0.01, desc = "")
+```
+
+Establish the relationships between variables by adding equations:
+
+```{r}
+# Add equations
+model_pc <- model_pc |>
+  add_equation("Y = C + G", desc = "") |>
+  add_equation("Yd = Y - T_x + r[-1] * B_h[-1]") |>
+  add_equation("T_x = theta * (Y + r[-1] * B_h[-1])") |>
+  add_equation("V = V[-1] + (Yd - C)") |>
+  add_equation("C = alpha1 * Yd + alpha2 * V[-1]") |>
+  add_equation("H_h = V - B_h") |>
+  add_equation("H_h1 = V * ((1 - lambda0) - lambda1 * r + lambda2 * ( Yd/V ))") |>
+  add_equation("B_h = V * (lambda0 + lambda1 * r - lambda2 * ( Yd/V ))") |>
+  add_equation("B_s = B_s[-1] + (G + r[-1] * B_s[-1]) - (T_x + r[-1] * B_cb[-1])") |>
+  add_equation("H_s = H_s[-1] + B_cb - B_cb[-1]") |>
+  add_equation("B_cb = B_s - B_h") |>
+  add_equation("H_h = H_s", hidden = T)
+```
+
+Now, you can simulate the model (in this example, we calculate the baseline scenario over 100 periods using the Gauss method)
+
+```{r}
+# Simulate model
+model_pc <- simulate_scenario(model_pc,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
+```
+
+With the simulation estimated, visualize the results for the variables of interest:
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(
+  model = model_pc, scenario = c("baseline"), from = 1, to = 100,
+  expressions = c("B_h / V")
+)
+```
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(
+  model = model_pc, scenario = c("baseline"), from = 1, to = 100,
+  expressions = c("H_h / V")
+)
+```
+
+*Note:* The above example uses the new pipe operator (`|>`), which requires R 4.1 or later.
+
+### Shock scenario
+With `godley` package you can simulate how shocks affect the economy (specifically, how they impact the base scenario).  
+
+In this example we propose to implement an increased rate of interest on bills.  
+
+First, initialize an empty shock object:
+
+```{r}
+# Create empty shock
+shock_pc <- create_shock()
+```
+
+Define the shock by adding an appropriate equation:
+
+```{r}
+# Add shock equation with increased rate of interest on bills
+shock_pc <- add_shock(shock_pc,
+  variable = "r",
+  value = 0.035,
+  desc = "Increase in the rate of interest on bills",
+  start = 5, end = 50
+)
+```
+
+Integrate the shock into the model by creating a new scenario:
+
+```{r}
+# Create new scenario with this shock
+model_pc <- add_scenario(model_pc,
+  name = "expansion", origin = "baseline",
+  origin_start = 1,
+  origin_end = 100,
+  shock = shock_pc
+)
+```
+
+Simulate the scenario with the shock applied:
+
+```{r}
+# Simulate shock
+model_pc <- simulate_scenario(model_pc,
+  scenario = "expansion", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+)
+```
+
+Finally, plot the simulation outcomes:
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(
+  model = model_pc, scenario = c("expansion"), from = 1, to = 50,
+  expressions = c("B_h / V")
+)
+```
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(
+  model = model_pc, scenario = c("expansion"), from = 1, to = 50,
+  expressions = c("H_h / V")
+)
+```
+
+### References
+For more details on PC model, refer to Chapter 4 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
