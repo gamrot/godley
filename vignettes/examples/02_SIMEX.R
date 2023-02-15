@@ -45,7 +45,7 @@ model_simex <- model_simex |>
 # Simulate model
 model_simex <- simulate_scenario(model_simex,
   scenario = "baseline", max_iter = 350, periods = 100,
-  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+  hidden_tol = 0.1, tol = 1e-05, method = "Newton"
 )
 
 # Plot results
@@ -59,20 +59,19 @@ shock_simex <- create_shock()
 
 # Add shock equation with increased government expenditures
 shock_simex <- add_shock(shock_simex,
-  equation = "G_d = 25",
+  variable = "G_d", value = 25,
   desc = "Increase in government expenditures", start = 5, end = 50
 )
 
 # Create new scenario with this shock
 model_simex <- add_scenario(model_simex,
-  name = "expansion", origin = "baseline",
-  origin_period = 1, shock = shock_simex
+  name = "expansion", origin = "baseline", shock = shock_simex
 )
 
 # Simulate shock
 model_simex <- simulate_scenario(model_simex,
   scenario = "expansion", max_iter = 350, periods = 100,
-  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+  hidden_tol = 0.1, tol = 1e-05, method = "Newton"
 )
 
 # Plot results

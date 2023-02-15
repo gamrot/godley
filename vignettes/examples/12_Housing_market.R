@@ -85,7 +85,7 @@ model_lp1 <- model_lp1 %>%
 
 model_lp1 <- model_lp1 %>%
   add_equation("Y=C+G") %>%
-  add_equation("YDcr=0.5*(Y-T)+PB+rBL*BLch[-1]+rentc+P+rd*Dch") %>% #
+  add_equation("YDcr=0.5*(Y-T)+PB+rBL*BLch[-1]+rentc+P+rd*Dch") %>%
   add_equation("rentc = Hc[-1]*phc[-1]*rh[-1]") %>%
   add_equation("P=Hh*ph-W") %>%
   add_equation("W=Wparam*phg*Hs") %>%
@@ -97,7 +97,7 @@ model_lp1 <- model_lp1 %>%
   add_equation("Vw=Vw[-1]+(YDwr-Cw) + Hw[-1]*(ph-ph[-1])-Mh") %>%
   add_equation("CGc=(pBL-pBL[-1])*BLch[-1]+(ph-ph[-1])*Hc[-1]") %>%
   add_equation("C=Cc+Cw") %>%
-  add_equation("Cc=(alpha1*YDcer)+(alpha2*Vc[-1])") %>% #
+  add_equation("Cc=(alpha1*YDcer)+(alpha2*Vc[-1])") %>%
   add_equation("Cw=(alpha1*YDwer)+(alpha2*Vw[-1])") %>%
   add_equation("Vce=Vc[-1]+(YDcer-Cc)") %>%
   add_equation("Dch=Vc-BLcd*pBL-Hc*ph") %>%
@@ -138,22 +138,22 @@ model_lp1 <- model_lp1 %>%
   add_equation("rh = rb")
 
 # Simulate model
-model_lp1 <- simulate_scenario(model_lp1, scenario = "baseline", max_iter = 350, periods = 50, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_lp1 <- simulate_scenario(model_lp1, scenario = "baseline", max_iter = 350, periods = 50, hidden_tol = 0.1, tol = 1e-05, method = "Gauss")
 
 # Create empty shock
 shock_lp1 <- create_shock()
 
 # Add shock equation with increased government expenditures and create new scenario with this shock
 shock_lp1 <- shock_lp1 %>%
-  add_shock(equation = "G = 59", desc = "", start = 5, end = 40)
+  add_shock(variable = "G", value = 59, desc = "", start = 5, end = 40)
 
 model_lp1 <- model_lp1 %>%
-  add_scenario(name = "expansion", origin = "baseline", origin_period = 50, shock = shock_lp1)
+  add_scenario(name = "expansion", origin = "baseline", origin_start = 1, origin_end = 50, shock = shock_lp1)
 
 # Simulate shock
 model_lp1 <- simulate_scenario(model_lp1,
   scenario = "expansion", max_iter = 350, periods = 50,
-  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+  hidden_tol = 0.1, tol = 1e-05, method = "Gauss"
 )
 
 # Plot results
@@ -163,7 +163,7 @@ plot_simulation(model = model_lp1, scenario = c("baseline", "expansion"), from =
 model_sen <- create_sensitivity(model_lp1, variable = "alpha1", lower = 0.3, upper = 0.8, step = 0.1)
 
 # Simulate sensitivity for alpha1
-model_sen <- simulate_scenario(model_sen, max_iter = 350, periods = 50, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_sen <- simulate_scenario(model_sen, max_iter = 350, periods = 50, hidden_tol = 0.1, tol = 1e-05, method = "Gauss")
 
 # plot sensitivity results for alpha1
 plot_simulation(model = model_sen, scenario = "sensitivity", take_all = T, from = 1, to = 50, expressions = c("Y"))

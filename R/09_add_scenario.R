@@ -78,7 +78,7 @@ Please simulate scenario before incorporating a shock")
   time_class_model <- class(model$baseline$result$time[1])
   if (all(is.na(c(origin_start, origin_end)))) {
     time_class_scenario <- time_class_model
-  } else if (class(origin_start) == "numeric" | class(origin_end) == "numeric") {
+  } else if (is.numeric(origin_start) | is.numeric(origin_end)) {
     time_class_scenario <- "numeric"
   } else {
     time_class_scenario <- "Date"
@@ -116,18 +116,18 @@ Please simulate scenario before incorporating a shock")
     if (is.na(origin_end)) origin_end <- nrow(model[[origin]]$result)
 
     initial_matrix <- model[[origin]]$result %>%
-      filter(time %in% c(origin_start:origin_end))
+      dplyr::filter(time %in% c(origin_start:origin_end))
   } else if (time_class == "Date") {
     if (is.na(origin_start)) origin_start <- min(model[[origin]]$result$time)
     if (is.na(origin_end)) origin_end <- max(model[[origin]]$result$time)
 
     initial_matrix <- model[[origin]]$result %>%
-      filter(time %in% seq(as.Date(origin_start), as.Date(origin_end), by = "quarter"))
+      dplyr::filter(time %in% seq(as.Date(origin_start), as.Date(origin_end), by = "quarter"))
   }
 
   attr(shock, "time_class_shock") <- time_class
 
-  model[[name]] <- list(initial_matrix = initial_matrix, shock = shock)
+  model[[name]] <- list(initial_matrix = initial_matrix, shock = shock, origin = origin)
 
   return(model)
 }

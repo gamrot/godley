@@ -9,11 +9,7 @@ add_variable(model, ...)
 \arguments{
 \item{model}{SFC model object}
 
-\item{name}{string name for added variable}
-
-\item{init}{numeric initial value, defaults to 1e-15}
-
-\item{desc}{string variable description}
+\item{...}{additional arguments passed to the function.}
 }
 \value{
 updated SFC model object containing added variable

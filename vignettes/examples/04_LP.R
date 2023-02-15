@@ -72,7 +72,7 @@ model_lp <- model_lp |>
 # Simulate model
 model_lp <- simulate_scenario(model_lp,
   scenario = "baseline", max_iter = 350, periods = 100,
-  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+  hidden_tol = 0.1, tol = 1e-05, method = "Gauss"
 )
 
 # Plot results

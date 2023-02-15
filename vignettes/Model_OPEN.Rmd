@@ -1,0 +1,239 @@
+---
+title: "Model OPEN"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Model OPEN}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This guide explains how to use the `godley` package to create the OPEN model — the simplest two-country system, with each country having its own currency, as described by *Wynne Godley* and *Marc Lavoie* in Chapter 6 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+
+```{r setup}
+library(godley)
+```
+
+### Base scenario
+Start by creating an empty SFC model:
+
+```{r}
+# Create empty model
+model_open <- create_model(name = "SFC OPEN")
+```
+
+Define the variables for the model:
+
+```{r}
+# Add variables
+model_open <- model_open |>
+  add_variable("xr", init = 1) |>
+  add_variable("pg_N", init = 1) |>
+  add_variable("r_N", init = 0.025) |>
+  add_variable("r_S", init = 0.025) |>
+  add_variable("G_S", init = 20) |>
+  add_variable("G_N", init = 20) |>
+  add_variable("mu_N", init = 0.15) |>
+  add_variable("mu_S", init = 0.15) |>
+  add_variable("alpha1_N", init = 0.7) |>
+  add_variable("alpha1_S", init = 0.8) |>
+  add_variable("alpha2_N", init = 0.3) |>
+  add_variable("alpha2_S", init = 0.2) |>
+  add_variable("lambda0_N", init = 0.67) |>
+  add_variable("lambda0_S", init = 0.67) |>
+  add_variable("lambda1_N", init = 0.05) |>
+  add_variable("lambda1_S", init = 0.05) |>
+  add_variable("lambda2_N", init = 0.01) |>
+  add_variable("lambda2_S", init = 0.01) |>
+  add_variable("theta_N", init = 0.2) |>
+  add_variable("theta_S", init = 0.2) |>
+  add_variable("Y_N") |>
+  add_variable("Y_S") |>
+  add_variable("C_N") |>
+  add_variable("X_N") |>
+  add_variable("IM_N") |>
+  add_variable("C_S") |>
+  add_variable("X_S") |>
+  add_variable("IM_S") |>
+  add_variable("YD_N") |>
+  add_variable("YD_S") |>
+  add_variable("TX_S") |>
+  add_variable("TX_N") |>
+  add_variable("Bh_S") |>
+  add_variable("Bh_N") |>
+  add_variable("V_N") |>
+  add_variable("V_S") |>
+  add_variable("Hh_N") |>
+  add_variable("Hh_S") |>
+  add_variable("Bs_N") |>
+  add_variable("Bs_S") |>
+  add_variable("Bcb_N") |>
+  add_variable("Bcb_S") |>
+  add_variable("or_N") |>
+  add_variable("or_S") |>
+  add_variable("Hs_N") |>
+  add_variable("Hs_S") |>
+  add_variable("pg_S") |>
+  add_variable("deltaor_S") |>
+  add_variable("deltaor_N")
+```
+
+Establish the relationships between variables by adding equations:
+
+```{r}
+# Add equations
+model_open <- model_open |>
+  add_equation("Y_N = C_N + G_N + X_N - IM_N") |>
+  add_equation("Y_S = C_S + G_S + X_S - IM_S") |>
+  add_equation("IM_N = mu_N * Y_N") |>
+  add_equation("IM_S = mu_S * Y_S") |>
+  add_equation("X_N = IM_S / xr") |>
+  add_equation("X_S = IM_N * xr") |>
+  add_equation("YD_N = Y_N - TX_N + r_N[-1] * Bh_N[-1]") |>
+  add_equation("YD_S = Y_S - TX_S + r_S[-1] * Bh_S[-1]") |>
+  add_equation("TX_N = theta_N * ( Y_N + r_N[-1] * Bh_N[-1])") |>
+  add_equation("TX_S = theta_S * ( Y_S + r_S[-1] * Bh_S[-1])") |>
+  add_equation("V_N = V_N[-1] + ( YD_N - C_N )") |>
+  add_equation("V_S = V_S[-1] + ( YD_S - C_S )") |>
+  add_equation("C_N = alpha1_N * YD_N + alpha2_N * V_N[-1]") |>
+  add_equation("C_S = alpha1_S * YD_S + alpha2_S * V_S[-1]") |>
+  add_equation("Hh_N = V_N - Bh_N") |>
+  add_equation("Hh_S = V_S - Bh_S") |>
+  add_equation("Bh_N = V_N * ( lambda0_N + lambda1_N * r_N - lambda2_N * ( YD_N/V_N ) )") |>
+  add_equation("Bh_S = V_S * ( lambda0_S + lambda1_S * r_S - lambda2_S * ( YD_S/V_S ) )") |>
+  add_equation("Bs_N = Bs_N[-1] + ( G_N + r_N[-1] * Bs_N[-1] ) - ( TX_N + r_N[-1] * Bcb_N[-1] )") |>
+  add_equation("Bs_S = Bs_S[-1] + ( G_S + r_S[-1] * Bs_S[-1] ) - ( TX_S + r_S[-1] * Bcb_S[-1] )") |>
+  add_equation("Bcb_N = Bs_N - Bh_N") |>
+  add_equation("Bcb_S = Bs_S - Bh_S") |>
+  add_equation("or_N = or_N[-1] + (( Hs_N - Hs_N[-1] - ( Bcb_N - Bcb_N[-1] ) )/pg_N)") |>
+  add_equation("or_S = or_S[-1] + (( Hs_S - Hs_S[-1] - ( Bcb_S - Bcb_S[-1] ) )/pg_S)") |>
+  add_equation("Hs_N = Hh_N") |>
+  add_equation("Hs_S = Hh_S") |>
+  add_equation("pg_S = pg_N * xr") |>
+  add_equation("deltaor_S = or_S - or_S[-1]") |>
+  add_equation("deltaor_N = - (or_N - or_N[-1])") |>
+  add_equation("deltaor_S = deltaor_N", hidden = TRUE)
+```
+
+Now, we can simulate the model (in this example, we calculate the baseline scenario over 100 periods using the Gauss method)
+
+```{r}
+# Simulate model
+model_open <- simulate_scenario(model_open,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
+```
+
+With the simulation estimated, we can visualize the results for the variables of interest:
+
+```{r, out.width="100%"}
+plot_simulation(
+  model = model_open, scenario = "baseline", from = 1, to = 50,
+  expressions = c(
+    "TB_N = X_N - IM_N",
+    "TB_S = X_S - IM_S",
+    "GB_N = TX_N - (G_N + dplyr::lag(r_N) * dplyr::lag(Bh_N))",
+    "GB_S = TX_S - (G_S + dplyr::lag(r_S) * dplyr::lag(Bh_S))"
+  )
+)
+```
+
+```{r, out.width="100%"}
+plot_simulation(
+  model = model_open, scenario = "baseline", from = 1, to = 50,
+  expressions = c("Y_N", "Y_S")
+)
+```
+
+```{r, out.width="100%"}
+plot_simulation(
+  model = model_open, scenario = "baseline", from = 1, to = 50,
+  expressions = c("or_S", "or_N")
+)
+```
+
+*Note:* The above example uses the new pipe operator (`|>`), which requires R 4.1 or later.
+
+### Shock scenario
+With `godley` package we can simulate how shocks affect the economy (specifically, how they impact the base scenario).
+
+In this example we demonstrate the effect of ever-falling gold reserves.  
+
+First, initialize an empty shock object:
+
+```{r}
+# Create empty shock
+shock_open <- create_shock()
+```
+
+Define the shock by adding an appropriate equation:
+
+```{r}
+# Add shock equation
+shock_open <- add_shock(shock_open,
+  variable = "mu_S",
+  value = 0.25,
+  desc = "increase in the propensity to import in the South",
+  start = 5, end = 50
+)
+```
+
+Integrate the shock into the model by creating a new scenario:
+
+```{r}
+# Create new scenario with this shock
+model_open <- add_scenario(model_open,
+  name = "expansion", origin = "baseline",
+  origin_start = 1,
+  origin_end = 100,
+  shock = shock_open
+)
+```
+
+Simulate the scenario with the shock applied:
+
+```{r}
+# Simulate shock
+model_open <- simulate_scenario(model_open,
+  scenario = "expansion", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
+```
+
+Finally, display the results for this shock scenario:
+
+```{r, out.width="100%"}
+plot_simulation(
+  model = model_open, scenario = "expansion", from = 1, to = 50,
+  expressions = c(
+    "TB_N = X_N - IM_N",
+    "TB_S = X_S - IM_S",
+    "GB_N = TX_N - (G_N + dplyr::lag(r_N) * dplyr::lag(Bh_N))",
+    "GB_S = TX_S - (G_S + dplyr::lag(r_S) * dplyr::lag(Bh_S))"
+  )
+)
+```
+
+```{r, out.width="100%"}
+plot_simulation(
+  model = model_open, scenario = "expansion", from = 1, to = 50,
+  expressions = c("Y_N", "Y_S")
+)
+```
+
+```{r, out.width="100%"}
+plot_simulation(
+  model = model_open, scenario = "expansion", from = 1, to = 50,
+  expressions = c("or_S", "or_N")
+)
+```
+
+### References
+For more details on OPEN model, refer to Chapter 6 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
