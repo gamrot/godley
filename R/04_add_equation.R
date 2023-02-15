@@ -3,9 +3,7 @@
 #' @export
 #'
 #' @param model SFC model object
-#' @param equation string equation in format: 'x = y + z - a * b + (c + d) / e + f[-1]'
-#' @param hidden logical, indicates if equation should be written as hidden, defaults to FALSE
-#' @param desc string equation description
+#' @param ... additional arguments passed to the function.
 #'
 #' @return updated SFC model object containing added equation
 
@@ -32,7 +30,7 @@ add_equation <- function(model, ...) {
   }
 
   for (i in 1:nrow(t)) {
-    model <- godley:::add_equation_single(model, equation = t$equation[[i]], hidden = t$hidden[[i]], desc = t$desc[[i]])
+    model <- add_equation_single(model, equation = t$equation[[i]], hidden = t$hidden[[i]], desc = t$desc[[i]])
   }
 
   return(model)
@@ -41,7 +39,12 @@ add_equation <- function(model, ...) {
 #' Add single equation to the model
 #'
 #' helper for add_equation()
-
+#'
+#' @param model SFC model object
+#' @param equation string equation in format: 'x = y + z - a * b + (c + d) / e + f[-1]'
+#' @param hidden logical, indicates if equation should be written as hidden, defaults to FALSE
+#' @param desc string equation description
+#'
 add_equation_single <- function(model,
                                 equation,
                                 hidden = FALSE,

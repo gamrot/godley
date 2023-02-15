@@ -90,7 +90,7 @@ model_open <- model_open |>
 # Simulate model
 model_open <- simulate_scenario(model_open,
   scenario = "baseline", max_iter = 350, periods = 100,
-  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+  hidden_tol = 0.1, tol = 1e-05, method = "Gauss"
 )
 
 # Plot results
@@ -118,20 +118,20 @@ plot_simulation(
 shock_open <- create_shock()
 
 shock_open <- add_shock(shock_open,
-  equation = "mu_S = 0.25",
+  variable = "mu_S", value = 0.25,
   desc = "increase in the propensity to import in the South",
   start = 5, end = 50
 )
 
 model_open <- add_scenario(model_open,
   name = "expansion", origin = "baseline",
-  origin_period = 100, shock = shock_open
+  origin_start = 1, origin_end = 100, shock = shock_open
 )
 
 # Simulate shock
 model_open <- simulate_scenario(model_open,
   scenario = "expansion", max_iter = 350, periods = 100,
-  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+  hidden_tol = 0.1, tol = 1e-05, method = "Gauss"
 )
 
 # Plot results

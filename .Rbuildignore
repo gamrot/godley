@@ -5,3 +5,8 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^doc$
+^Meta$
+^\.github$
+^vignettes/examples/
+^vignettes/Model_.*\.Rmd$
