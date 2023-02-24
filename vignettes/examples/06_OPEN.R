@@ -90,7 +90,7 @@ model_open <- model_open |>
 # Simulate model
 model_open <- simulate_scenario(model_open,
   scenario = "baseline", max_iter = 350, periods = 100,
-  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+  hidden_tol = 0.1, tol = 1e-05, method = "Gauss"
 )
 
 # Plot results
@@ -131,7 +131,7 @@ model_open <- add_scenario(model_open,
 # Simulate shock
 model_open <- simulate_scenario(model_open,
   scenario = "expansion", max_iter = 350, periods = 100,
-  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+  hidden_tol = 0.1, tol = 1e-05, method = "Gauss"
 )
 
 # Plot results

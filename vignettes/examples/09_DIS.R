@@ -75,7 +75,7 @@ model_dis <- model_dis |>
   add_equation("Mh = Ms", hidden = T)
 
 # Simulate model
-model_dis <- simulate_scenario(model_dis, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_dis <- simulate_scenario(model_dis, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-05, method = "Gauss")
 
 # Plot results
 plot_simulation(
@@ -90,7 +90,7 @@ shock <- create_shock() |>
 model_dis <- model_dis |>
   add_scenario(name = "expansion", origin = "baseline", origin_period = 100, shock = shock)
 
-model_dis <- simulate_scenario(model_dis, scenario = "expansion", max_iter = 350, periods = 40, hidden_tol = .1, tol = 1e-08, method = "Gauss")
+model_dis <- simulate_scenario(model_dis, scenario = "expansion", max_iter = 350, periods = 40, hidden_tol = .1, tol = 1e-05, method = "Gauss")
 
 plot_simulation(
   model = model_dis, scenario = "expansion", from = 1, to = 40,
@@ -104,7 +104,7 @@ shock2 <- create_shock() |>
 model_dis <- model_dis |>
   add_scenario(name = "expansion2", origin = "baseline", origin_period = 100, shock = shock2)
 
-model_dis <- simulate_scenario(model_dis, scenario = "expansion2", max_iter = 350, periods = 50, hidden_tol = .1, tol = 1e-08, method = "Gauss")
+model_dis <- simulate_scenario(model_dis, scenario = "expansion2", max_iter = 350, periods = 50, hidden_tol = .1, tol = 1e-05, method = "Gauss")
 
 plot_simulation(
   model = model_dis, scenario = "expansion2", from = 1, to = 50,

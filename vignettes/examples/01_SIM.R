@@ -40,7 +40,7 @@ model_sim <- model_sim |>
 # Simulate model
 model_sim <- simulate_scenario(model_sim,
   scenario = "baseline", max_iter = 350, periods = 100,
-  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+  hidden_tol = 0.1, tol = 1e-05, method = "Newton"
 )
 
 # Plot results
@@ -67,7 +67,7 @@ model_sim <- add_scenario(model_sim,
 # Simulate shock
 model_sim <- simulate_scenario(model_sim,
   scenario = "expansion", max_iter = 350, periods = 100,
-  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+  hidden_tol = 0.1, tol = 1e-05, method = "Newton"
 )
 
 # Plot results
@@ -80,7 +80,7 @@ plot_simulation(
 model_sen <- create_sensitivity(model_sim, variable = "alpha1", lower = 0, upper = 0.8, step = 0.1)
 
 # Simulate sensitivity for alpha1
-model_sen <- simulate_scenario(model_sen, max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+model_sen <- simulate_scenario(model_sen, max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-05, method = "Newton")
 
 # plot sensitivity results for alpha1
 plot_simulation(model = model_sen, scenario = "sensitivity", take_all = T, from = 1, to = 50, expressions = c("Y"))

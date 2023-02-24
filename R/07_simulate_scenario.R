@@ -43,7 +43,7 @@ d <- function(x) {
 #' @param max_iter numeric maximum iterations allowed per period, defaults to 350
 #' @param periods numeric total number of rows (periods) in the model, defaults to 100
 #' @param start_date character date to begin the simulation in the format "yyyy-mm-dd"
-#' @param tol numeric tolerance accepted to determine convergence, defaults to 1e-08
+#' @param tol numeric tolerance accepted to determine convergence, defaults to 1e-05
 #' @param hidden_tol numeric error tolerance to accept the equality of hidden equations, defaults to 0.1.
 #' @param method string name of method used to find solution chosen from: 'Gauss', 'Newton', defaults to 'Gauss'
 #' @param info logical to tell if additional model info should be displayed
@@ -56,7 +56,7 @@ simulate_scenario <- function(model,
                               start_date = NA,
                               method = "Gauss",
                               max_iter = 350,
-                              tol = 1e-08,
+                              tol = 1e-05,
                               hidden_tol = 0.1,
                               info = FALSE) {
   # argument check
@@ -144,7 +144,7 @@ simulate_scenario <- function(model,
   i <- 1
   for (scenario in scenarios_to_simulate) {
     message("Simulating scenario ", scenario, " (", i, " of ", no_scenarios, ")")
-    
+
     periods <- periods_user
     start_date <- start_date_user
 
@@ -152,15 +152,15 @@ simulate_scenario <- function(model,
       if (is.na(periods)) {
         periods <- nrow(model[[model[[scenario]]$origin]]$result)
       }
-      if (is.na(start_date) & 
-          class(model[[model[[scenario]]$origin]]$result$time) == "Date") {
+      if (is.na(start_date) &
+        class(model[[model[[scenario]]$origin]]$result$time) == "Date") {
         start_date <- min(model[[model[[scenario]]$origin]]$result$time)
       }
       model <- godley:::prepare_scenario_matrix(model, scenario, periods)
     }
-    
+
     if (is.na(periods)) periods <- 100
-    
+
     origin <- model[[scenario]]$initial_matrix
     calls <- attr(model$prepared, "calls")
     m <- origin

@@ -141,10 +141,10 @@ load_model_template <- function(model_template_name) {
       add_variable("Y", desc = "") %>%
       add_variable("YDr") %>%
       add_variable("TX") %>%
-      add_variable("V", init = 1e-07) %>%
+      add_variable("V", init = 1e-05) %>%
       add_variable("CG") %>%
       add_variable("C") %>%
-      add_variable("VE", init = 1e-07) %>%
+      add_variable("VE", init = 1e-05) %>%
       add_variable("Hh") %>%
       add_variable("Hd") %>%
       add_variable("Bd") %>%

@@ -4,7 +4,7 @@
 #'
 #' @param model SFC model object
 #' @param name string name for added variable
-#' @param init numeric initial value, defaults to 1e-15
+#' @param init numeric initial value, defaults to 1e-05
 #' @param desc string variable description
 #'
 #' @return updated SFC model object containing added variable

@@ -11,7 +11,7 @@ simulate_scenario(
   start_date = NA,
   method = "Gauss",
   max_iter = 350,
-  tol = 1e-08,
+  tol = 1e-05,
   hidden_tol = 0.1,
   info = FALSE
 )
@@ -29,7 +29,7 @@ simulate_scenario(
 
 \item{max_iter}{numeric maximum iterations allowed per period, defaults to 350}
 
-\item{tol}{numeric tolerance accepted to determine convergence, defaults to 1e-08}
+\item{tol}{numeric tolerance accepted to determine convergence, defaults to 1e-05}
 
 \item{hidden_tol}{numeric error tolerance to accept the equality of hidden equations, defaults to 0.1.}
 

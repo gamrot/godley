@@ -51,7 +51,7 @@ model_pcex <- model_pcex |>
   add_equation("H_h = H_s", hidden = T)
 
 # Simulate model
-model_pcex <- simulate_scenario(model_pcex, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+model_pcex <- simulate_scenario(model_pcex, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-05, method = "Newton")
 
 # Plot results
 plot_simulation(
@@ -110,7 +110,7 @@ model_pcex1 <- model_pcex1 |>
   add_equation("H_h = H_s", hidden = T)
 
 # Simulate model
-model_pcex1 <- simulate_scenario(model_pcex1, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+model_pcex1 <- simulate_scenario(model_pcex1, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-05, method = "Newton")
 
 # Plot results
 plot_simulation(
@@ -138,7 +138,7 @@ model_pcex1 <- add_scenario(model_pcex1,
 # Simulate shock
 model_pcex1 <- simulate_scenario(model_pcex1,
                                  scenario = "expansion", max_iter = 350, periods = 100,
-                                 hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+                                 hidden_tol = 0.1, tol = 1e-05, method = "Newton"
 )
 
 # Plot results
@@ -207,7 +207,7 @@ model_pcex2 <- model_pcex2 |>
   add_equation("H_h = H_s", hidden = T)
 
 # Simulate model
-model_pcex2 <- simulate_scenario(model_pcex2, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Newton")
+model_pcex2 <- simulate_scenario(model_pcex2, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-05, method = "Newton")
 
 # Plot results
 plot_simulation(
@@ -235,7 +235,7 @@ model_pcex2 <- add_scenario(model_pcex2,
 # Simulate shock
 model_pcex2 <- simulate_scenario(model_pcex2,
                                  scenario = "expansion", max_iter = 350, periods = 100,
-                                 hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+                                 hidden_tol = 0.1, tol = 1e-05, method = "Newton"
 )
 
 # Plot results

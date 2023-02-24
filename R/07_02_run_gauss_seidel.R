@@ -65,7 +65,7 @@ Please check if equations are correctly specified or change initial values")
 During computation NaN or Inf was obtained in ", .v, " equation
 Check if equations are correctly specified or change initial values."))
             }
-            checks[[.v]] <- suppressMessages(abs(m[.i, .v] - holdouts[[.v]]) / (holdouts[[.v]] + 1e-15))
+            checks[[.v]] <- suppressMessages(abs(m[.i, .v] - holdouts[[.v]]) / (holdouts[[.v]] + 1e-05))
           }
 
           # m[.i, block_names[[.block]]] <- .ite

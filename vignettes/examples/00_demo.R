@@ -21,7 +21,7 @@ model_sim <- model_sim |>
     max_iter = 350,
     periods = 100,
     hidden_tol = 0.1,
-    tol = 1e-08,
+    tol = 1e-05,
     method = "Newton"
   )
 
@@ -52,7 +52,7 @@ model_sim <- model_sim |>
     max_iter = 350,
     periods = 100,
     hidden_tol = 0.1,
-    tol = 1e-08,
+    tol = 1e-05,
     method = "Newton"
   )
 
@@ -132,7 +132,7 @@ model_sim <- model_sim |>
     max_iter = 350,
     periods = 100,
     hidden_tol = 0.1,
-    tol = 1e-08,
+    tol = 1e-05,
     method = "Newton"
   )
 
@@ -142,7 +142,7 @@ model_sim <- model_sim |>
     max_iter = 350,
     periods = 100,
     hidden_tol = 0.1,
-    tol = 1e-08,
+    tol = 1e-05,
     method = "Newton"
   )
 
@@ -164,7 +164,7 @@ model_open <- model_open |>
     max_iter = 350,
     periods = 100,
     hidden_tol = 0.1,
-    tol = 1e-08,
+    tol = 1e-05,
     method = "Gauss"
   )
 
@@ -197,7 +197,7 @@ model_open <- model_open |>
 
 model_open <- simulate_scenario(model_open,
   scenario = "expansion", max_iter = 350,
-  periods = 60, hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+  periods = 60, hidden_tol = 0.1, tol = 1e-05, method = "Gauss"
 )
 
 
@@ -285,7 +285,7 @@ model_simex <- model_simex |>
     max_iter = 350,
     periods = 100,
     hidden_tol = 0.1,
-    tol = 1e-08,
+    tol = 1e-05,
     method = "Gauss"
   )
 

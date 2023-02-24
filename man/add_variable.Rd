@@ -11,7 +11,7 @@ add_variable(model, ...)
 
 \item{name}{string name for added variable}
 
-\item{init}{numeric initial value, defaults to 1e-15}
+\item{init}{numeric initial value, defaults to 1e-05}
 
 \item{desc}{string variable description}
 }

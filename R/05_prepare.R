@@ -186,7 +186,7 @@ prepare <- function(model, info = FALSE) {
   var <- var[all_var]
   names(var) <- all_var
 
-  if (any(is.na(var))) var[is.na(var)] <- 0.001 # default init value
+  if (any(is.na(var))) var[is.na(var)] <- 1e-05 # default init value
 
   m1 <- do.call(cbind, var)
   prepared <- structure(tibble::tibble(prepared = T),

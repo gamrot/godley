@@ -45,7 +45,7 @@ model_simex <- model_simex |>
 # Simulate model
 model_simex <- simulate_scenario(model_simex,
   scenario = "baseline", max_iter = 350, periods = 100,
-  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+  hidden_tol = 0.1, tol = 1e-05, method = "Newton"
 )
 
 # Plot results
@@ -72,7 +72,7 @@ model_simex <- add_scenario(model_simex,
 # Simulate shock
 model_simex <- simulate_scenario(model_simex,
   scenario = "expansion", max_iter = 350, periods = 100,
-  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+  hidden_tol = 0.1, tol = 1e-05, method = "Newton"
 )
 
 # Plot results

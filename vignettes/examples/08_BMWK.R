@@ -60,7 +60,7 @@ model_bmwk <- model_bmwk |>
   add_equation("Ms = Mh", hidden = T)
 
 # Simulate model
-model_bmwk <- simulate_scenario(model_bmwk, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-08, method = "Gauss")
+model_bmwk <- simulate_scenario(model_bmwk, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-05, method = "Gauss")
 
 # Plot results
 plot_simulation(
@@ -75,7 +75,7 @@ shock <- create_shock() |>
 model_bmwk <- model_bmwk |>
   add_scenario(name = "expansion", origin = "baseline", origin_period = 100, shock = shock)
 
-model_bmwk <- simulate_scenario(model_bmwk, scenario = "expansion", max_iter = 350, periods = 100, hidden_tol = 10, tol = 1e-08, method = "Gauss")
+model_bmwk <- simulate_scenario(model_bmwk, scenario = "expansion", max_iter = 350, periods = 100, hidden_tol = 10, tol = 1e-05, method = "Gauss")
 
 plot_simulation(
   model = model_bmwk, scenario = "expansion", from = 1, to = 50,
@@ -89,7 +89,7 @@ shock2 <- create_shock() |>
 model_bmwk <- model_bmwk |>
   add_scenario(name = "expansion2", origin = "baseline", origin_period = 100, shock = shock2)
 
-model_bmwk <- simulate_scenario(model_bmwk, scenario = "expansion2", max_iter = 350, periods = 100, hidden_tol = .1, tol = 1e-08, method = "Gauss")
+model_bmwk <- simulate_scenario(model_bmwk, scenario = "expansion2", max_iter = 350, periods = 100, hidden_tol = .1, tol = 1e-05, method = "Gauss")
 
 plot_simulation(
   model = model_bmwk, scenario = "expansion2", from = 1, to = 50,
