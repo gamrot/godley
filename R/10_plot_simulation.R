@@ -80,7 +80,7 @@ plot_simulation <- function(model,
     stop(paste0("There is/ are no scenario(s) named: ", paste0(scenario[!(scenario %in% names(model))], collapse = ", "), " in the model"))
   }
 
-  results <- model$baseline$result %>% select(time)
+  results <- model$baseline$result %>% dplyr::select(time)
 
   for (i in scenario) {
     m <- model[[i]]$result
@@ -90,7 +90,7 @@ plot_simulation <- function(model,
     })
     exprs <- purrr::map(exprs, function(x) parse(text = x))
 
-    result_var <- m %>% select(time)
+    result_var <- m %>% dplyr::select(time)
     for (n in 1:length(expressions)) {
       result <- eval(exprs[[n]])
       name <- paste0(i, ": ", stringr::str_trim(stringr::str_split(expressions[[n]], "=")[[1]][1]))
@@ -108,7 +108,7 @@ plot_simulation <- function(model,
     to <- max(results$time)
   }
 
-  results <- results %>% filter(time >= from, time <= to)
+  results <- results %>% dplyr::filter(time >= from, time <= to)
 
   fig <- plotly::plot_ly()
 
