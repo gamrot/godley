@@ -24,7 +24,7 @@ create_sensitivity <- function(model_pass,
   checkmate::assert_number(step)
 
   # create new model as a copy of provided model
-  model <- create_model(name = paste("Sensitivity", variable, sep = "_"), template = model_pass)
+  model <- godley:::create_model(name = paste("Sensitivity", variable, sep = "_"), template = model_pass)
   model <- godley:::prepare(model)
 
   # check if provided variable is exogenous

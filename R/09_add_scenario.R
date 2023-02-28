@@ -116,13 +116,13 @@ Please simulate scenario before incorporating a shock")
     if (is.na(origin_end)) origin_end <- nrow(model[[origin]]$result)
 
     initial_matrix <- model[[origin]]$result %>%
-      filter(time %in% c(origin_start:origin_end))
+      dplyr::filter(time %in% c(origin_start:origin_end))
   } else if (time_class == "Date") {
     if (is.na(origin_start)) origin_start <- min(model[[origin]]$result$time)
     if (is.na(origin_end)) origin_end <- max(model[[origin]]$result$time)
 
     initial_matrix <- model[[origin]]$result %>%
-      filter(time %in% seq(as.Date(origin_start), as.Date(origin_end), by = "quarter"))
+      dplyr::filter(time %in% seq(as.Date(origin_start), as.Date(origin_end), by = "quarter"))
   }
 
   attr(shock, "time_class_shock") <- time_class
