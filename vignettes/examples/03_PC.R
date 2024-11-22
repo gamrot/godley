@@ -41,8 +41,11 @@ model_pc <- model_pc |>
   add_equation("H_h = H_s", hidden = T)
 
 # Simulate model
-model_pc <- simulate_scenario(model_pc, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-05, method = "Gauss")
-
+model_pc <- simulate_scenario(
+  model_pc,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
 # Plot results
 plot_simulation(
   model = model_pc, scenario = c("baseline"), from = 1, to = 50,
@@ -59,10 +62,10 @@ plot_simulation(
 shock_pc <- create_shock()
 
 shock_pc <- shock_pc |>
-  add_shock(equation = "r = 0.035", desc = "Increase in the rate of interest on bills", start = 5, end = 50)
+  add_shock(variable = "r", value = 0.035, desc = "Increase in the rate of interest on bills", start = 5, end = 50)
 
 model_pc <- model_pc |>
-  add_scenario(name = "expansion", origin = "baseline", origin_period = 100, shock = shock_pc)
+  add_scenario(name = "expansion", origin = "baseline", origin_start = 1, origin_end = 100, shock = shock_pc)
 
 # Simulate shock
 model_pc <- simulate_scenario(model_pc,

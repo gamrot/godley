@@ -87,7 +87,7 @@ add_shock <- function(shock,
 
   if (all(is.na(c(start, end)))) {
     time_class_shock <- NA
-  } else if (class(start) == "numeric" | class(end) == "numeric") {
+  } else if (is.numeric(start) | is.numeric(end)) {
     time_class_shock <- "numeric"
   } else {
     time_class_shock <- "Date"

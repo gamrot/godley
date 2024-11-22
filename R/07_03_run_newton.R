@@ -46,13 +46,13 @@ run_newton <- function(m,
     dplyr::pull(block)
 
   eqs2 <- calls %>%
-    dplyr::mutate(lhs2 = gsub(godley:::.pvar(.data$lhs), "m\\[.i, '\\1'\\]", .data$lhs, perl = T)) %>%
+    dplyr::mutate(lhs2 = gsub(.pvar(.data$lhs), "m\\[.i, '\\1'\\]", .data$lhs, perl = T)) %>%
     dplyr::mutate(rhs2 = paste0(.data$rhs, " - ", .data$lhs2)) %>%
     dplyr::mutate(lhs2 = stringr::str_replace_all(.data$lhs2, c("\\[" = "\\\\[", "\\]" = "\\\\]")))
 
   blk <- purrr::map(blocks, ~ eqs2[eqs2$block == .x, ])
 
-  blk <- purrr::map(blk, godley:::prep_broyden)
+  blk <- purrr::map(blk, prep_broyden)
 
   block_names <- purrr::map(blocks, ~ paste0("block", .x))
 

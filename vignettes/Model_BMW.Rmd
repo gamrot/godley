@@ -1,0 +1,228 @@
+---
+title: "Model BMW"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Model BMW}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This guide explains how to use the `godley` package to create the BMW model — the simplest model with private bank money described by *Wynne Godley* and *Marc Lavoie* in Chapter 7 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+
+```{r setup}
+library(godley)
+```
+
+### Base scenario
+Start by creating an empty SFC model:
+
+```{r}
+# Create empty model
+model_bmw <- create_model(name = "SFC BMW")
+```
+
+Define the variables for the model:
+
+```{r}
+# Add variables
+model_bmw <- model_bmw |>
+  add_variable("rl", init = 0.025) |>
+  add_variable("alpha0", init = 20) |>
+  add_variable("alpha1", init = 0.75) |>
+  add_variable("alpha2", init = 0.10) |>
+  add_variable("delta", init = 0.10) |>
+  add_variable("gamma", init = 0.15) |>
+  add_variable("kappa", init = 1) |>
+  add_variable("pr", init = 1) |>
+  add_variable("Nd", init = .001) |>
+  add_variable("Ns", init = .001) |>
+  add_variable("Y", init = .001) |>
+  add_variable("Cs") |>
+  add_variable("Cd") |>
+  add_variable("Is") |>
+  add_variable("Id") |>
+  add_variable("Ls") |>
+  add_variable("Ld") |>
+  add_variable("WBd") |>
+  add_variable("AF") |>
+  add_variable("K") |>
+  add_variable("YD") |>
+  add_variable("WBs") |>
+  add_variable("rm") |>
+  add_variable("Mh") |>
+  add_variable("Ms") |>
+  add_variable("W") |>
+  add_variable("DA") |>
+  add_variable("KT")
+```
+
+Establish the relationships between variables by adding equations:
+
+```{r}
+# Add equations
+model_bmw <- model_bmw |>
+  add_equation("Cs = Cd") |>
+  add_equation("Is = Id") |>
+  add_equation("Ns = Nd") |>
+  add_equation("Ls = Ls[-1] + Ld - Ld[-1]") |>
+  add_equation("Y = Cs + Is") |>
+  add_equation("WBd = Y - rl[-1] * Ld[-1] - AF") |>
+  add_equation("AF = delta * K[-1]") |>
+  add_equation("Ld = Ld[-1] + Id - AF") |>
+  add_equation("YD = WBs + rm[-1] * Mh[-1]") |>
+  add_equation("Mh = Mh[-1] + YD - Cd") |>
+  add_equation("Ms = Ms[-1] + Ls - Ls[-1]") |>
+  add_equation("rm = rl") |>
+  add_equation("WBs = W * Ns") |>
+  add_equation("Nd = Y / pr") |>
+  add_equation("W = WBd / Nd") |>
+  add_equation("Cd = alpha0 + alpha1 * YD + alpha2 * Mh[-1]") |>
+  add_equation("K = K[-1] + Id - DA") |>
+  add_equation("DA = delta * K[-1]") |>
+  add_equation("KT = kappa * Y[-1]") |>
+  add_equation("Id = gamma * (KT - K[-1]) + DA") |>
+  add_equation("Ms = Mh", hidden = TRUE)
+```
+
+Now, you can simulate the model (in this example, the baseline scenario over 100 periods using the Gauss method):
+
+```{r}
+# Simulate model
+model_bmw <- simulate_scenario(model_bmw,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
+```
+
+With the simulation estimated, you can create a plot to visualize the results for the variables of interest:
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(
+  model = model_bmw, scenario = c("baseline"), from = 1, to = 50,
+  expressions = c("Cd", "YD")
+)
+```
+
+*Note:* The above example uses the new pipe operator (`|>`), which requires R 4.1 or later.
+
+### Shock scenario
+With `godley` package we can simulate how shocks affect the economy (specifically, how they impact the base scenario).
+
+#### Shock 1
+In this example we observe the effect of increased autonomous consumption expenditures.  
+
+First, initialize an empty shock object:
+
+```{r}
+# Create empty shock
+shock_bmw <- create_shock()
+```
+
+Define the shock by adding an appropriate equation:
+
+```{r}
+# Add shock equation with increase in autonomous consumption expenditures
+shock_bmw <- add_shock(shock_bmw,
+  variable = "alpha0",
+  value = 30,
+  desc = "Increase in autonomous consumption expenditures",
+  start = 5, end = 50
+)
+```
+
+Integrate the shock into the model by creating a new scenario:
+
+```{r}
+# Create new scenario with this shock
+model_bmw <- add_scenario(model_bmw,
+  name = "expansion1", origin = "baseline",
+  origin_start = 1,
+  origin_end = 100,
+  shock = shock_bmw
+)
+```
+
+Simulate the scenario with the shock applied:
+
+```{r}
+# Simulate shock
+model_bmw <- simulate_scenario(model_bmw,
+  scenario = "expansion1", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+)
+```
+
+Finally, display the results for the shock scenario:
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(
+  model = model_bmw, scenario = c("expansion1"), from = 1, to = 50,
+  expressions = c("Cd", "YD")
+)
+```
+
+#### Shock 2
+In the second example, we propose to introduce an increase in the propensity to save.  
+
+First, initialize an empty shock object:
+
+```{r}
+# Create empty shock
+shock_bmw <- create_shock()
+```
+
+Define the shock by adding an appropriate equation:
+
+```{r}
+# Add shock equation with increased propensity to save
+shock_bmw <- add_shock(shock_bmw,
+  variable = "alpha1",
+  value = 0.7,
+  desc = "Increase in the propensity to save",
+  start = 5, end = 50
+)
+```
+
+Integrate the shock into the model by creating a new scenario:
+
+```{r}
+# Create new scenario with this shock
+model_bmw <- add_scenario(model_bmw,
+  name = "expansion2", origin = "baseline",
+  origin_start = 1,
+  origin_end = 100,
+  shock = shock_bmw
+)
+```
+
+Simulate the scenario with the shock applied:
+
+```{r}
+# Simulate shock
+model_bmw <- simulate_scenario(model_bmw,
+  scenario = "expansion2", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+)
+```
+
+Display the results on the plot:
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(
+  model = model_bmw, scenario = c("expansion2"), from = 1, to = 50,
+  expressions = c("Cd", "YD")
+)
+```
+
+### References
+For more details on BMW model, refer to Chapter 7 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*

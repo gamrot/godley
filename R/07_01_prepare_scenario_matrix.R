@@ -1,5 +1,7 @@
 # ' Make initial matrix row for scenario specified by \code{create_shock()} and \code{add_scenario()}.
 
+#' @importFrom data.table :=
+
 prepare_scenario_matrix <- function(model, scenario, periods) {
   initial_matrix <- model[[scenario]]$initial_matrix
   shock <- model[[scenario]]$shock
@@ -63,7 +65,7 @@ prepare_scenario_matrix <- function(model, scenario, periods) {
         values <- c(values, rep(tail(values, 1), length(times) - length(values)))
       }
 
-      shock_tbl_s <- tibble(time = times, !!shock_name := values)
+      shock_tbl_s <- tibble::tibble(time = times, !!shock_name := values)
     } else if (time_class == "Date") {
       if (is.na(shock_start)) shock_start <- min(initial_matrix$time)
       if (is.na(shock_end)) shock_end <- max(initial_matrix$time)
@@ -93,7 +95,7 @@ prepare_scenario_matrix <- function(model, scenario, periods) {
 
     initial_matrix <- dplyr::full_join(shock_tbl_s, initial_matrix, by = "time") %>%
       dplyr::mutate(
-        !!s := as.numeric(ifelse(is.na(get(shock_name)), get(s), get(shock_name)))
+        !!s := as.numeric(ifelse(is.na(get(!!shock_name)), get(!!s), get(!!shock_name)))
       ) %>%
       dplyr::arrange(time) %>%
       dplyr::select(-dplyr::all_of(shock_name))

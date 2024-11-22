@@ -6,6 +6,15 @@
 \usage{
 add_variable_single(model, name, init = NA, desc = "")
 }
+\arguments{
+\item{model}{SFC model object}
+
+\item{name}{string name for added variable}
+
+\item{init}{numeric initial value, defaults to 1e-05}
+
+\item{desc}{string variable description}
+}
 \description{
 helper for add_variable()
 }

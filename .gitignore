@@ -7,3 +7,6 @@ inst/doc
 vignettes/*.R
 vignettes/*.html
 !vignettes/examples*.R
+diagnostics/*
+/doc/
+/Meta/

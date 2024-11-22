@@ -56,7 +56,7 @@ model_pcex <- simulate_scenario(model_pcex, scenario = "baseline", max_iter = 35
 # Plot results
 plot_simulation(
   model = model_pcex, scenario = c("baseline"), from = 1, to = 50,
-  expressions = c("H_h", 'H_d')
+  expressions = c("H_h", "H_d")
 )
 
 # model PCEX1 - model PC with expectations (adaptive expectations)
@@ -118,27 +118,27 @@ plot_simulation(
   expressions = c("Y")
 )
 
-#shock - increase in the propensity to consume out of disposable income 
+# shock - increase in the propensity to consume out of disposable income
 
 # Create empty shock
 shock_pcex1 <- create_shock()
 
 # Add shock equation with increased government expenditures
 shock_pcex1 <- add_shock(shock_pcex1,
-                         equation = "alpha1 = 0.7",
-                         desc = "Increase in the propensity to consume out of disposable income", start = 5, end = 50
+  variable = "alpha1", value = 0.7,
+  desc = "Increase in the propensity to consume out of disposable income", start = 5, end = 50
 )
 
 # Create new scenario with this shock
 model_pcex1 <- add_scenario(model_pcex1,
-                            name = "expansion", origin = "baseline",
-                            origin_period = 100, shock = shock_pcex1
+  name = "expansion", origin = "baseline",
+  origin_start = 1, origin_end = 100, shock = shock_pcex1
 )
 
 # Simulate shock
 model_pcex1 <- simulate_scenario(model_pcex1,
-                                 scenario = "expansion", max_iter = 350, periods = 100,
-                                 hidden_tol = 0.1, tol = 1e-05, method = "Newton"
+  scenario = "expansion", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-05, method = "Newton"
 )
 
 # Plot results
@@ -215,27 +215,28 @@ plot_simulation(
   expressions = c("Y")
 )
 
-#shock - increase in the rate of interest on bills
+# shock - increase in the rate of interest on bills
 
 # Create empty shock
 shock_pcex2 <- create_shock()
 
 # Add shock equation with increased government expenditures
 shock_pcex2 <- add_shock(shock_pcex2,
-                         equation = "r = 0.035",
-                         desc = "Increase in the rate of interest on bills", start = 5, end = 50
+  variable = "r",
+  value = 0.035,
+  desc = "Increase in the rate of interest on bills", start = 5, end = 50
 )
 
 # Create new scenario with this shock
 model_pcex2 <- add_scenario(model_pcex2,
-                            name = "expansion", origin = "baseline",
-                            origin_period = 100, shock = shock_pcex2
+  name = "expansion", origin = "baseline",
+  origin_start = 1, origin_end = 100, shock = shock_pcex2
 )
 
 # Simulate shock
 model_pcex2 <- simulate_scenario(model_pcex2,
-                                 scenario = "expansion", max_iter = 350, periods = 100,
-                                 hidden_tol = 0.1, tol = 1e-05, method = "Newton"
+  scenario = "expansion", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-05, method = "Newton"
 )
 
 # Plot results

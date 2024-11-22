@@ -3,9 +3,7 @@
 #' @export
 #'
 #' @param model SFC model object
-#' @param name string name for added variable
-#' @param init numeric initial value, defaults to 1e-05
-#' @param desc string variable description
+#' @param ... additional arguments passed to the function.
 #'
 #' @return updated SFC model object containing added variable
 
@@ -32,7 +30,7 @@ add_variable <- function(model, ...) {
   }
 
   for (i in 1:nrow(t)) {
-    model <- godley:::add_variable_single(model, name = t$name[[i]], init = t$init[[i]], desc = t$desc[[i]])
+    model <- add_variable_single(model, name = t$name[[i]], init = t$init[[i]], desc = t$desc[[i]])
   }
 
   return(model)
@@ -41,6 +39,12 @@ add_variable <- function(model, ...) {
 #' Add single variable to the model
 #'
 #' helper for add_variable()
+#'
+#' @param model SFC model object
+#' @param name string name for added variable
+#' @param init numeric initial value, defaults to 1e-05
+#' @param desc string variable description
+#'
 
 add_variable_single <- function(model,
                                 name,

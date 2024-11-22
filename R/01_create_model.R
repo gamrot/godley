@@ -2,6 +2,8 @@
 #'
 #' @export
 #' @importFrom magrittr %>%
+#' @importFrom stats time
+#' @importFrom utils tail
 #'
 #' @param name string name for created SFC model object
 #' @param template string name of model template chosen from: 'SIM', 'PC', 'LP', 'REG', 'OPEN', 'BMW', 'BMWK', 'DIS', 'DISINF', 'SIMEX', 'PCEX'
@@ -20,7 +22,7 @@ create_model <- function(name = "SFC model",
     if (is.character(template)) {
       if (template %in% c("SIM", "PC", "PCEX", "LP", "REG", "OPEN", "BMW", "BMWK", "DIS", "DISINF", "SIMEX")) {
         # loading a model defined based on examples
-        model <- suppressMessages(godley:::load_model_template(template))
+        model <- suppressMessages(load_model_template(template))
         message("Model ", template, " loaded from template")
       } else {
         stop("There is no template named ", template, "
