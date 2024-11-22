@@ -118,14 +118,14 @@ plot_simulation(
 shock_open <- create_shock()
 
 shock_open <- add_shock(shock_open,
-  equation = "mu_S = 0.25",
+  variable = "mu_S", value = 0.25,
   desc = "increase in the propensity to import in the South",
   start = 5, end = 50
 )
 
 model_open <- add_scenario(model_open,
   name = "expansion", origin = "baseline",
-  origin_period = 100, shock = shock_open
+  origin_start = 1, origin_end = 100, shock = shock_open
 )
 
 # Simulate shock

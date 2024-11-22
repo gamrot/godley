@@ -65,6 +65,7 @@ plot_simulation <- function(model,
     scenarios <- c()
     for (i in scenario) {
       scenario_i <- names(model)[grepl(i, names(model))]
+      scenario_i <- if (length(scenario_i) == 0) NULL else scenario_i
       scenarios <- append(scenarios, scenario_i)
     }
 
@@ -72,21 +73,22 @@ plot_simulation <- function(model,
     scenario <- scenarios
 
     if (is.null(scenario)) {
-      stop(paste0("There is/ are no scenario(s) named: ", paste0(scenario_pass, collapse = ", "), " in the model"))
+      stop(paste0("There is/are no scenario(s) named: ", paste0(scenario_pass, collapse = ", "), " in the model"))
     }
   }
 
   if (!(all(scenario %in% names(model)))) {
-    stop(paste0("There is/ are no scenario(s) named: ", paste0(scenario[!(scenario %in% names(model))], collapse = ", "), " in the model"))
+    stop(paste0("There is/are no scenario(s) named: ", paste0(scenario[!(scenario %in% names(model))], collapse = ", "), " in the model"))
   }
 
   results <- model$baseline$result %>% dplyr::select(time)
+
 
   for (i in scenario) {
     m <- model[[i]]$result
 
     exprs <- lapply(expressions, function(x) {
-      gsub(godley:::.pvar(names(m)), "m\\[, '\\1'\\]", x, perl = T)
+      gsub(.pvar(names(m)), "m\\[, '\\1'\\]", x, perl = T)
     })
     exprs <- purrr::map(exprs, function(x) parse(text = x))
 

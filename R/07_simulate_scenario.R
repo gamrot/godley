@@ -1,7 +1,7 @@
 #' Calculate 1 order lag difference of a variable in model
 #'
 #' @export
-#'
+#' @import tibble
 #' @param x variable name
 #'
 #' @details this is a special function to be used exclusively in model equation strings e.g. "x = d(y) + z"
@@ -46,9 +46,10 @@ d <- function(x) {
 #' @param tol numeric tolerance accepted to determine convergence, defaults to 1e-05
 #' @param hidden_tol numeric error tolerance to accept the equality of hidden equations, defaults to 0.1.
 #' @param method string name of method used to find solution chosen from: 'Gauss', 'Newton', defaults to 'Gauss'
-#' @param info logical to tell if additional model info should be displayed
+#' @param verbose logical to tell if additional model verbose should be displayed
 #'
 #' @return updated model containing simulated scenario(s)
+#'
 
 simulate_scenario <- function(model,
                               scenario,
@@ -58,7 +59,7 @@ simulate_scenario <- function(model,
                               max_iter = 350,
                               tol = 1e-05,
                               hidden_tol = 0.1,
-                              info = FALSE) {
+                              verbose = FALSE) {
   # argument check
   # type
   checkmate::assert_class(model, "SFC")
@@ -73,7 +74,7 @@ simulate_scenario <- function(model,
   checkmate::assert_number(hidden_tol, lower = 0)
   checkmate::assert_number(tol, lower = 0)
   checkmate::assert_string(method)
-  checkmate::assert_logical(info)
+  checkmate::assert_logical(verbose)
   # conditions
   if (!(method %in% c("Gauss", "Newton"))) {
     stop(
@@ -84,9 +85,9 @@ simulate_scenario <- function(model,
 
   # prepare if unprepared
   if (is.null(model$prepared)) {
-    model <- godley:::prepare(model, info)
+    model <- prepare(model, verbose)
   } else if (model$prepared[[1]] == F) {
-    model <- godley:::prepare(model, info)
+    model <- prepare(model, verbose)
   }
 
   # create list of all scenarios
@@ -153,10 +154,10 @@ simulate_scenario <- function(model,
         periods <- nrow(model[[model[[scenario]]$origin]]$result)
       }
       if (is.na(start_date) &
-        class(model[[model[[scenario]]$origin]]$result$time) == "Date") {
+        inherits(model[[model[[scenario]]$origin]]$result$time, "Date")) {
         start_date <- min(model[[model[[scenario]]$origin]]$result$time)
       }
-      model <- godley:::prepare_scenario_matrix(model, scenario, periods)
+      model <- prepare_scenario_matrix(model, scenario, periods)
     }
 
     if (is.na(periods)) periods <- 100
@@ -178,9 +179,9 @@ simulate_scenario <- function(model,
     dimnames(m) <- list(c(1:periods), colnames(origin))
 
     if (method == "Gauss") {
-      m <- godley:::run_gauss_seidel(m, calls, periods, max_iter, tol)
+      m <- run_gauss_seidel(m, calls, periods, max_iter, tol, verbose)
     } else if (method == "Newton") {
-      m <- godley:::run_newton(m, calls, periods, max_iter, tol)
+      m <- run_newton(m, calls, periods, max_iter, tol)
     }
 
     # Check if hidden is fulfilled
@@ -195,10 +196,46 @@ simulate_scenario <- function(model,
     hl <- h$lhs
     hr <- h$rhs
 
-    if (any(abs(m[, hl] - m[, hr]) >= hidden_tol) & length(abs(m[, hl] - m[, hr])) > 0) {
-      stop("Hidden equation is not fulfilled
-Plesae check the model try again
-If the problem persists, try `hidden = FALSE` or change the tolerance level")
+    # Check if hidden equations are fulfilled
+    diffs <- m[, hl, drop = FALSE] - m[, hr, drop = FALSE]
+
+    # Identify any hidden equations that fail the tolerance criterion
+    failing_equations <- which(apply(abs(diffs), 2, max) >= hidden_tol)
+
+    if (length(failing_equations) > 0) {
+      # Construct a detailed message for each failing equation
+      eq_messages <- sapply(failing_equations, function(i) {
+        eq_lhs <- h$lhs[i]
+        eq_rhs <- h$rhs[i]
+        max_diff <- max(abs(diffs[, i]))
+        paste0(
+          "Hidden equation '", eq_lhs, " = ", eq_rhs,
+          "' does not hold within the hidden tolerance of ", hidden_tol,
+          ". Maximum difference observed: ", max_diff
+        )
+      })
+
+      error_message <- paste0(
+        "\nThe following hidden (redundant) equation(s) are not fulfilled:\n",
+        paste(eq_messages, collapse = "\n"),
+        "\n\nHidden equations serve as a critical check on the model's water tight accounting,",
+        "which is one of the defining aspects of a SFC model.",
+        " In a properly specified and converged stationary SFC model,",
+        " these redundant conditions should be met exactly (within the chosen tolerance).",
+        "\n\nIf these conditions fail, it may indicate an issue with the model's internal consistency or equilibrium conditions.",
+        " Possible steps to address this issue include:\n",
+        " - Double-checking the model's specification and variables values.\n",
+        " - Adjusting the `hidden_tol` to a higher value if you believe the differences are negligible.\n",
+        " - Changing the solution method (e.g., from 'Gauss' to 'Newton') to improve convergence.\n",
+        " - Trying `hidden = FALSE` to ignore these redundant checks if appropriate.\n"
+      )
+      if (!verbose) {
+        error_message <- paste0(
+          error_message,
+          "\nInclude the simulate_scenario(..., verbose = TRUE) parameter to get more details on the root causes of issues during execution."
+        )
+      }
+      stop(error_message)
     }
 
     m <- tibble::tibble(data.frame(m))

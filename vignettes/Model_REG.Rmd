@@ -1,0 +1,313 @@
+---
+title: "Model REG"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Model REG}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This guide explains how to use the `godley` package to create the REG model — a model with two-region economy, as described by *Wynne Godley* and *Marc Lavoie* in Chapter 6 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+
+```{r setup}
+library(godley)
+```
+
+### Base scenario
+Start by creating an empty SFC model:
+
+```{r}
+# Create empty model
+model_reg <- create_model(name = "SFC REG")
+```
+
+Define the variables for the model:
+
+```{r}
+# Add variables
+model_reg <- model_reg |>
+  add_variable("r", init = 0.025) |>
+  add_variable("G_S", init = 20) |>
+  add_variable("G_N", init = 20) |>
+  add_variable("mu_N", init = 0.15) |>
+  add_variable("mu_S", init = 0.15) |>
+  add_variable("alpha1_N", init = 0.7) |>
+  add_variable("alpha1_S", init = 0.7) |>
+  add_variable("alpha2_N", init = 0.3) |>
+  add_variable("alpha2_S", init = 0.3) |>
+  add_variable("lambda0_N", init = 0.67) |>
+  add_variable("lambda0_S", init = 0.67) |>
+  add_variable("lambda1_N", init = 0.05) |>
+  add_variable("lambda1_S", init = 0.05) |>
+  add_variable("lambda2_N", init = 0.01) |>
+  add_variable("lambda2_S", init = 0.01) |>
+  add_variable("theta", init = 0.2) |>
+  add_variable("Y_N") |>
+  add_variable("C_N") |>
+  add_variable("X_N") |>
+  add_variable("IM_N") |>
+  add_variable("Y_S") |>
+  add_variable("C_S") |>
+  add_variable("X_S") |>
+  add_variable("IM_S") |>
+  add_variable("YD_N") |>
+  add_variable("TX_N") |>
+  add_variable("Bh_N") |>
+  add_variable("YD_S") |>
+  add_variable("TX_S") |>
+  add_variable("Bh_S") |>
+  add_variable("V_N") |>
+  add_variable("V_S") |>
+  add_variable("Hh_N") |>
+  add_variable("Hh_S") |>
+  add_variable("TX") |>
+  add_variable("G") |>
+  add_variable("Bh") |>
+  add_variable("Bs") |>
+  add_variable("Hh") |>
+  add_variable("Hs") |>
+  add_variable("Bcb")
+```
+
+Establish the relationships between variables by adding equations:
+
+```{r}
+# Add equations
+model_reg <- model_reg |>
+  add_equation("Y_N = C_N + G_N + X_N - IM_N") |>
+  add_equation("Y_S = C_S + G_S + X_S - IM_S") |>
+  add_equation("IM_N = mu_N * Y_N") |>
+  add_equation("IM_S = mu_S * Y_S") |>
+  add_equation("X_N = IM_S") |>
+  add_equation("YD_N = Y_N - TX_N + r[-1] * Bh_N[-1]") |>
+  add_equation("YD_S = Y_S - TX_S + r[-1] * Bh_S[-1]") |>
+  add_equation("TX_N = theta * ( Y_N + r[-1] * Bh_N[-1])") |>
+  add_equation("X_S = IM_N") |>
+  add_equation("TX_S = theta * ( Y_S + r[-1] * Bh_S[-1])") |>
+  add_equation("V_N = V_N[-1] + ( YD_N - C_N )") |>
+  add_equation("V_S = V_S[-1] + ( YD_S - C_S )") |>
+  add_equation("C_N = alpha1_N * YD_N + alpha2_N * V_N[-1]") |>
+  add_equation("C_S = alpha1_S * YD_S + alpha2_S * V_S[-1]") |>
+  add_equation("Hh_N = V_N - Bh_N") |>
+  add_equation("Hh_S = V_S - Bh_S") |>
+  add_equation("Bh_N = V_N * ( lambda0_N + lambda1_N * r - lambda2_N * ( YD_N/V_N ) )") |>
+  add_equation("Bh_S = V_S * ( lambda0_S + lambda1_S * r - lambda2_S * ( YD_S/V_S ) )") |>
+  add_equation("TX = TX_N + TX_S") |>
+  add_equation("G = G_N + G_S") |>
+  add_equation("Bh = Bh_N + Bh_S") |>
+  add_equation("Hh = Hh_N + Hh_S") |>
+  add_equation("Bs = Bs[-1] + ( G + r[-1] * Bs[-1] ) - ( TX + r[-1] * Bcb[-1] )") |>
+  add_equation("Hs = Hs[-1] + Bcb - Bcb[-1]") |>
+  add_equation("Bcb = Bs - Bh") |>
+  add_equation("Hs = Hh", desc = "Money equilibrium", hidden = TRUE)
+```
+
+Now, you can simulate the model (in this example, we calculate the baseline scenario over 100 periods using the Gauss method)
+
+```{r}
+# Simulate model
+model_reg <- simulate_scenario(model_reg,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
+```
+
+With the simulation estimated, visualize the results for the variables of interest:
+
+```{r, out.width="100%"}
+# Plot results
+plot_simulation(
+  model = model_reg, scenario = "baseline", from = 1, to = 50,
+  expressions = c(
+    "deltaV_S = V_S - dplyr::lag(V_S)",
+    "GB_S = TX_S - (G_S + dplyr::lag(r) * dplyr::lag(Bh_S))",
+    "TB_S = X_S - IM_S"
+  )
+)
+```
+
+*Note:* The above example uses the new pipe operator (`|>`), which requires R 4.1 or later.
+
+### Shock scenario
+With `godley` package you can simulate how shocks affect the economy (specifically, how they impact the base scenario).
+
+#### Shock 1
+In the first example, we propose to introduce an increase in the propensity to import in the South.  
+
+First, initialize an empty shock object:
+
+```{r}
+# Create empty shock
+shock_reg <- create_shock()
+```
+
+Then, define the shock by adding an appropriate equation:
+
+```{r}
+# Add shock equation with increased propensity to import of the South
+shock_reg <- add_shock(shock_reg,
+  variable = "mu_S",
+  value = 0.25,
+  desc = "An increase in the propensity to import of the South",
+  start = 5, end = 60
+)
+```
+
+Integrate the shock into the model by creating a new scenario:
+
+```{r}
+# Create new scenario with this shock
+model_reg <- add_scenario(model_reg,
+  name = "expansion1", origin = "baseline",
+  origin_start = 1,
+  origin_end = 100,
+  shock = shock_reg
+)
+```
+
+Simulate the scenario with the shock applied:
+
+```{r}
+# Simulate shock
+model_reg <- simulate_scenario(model_reg,
+  scenario = "expansion1", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
+```
+
+Finally, plot the simulation outcomes:
+
+```{r, out.width="100%"}
+plot_simulation(
+  model = model_reg, scenario = "expansion1", from = 1, to = 50,
+  expressions = c(
+    "deltaV_S = V_S - dplyr::lag(V_S)",
+    "GB_S = TX_S - (G_S + dplyr::lag(r) * dplyr::lag(Bh_S))",
+    "TB_S = X_S - IM_S"
+  )
+)
+```
+
+#### Shock 2
+Another example implements an increase in government expenditures in the South.  
+
+First, initialize an empty shock object:
+
+```{r}
+# Create empty shock
+shock_reg <- create_shock()
+```
+
+Add an appropriate equation:
+
+```{r}
+# Add shock equation with increased government expenditures of the South
+shock_reg <- add_shock(shock_reg,
+  variable = "G_S",
+  value = 25,
+  desc = "An increase of government expenditures of the South",
+  start = 5, end = 50
+)
+```
+
+Integrate the shock into the model by creating a new scenario:
+
+```{r}
+# Create new scenario with this shock
+model_reg <- add_scenario(model_reg,
+  name = "expansion2", origin = "baseline",
+  origin_start = 1,
+  origin_end = 100,
+  shock = shock_reg
+)
+```
+
+Simulate the model with the shock applied:
+
+```{r}
+# Simulate shock
+model_reg <- simulate_scenario(model_reg,
+  scenario = "expansion2", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
+```
+
+Visualize the results for the shock scenario:
+
+```{r, out.width="100%"}
+plot_simulation(
+  model = model_reg, scenario = "expansion2", from = 1, to = 50,
+  expressions = c(
+    "deltaV_S = V_S - dplyr::lag(V_S)",
+    "GB_S = TX_S - (G_S + dplyr::lag(r) * dplyr::lag(Bh_S))",
+    "TB_S = X_S - IM_S"
+  )
+)
+```
+
+#### Shock 3
+In the final example, we suggest applying an increase to the propensity to save among Southern households.
+
+First, initialize an empty shock:
+
+```{r}
+# Create empty shock
+shock_reg <- create_shock()
+```
+
+Add an appropriate equation:
+
+```{r}
+# Add shock equation with increased government expenditures of the South
+shock_reg <- add_shock(shock_reg,
+  variable = "alpha1_S",
+  value = .6,
+  desc = "Increased propensity to save of the Southern households",
+  start = 5, end = 50
+)
+```
+
+Integrate the shock into the model by creating a new scenario:
+
+```{r}
+# Create new scenario with this shock
+model_reg <- add_scenario(model_reg,
+  name = "expansion3", origin = "baseline",
+  origin_start = 1,
+  origin_end = 100,
+  shock = shock_reg
+)
+```
+
+Run the simulation with the shock applied:
+
+```{r}
+# Simulate shock
+model_reg <- simulate_scenario(model_reg,
+  scenario = "expansion3", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
+```
+
+Finally, plot the simulation outcomes:
+
+```{r, out.width="100%"}
+plot_simulation(
+  model = model_reg, scenario = "expansion3", from = 1, to = 50,
+  expressions = c(
+    "deltaV_S = V_S - dplyr::lag(V_S)",
+    "GB_S = TX_S - (G_S + dplyr::lag(r) * dplyr::lag(Bh_S))",
+    "TB_S = X_S - IM_S"
+  )
+)
+```
+
+### References
+For more details on REG model, refer to Chapter 6 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*

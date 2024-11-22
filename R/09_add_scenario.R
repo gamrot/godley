@@ -78,7 +78,7 @@ Please simulate scenario before incorporating a shock")
   time_class_model <- class(model$baseline$result$time[1])
   if (all(is.na(c(origin_start, origin_end)))) {
     time_class_scenario <- time_class_model
-  } else if (class(origin_start) == "numeric" | class(origin_end) == "numeric") {
+  } else if (is.numeric(origin_start) | is.numeric(origin_end)) {
     time_class_scenario <- "numeric"
   } else {
     time_class_scenario <- "Date"

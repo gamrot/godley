@@ -1,13 +1,22 @@
 Package: godley
 Type: Package
 Title: Stock-Flow-Consistent Model Simulator
-Version: 0.2.0
+Version: 0.2.1
+Authors@R: 
+    c(
+        person("Michał", "Gamrot", email = "gamrot@gmail.com", role = c("aut", "cph")),
+        person("Iwo", "Augustyński", email = "iwo.a@int.pl", role = c("ctb")),
+        person("Julian", "Kacprzak", role = c("ctb")),
+        person("Elżbieta", "Jowik", email = "jowik.elzbieta@gmail.com", role = c("cre", "ctb"))
+    )
+Maintainer: Elżbieta Jowik <jowik.elzbieta@gmail.com>
 Description: Define, simulate and validate SFC models. The accounting structure of SFC models are described in Godley and Lavoie (2007, ISBN:978-1-137-08599-3). The algorithms implemented to solve the models are described in Kinsella and O'Shea (2010) <doi:10.2139/ssrn.1729205> and Peressini and Sullivan (1988, ISBN:0-387-96614-5) and Joao Macalos.
+URL: https://gamrot.github.io/godley
+BugReports: https://github.com/gamrot/godley/issues
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Imports: dplyr,
-  tibble,
   stringr,
   tidyr,
   igraph,
@@ -18,8 +27,12 @@ Imports: dplyr,
   plotly,
   magrittr,
   checkmate,
-  vecsets
-RoxygenNote: 7.2.3
+  vecsets,
+  lubridate,
+  data.table,
+  tibble,
+  visNetwork
+RoxygenNote: 7.3.2
 Suggests: 
     knitr,
     rmarkdown,

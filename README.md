@@ -1,50 +1,64 @@
 # godley
 
-`godley` is an R package for simulating SFC (stock-flow consistent) models. It can be used to create and simulate fully fledged post-keynesian / MMT models of the economy. It allows users to apply shocks, analyse effects of parameter change, visualize different macro scenarios and much more.
+`godley` is an R package for simulating *stock-flow consistent* (SFC) macroeconomic models.
 
-`godley` is named after Wynne Godley (1926-2010), a famous British post-keynesian economist and a father of stock-flow consistent modelling.
+By employing godley, users can create fully fledged post-keynesian and MMT models of the economy to:
 
-## Installation ⚙️
+- analyze the sensitivity of parameter changes,
+- impose policy or exogenous shocks,
+- visualize diverse dynamic macroeconomic scenarios, and
+- study the implications of various macroeconomic structures on key variables.
 
-The best way to start using `godley` is to install it directly from GitHub using the `devtools` package.
+The package offers the flexibility to support both theoretical frameworks and data-driven scenarios.
+
+It is named in honor of Wynne Godley (1926–2010), a prominent British post-Keynesian economist and a leading figure in SFC modeling.
+
+### Installation ⚙️
+
+`godley` is currently hosted on GitHub [github.com/gamrot/godley](https://github.com/gamrot/godley). To install the development version directly, please use `devtools` package:
 
 ``` r
 install.packages("devtools")
 devtools::install_github("gamrot/godley")
 ```
 
-## Usage 📊
+### Example 📊
 
-Below you can find a simple example of `godley` in action. Let's play with the well known "SIM model" from Monetary Economics (Godley & Lavoie, 2007).
+The following demonstrates a basic example of using the package to simulate a baseline scenario in the classic SIM model (Godley & Lavoie, *Monetary Economics*, 2007).
 
-First, we need to create an empty model using `create_model()` function.
+To define the model structure, start by creating an empty model with the `create_model()` function.  
+The resulting model is an S3 object (a list) of the SFC class.
 
 ``` r
 model_sim <- create_model(name = "SFC SIM")
 ```
 
-Now let's add some variables using the `add_variable()` function. This will add a `$varibles` tibble to the model. Each variable can be assigned with an initial value --- this can be both a theoretical starting point or a whole vector of real data.
+Use the `add_variable()` function to include variables in the model. This function creates a `$variables` tibble within the model. 
+
+⚠️ **Remarks:**  
+
+- The following characters are not permitted in variable names: `§`, `£`, `@`, `#`, `$`, `{`, `}`, `;`, `:`, `'`, `\`, `~`, `` ` ``, `?`, `!`, `%`, `^`, `&`, `*`, `(`, `)`, `-`, `+`, `=`, `[`, `]`, `|`, `<`, `,`, `>`, `/`.  
+- For best practices, use only letters, numbers, and underscores (`_`) when naming variables.  
+- Each variable can be initialized with either a single scalar (representing a theoretical starting point) or a full vector of real data.  
 
 ``` r
 model_sim <- model_sim |>
-  add_variable(
-    "C_d", desc = "Consumption demand by households",
-    "C_s", desc = "Consumption supply",
-    "G_s", desc = "Government supply",
-    "H_h", desc = "Cash money held by households",
-    "H_s", desc = "Cash money supplied by the government",
-    "N_d", desc = "Demand for labor",
-    "N_s", desc = "Supply of labor",
-    "T_d", desc = "Taxes, demand",
-    "T_s", desc = "Taxes, supply",
-    "Y", desc = "Income = GDP",
-    "Yd", desc = "Disposable income of households",
-    "alpha1", init = 0.6, desc = "Propensity to consume out of income",
-    "alpha2", init = 0.4, desc = "Propensity to consume out of wealth",
-    "theta", init = 0.2, desc = "Tax rate",
-    "G_d", init = 20, desc = "Government demand",
-    "W", init = 1, desc = "Wage rate"
-  )
+ add_variable("C_d", desc = "Consumption demand by households") |> 
+ add_variable("C_s", desc = "Consumption supply") |> 
+ add_variable("G_s", desc = "Government supply") |> 
+ add_variable("H_h", desc = "Cash money held by households") |> 
+ add_variable("H_s", desc = "Cash money supplied by the government") |> 
+ add_variable("N_d", desc = "Demand for labor") |> 
+ add_variable("N_s", desc = "Supply of labor") |> 
+ add_variable("T_d", desc = "Taxes, demand") |> 
+ add_variable("T_s", desc = "Taxes, supply") |> 
+ add_variable("Y", desc = "Income = GDP") |> 
+ add_variable("Yd", desc = "Disposable income of households") |> 
+ add_variable("alpha1", init = 0.6, desc = "Propensity to consume out of income") |> 
+ add_variable("alpha2", init = 0.4, desc = "Propensity to consume out of wealth") |> 
+ add_variable("theta", init = 0.2, desc = "Tax rate") |> 
+ add_variable("G_d", init = 20, desc = "Government demand") |> 
+ add_variable("W", init = 1, desc = "Wage rate")
 
 model_sim$variables
 
@@ -69,26 +83,34 @@ model_sim$variables
 ## 16 W      1         Wage rate
 ```
 
-Okay, let's add some equations, shall we? There's a function for that! You've guessed it, it's the `add_equation()` function. It also adds a tibble to the model, this time it's called `$equations`.
+Then, specify the system of equations that governs the model. This can be done using the `add_equation()` function by providing the equations in text form. The model will then include a `$equations` tibble.  
 
-Lags in equation formulas can be denoted by `[-1]`. First order differences have their own function `d()`. To achieve a lagged difference you just need to combine these two, e.g., `d(H_s[-1])`.
+Equations must adhere to the following rules:  
+
+1. The following characters are **not allowed**: `§`, `£`, `@`, `#`, `$`, `{`, `}`, `;`, `:`, `'`, `\`, `~`, `` ` ``.  
+2. Some characters are **acceptable but treated as operators** (ignored when reading variable names): `!`, `%`, `^`, `&`, `*`, `(`, `)`, `-`, `+`, `=`, `[`, `]`, `|`, `<`, `,`, `>`, `/`.  
+3. The left-hand side must contain a variable that the equation defines, written in its untransformed form. For example, `C_s` for consumption. Constructs like `C_s*2` or `log(C_s)` are not allowed on the left-hand side. If an operator or function appears on the left, the entire expression will be treated as the variable name.
+4. An equals sign `=` must separate the left-hand side from the right-hand side.
+5. The right-hand side should contain the rest of the equation, written using variable names, standard operators, and functions available in R. For convenience, the package also includes commonly used operations on matrix columns, such as lags and differences:
+    * **Lags**: Add a negative lag order in square brackets to a variable. For example, the first lag of consumption is written as `C_s[-1]`, and the third lag as `C_s[-3]`. The package supports lags up to the fourth order, which is particularly useful for quarterly data. This syntax mirrors the behavior of the `lag()` function in R.
+    * **First differences**: The first difference, e.g., `C_s - C_s[-1]`, can be written as `d(C_s)`. This is equivalent to the `diff()` function in R. Note that this operation is defined only for the first difference; higher-order differences, such as the third difference, must be expressed explicitly, e.g., `C_s - C_s[-3]`.
+    * **Lagged differences**: Combine the above two operations, e.g., `d(C_s[-1])`.
+6. Each variable being defined can appear on the left-hand side of a single equation. It is not allowed to have multiple different equations for the same variable (exact duplicates are flagged with an appropriate message).
 
 ``` r
 model_sim <- model_sim |>
-  add_equation(
-    "C_s = C_d", desc = "Consumption",
-    "G_s = G_d",
-    "T_s = T_d",
-    "N_s = N_d",
-    "Yd = W * N_s - T_s",
-    "T_d = theta * W * N_s",
-    "C_d = alpha1 * Yd + alpha2 * H_h[-1]",
-    "H_s = G_d - T_d + H_s[-1]",
-    "H_h = Yd - C_d + H_h[-1]",
-    "Y = C_s + G_s",
-    "N_d = Y/W",
-    "H_s = H_h", desc = "Money equilibrium", hidden = TRUE
-  )
+  add_equation("C_s = C_d", desc = "Consumption") |> 
+  add_equation("G_s = G_d") |> 
+  add_equation("T_s = T_d") |> 
+  add_equation("N_s = N_d") |> 
+  add_equation("Yd = W * N_s - T_s") |> 
+  add_equation("T_d = theta * W * N_s") |> 
+  add_equation("C_d = alpha1 * Yd + alpha2 * H_h[-1]") |> 
+  add_equation("H_s = G_d - T_d + H_s[-1]") |> 
+  add_equation("H_h = Yd - C_d + H_h[-1]") |> 
+  add_equation("Y = C_s + G_s") |> 
+  add_equation("N_d = Y/W") |> 
+  add_equation("H_s = H_h", desc = "Money equilibrium", hidden = TRUE)
 
 model_sim$equations
 
@@ -109,7 +131,22 @@ model_sim$equations
 ## 12 H_s = H_h                            TRUE   "Money equilibrium"
 ```
 
-With all variables and equations defined, it's about time to run some simulations using the `simulate_scenario()` function. You can choose a number of periods, a simulation method (`Newton` or `Gauss`) and optionally a start date for quarters. Results will be stored in a `$result` tibble under a `$baseline` scenario.
+With all variables and equations defined, the model is ready to be solved over a given time horizon. This can be done using the `simulate_scenario()` function. The function starts by validating the user-defined model through the `prepare()` function, which is also accessible in the package's exported environment.
+
+The function allows choosing a simulation method (`Newton` or `Gauss`), selecting the number of periods and a starting date. Specifying an initial period is optional; if omitted, periods will simply be numbered consecutively with natural numbers.  
+
+By default, equations are solved using the Gauss method. Independent equations for a specific period are resolved in a single iteration. Interdependent equations are grouped into loops and solved iteratively. For the first period, the method uses the provided initial values (`init`). In subsequent iterations, it relies on the results of the previous iteration for all variables. The process continues until the solution converges within the specified tolerance (`tol`) or the maximum number of iterations (`max_iter`) is reached. If any period produces a value of `Inf`, `NaN`, or `NA`, the process is stopped, and an error message is displayed.  
+
+Before solving equations, their order is determined to:  
+
+1. Solve endogenous variables first, allowing them to be used as exogenous variables later.  
+2. Group interdependent equations into loops, ensuring proper substitution of exogenous variables.  
+
+The Newton method works similarly but uses the Newton-Raphson algorithm to solve interdependent equations. This algorithm is implemented via the `rootSolve::multiroot()` function.  
+
+During the model-building phase, setting the `info = TRUE` argument can be helpful. This returns the result of the `prepare()` function, providing details on the classification of all variables (endogenous/exogenous) and other summary information about the input data.  
+
+Simulation results are saved in a `$result` tibble linked to the scenario being simulated (e.g., the baseline scenario is stored as `$baseline`).
 
 ``` r
 model_sim <- model_sim |>
@@ -137,7 +174,12 @@ model_sim$baseline$result
 ## #   theta <dbl>, G_d <dbl>, W <dbl>
 ```
 
-When everything is done, you can plot the outcome using the `plot_simulation()` function. You can define which variables or expressions you want. Let's plot Income, Government spending and Taxes.
+### Visualizations 🎨
+
+The **godley** package provides customized visualization capabilities to enhance the analysis of simulation outcomes.
+
+Users can leverage the `plot_simulation()` function to create plots, by specifying the time range with `from` and `to`, along with a list of `expressions`. These expressions can include variable names or calculations derived from them, such as `G_s/Y`. In the example below, the plot displays the expressions for Income, Government Spending, and Taxes.
+
 
 ``` r
 plot_simulation(
@@ -147,15 +189,34 @@ plot_simulation(
 )
 ```
 
-![Scenario baseline](man/figures/images/Scenario_baseline.png)
+![Baseline Scenario Plot: Simulation results for the baseline scenario, showing how Income, Government Spending, and Taxes are expected to evolve over time](man/figures/images/Scenario_baseline.png)
 
-And one more thing (if you're lazy like me), you can create models with "templates" using `create_model(template = "SIM")`. You can choose from `SIM`, `SIMEX`, `PC`, `PCEX`, `LP`, `REG`, `OPEN`, `BMW`, `BMWK`, `DIS` and `DISINF`. Basically all models from Godley & Lavoie (2007).
+\
+Beyond plotting variables over time, the `plot_cycles()` function provides a way to visualize the model's structure and uncover loops (feedback mechanisms and endogeneity) within the interdependencies between variables, offering an intuitive approach for interpreting and communicating the results of macroeconomic simulations.
+
+``` r
+plot_cycles(model_sim)
+```
+![Interdependent Variables Graph: A network diagram illustrating the relationships between the variables in the model](man/figures/images/Cycles.png)
+
+### Templates 📝
+
+To streamline model creation, **godley** comes with predefined templates. Rather than starting with an empty model and manually adding equations each time, users can reuse a previously created model or choose from the classic SFC models (Godley & Lavoie, 2007) included in the package. These templates are available through the `template` argument in the `create_model()` function. The available templates include `SIM`, `SIMEX`, `PC`, `PCEX`, `LP`, `REG`, `OPEN`, `BMW`, `BMWK`, `DIS`, and `DISINF`, covering all models presented in Godley & Lavoie (2007).
 
 ### Shocks ⚡
 
-`godley` allows you to create and simulate shocks. Let's see what happens if we increase government spending.
+The package allows users to introduce and simulate shocks within the model.
 
-To create the shock first we need to create an empty shock object with `create_shock()`. Next let's see what's gonna happen when we use the `add_shock()` function to increase government spending by 20% from Q1 2017 to Q4 2020. Shock value can be defined explicitly by `value`, relatively by `rate` or absolutely by `absolute`.
+An alternative shock scenario is defined by:
+
+1. **Shock parameters** (which variable is affected, when it occurs, and what value it takes),  
+2. **Simulation** (how many future periods the new scenario should cover).  
+
+To create a shock, begin by initializing an empty S3 object (list) of the `SFC_shock` class using the `create_shock()` function.
+Next, add the shock parameters for selected variables (`variable`) using the `add_shock()` function. Shock values can be defined explicitly (`value`), as a relative rate (`rate`), or as an absolute increment (`absolute`).
+
+For example, a 20% increase in government spending can be simulated by first creating a shock object using `create_shock()` and then applying it with `add_shock()` for the period between Q1 2017 and Q4 2020.
+
 
 ``` r
 sim_shock <- create_shock() |>
@@ -166,7 +227,7 @@ sim_shock <- create_shock() |>
   )
 ```
 
-With everything defined, let's add a new scenario using the `add_scenario()` function. But first we need to instruct `godley` which scenario we will use as a starting point (and which periods). After a shock scenario is created we can simulate it using the now familiar `simulate_scenario()` function.
+Once the shock has been defined, it can be incorporated into a new scenario using `add_scenario()`. The baseline scenario and corresponding time periods must first be specified. After establishing the shock scenario, the `simulate_scenario()` function can be executed again to generate the updated results.  
 
 ``` r
 model_sim <- model_sim |>
@@ -196,7 +257,7 @@ model_sim$expansion$result
 ## #   theta <dbl>, G_d <dbl>, W <dbl>
 ```
 
-Now let's see the result using the `plot_simulation()` function. As you can see, an increase in government expenditures has a positive effect on income... And not so positive short-term effect on government balance.
+The results indicate that increased government expenditures have a positive effect on income, but a less favorable short-term impact on the government balance. This outcome can be visualized as follows:
 
 ``` r
 plot_simulation(
@@ -205,13 +266,15 @@ plot_simulation(
 )
 ```
 
-![Scenario expansion](man/figures/images/Scenario_expansion.png)
+![Shock Simulation Plot: Simulation results illustrating how the same variables (as in the baseline scenario) would evolve under the government expenditure expansion scenario](man/figures/images/Scenario_expansion.png)
 
 ### Sensitivity 🧙
 
-`godley` allows users to see if simulation results are sensitive to parameter changes. After all, we don't want to create models that make sense just for a specific combination of parameters. Let's see how small changes to `alpha1` affect short-term model dynamics.
+The **godley** package allows for the assessment of simulation result sensitivity to specific parameter values. For example, the effect of small adjustments to `alpha1` on short-term dynamics can be analyzed by first creating a new model object with `create_sensitivity()` and specifying the upper and lower bounds for the parameter of interest. 
 
-First we need to create a new model object using `create_sensitivity()` function and define lower and upper bounds for the parameter we want to analyze. After the model is created we can simulate all scenarios.
+The `create_sensitivity()` function generates a new SFC object based on an existing model and automatically adds multiple scenarios. These scenarios differ only in the value of the selected parameter (`variable`), which is varied across a specified range defined by `lower`, `upper`, and `step`.
+
+Once the sensitivity scenarios are generated, the simulations can be executed:
 
 ``` r
 model_sens <- model_sim |>
@@ -221,7 +284,7 @@ model_sens <- model_sim |>
   simulate_scenario(periods = 100, start_date = "2015-01-01")
 ```
 
-Now we're ready to see results on a plot. All sensitivity scenarios can be plotted at once by taking all scenarios containing selected name.
+The results can be displayed in a plot. To visualize multiple scenarios that share the same `scenario` substring in their names, set the `take_all = TRUE` argument.
 
 ``` r
 plot_simulation(
@@ -230,35 +293,33 @@ plot_simulation(
 )
 ```
 
-![Sensitivity](man/figures/images/Sensitivity.png)
+![Multiple Scenarios Plot: Illustration of sensitivity analysis across different scenarios with varying alpha values](man/figures/images/Sensitivity.png)
 
-### Other examples ⭐
+### Additional examples ⭐
 
-[Here](https://gamrot.github.io/godley/) you can find more details about package functions and other models created with `godley`.
+More examples and detailed information about **godley** functions and model setups are available at the [package website](https://gamrot.github.io/godley/).
 
-## Functions 🔧
+### Key Functions 🔧
 
-Here's a list of package's most important functions.
+- `create_model()`: Create an SFC model.
+- `add_variable()`: Add variables to the model.
+- `add_equation()`: Add equations to the model.
+- `simulate_scenario()`: Simulate one or more scenarios.
+- `plot_simulation()`: Plot simulation results.
+- `plot_cycles()`: Visualize model structure and feedback loops.
+- `create_shock()`: Create a shock object.
+- `add_shock()`: Add shock parameters.
+- `add_scenario()`: Add a new scenario to an existing model.
+- `create_sensitivity()`: Generate sensitivity scenarios for selected parameters.
 
-`create_model()` - creates an SFC model\
-`add_variable()` - adds variables\
-`add_equation()` - adds equations\
-`simulate_scenario()` - simulates selected scenario(s)\
-`plot_simulation()` - plots simulation results
+### Similar work 👪
 
-`create_shock()` - creates a shock object\
-`add_shock()` - adds shock parameters\
-`add_scenario()` - adds scenario to an existing model
+The following packages also provide approaches to stock-flow consistent modeling:
+  
+- [sfcr](https://github.com/joaomacalos/sfcr): An alternative framework for SFC modeling.
+- [bimets](https://github.com/andrea-luciani/bimets): Offers time series and econometric tools for empirical models.
+- [pysolve3](https://github.com/gpetrini/pysolve3): A Python-based solver for SFC models.
 
-`create_sensitivity()` - creates a new SFC model with sensitivity scenarios for selected parameters
+### Getting help 🐛
 
-## Similar work 👪
-
-There are two other packages that also allows users to build stock-flow consistent models:
-
--   [sfcr](https://github.com/joaomacalos/sfcr) - you should definitely check it out!
--   [pysolve3](https://github.com/gpetrini/pysolve3)
-
-## Getting help 🐛
-
-If you encounter a clear bug, please file an issue with a minimal reproducible example on [GitHub](https://github.com/gamrot/godley/issues).
+If any issues arise or bugs are encountered, please file a report with a minimal reproducible example at [https://github.com/gamrot/godley/issues](https://github.com/gamrot/godley/issues).
