@@ -125,14 +125,14 @@ shock_pcex1 <- create_shock()
 
 # Add shock equation with increased government expenditures
 shock_pcex1 <- add_shock(shock_pcex1,
-                         equation = "alpha1 = 0.7",
+                         variable = "alpha1", value = 0.7,
                          desc = "Increase in the propensity to consume out of disposable income", start = 5, end = 50
 )
 
 # Create new scenario with this shock
 model_pcex1 <- add_scenario(model_pcex1,
                             name = "expansion", origin = "baseline",
-                            origin_period = 100, shock = shock_pcex1
+                            origin_start=1, origin_end=100, shock = shock_pcex1
 )
 
 # Simulate shock
@@ -222,14 +222,15 @@ shock_pcex2 <- create_shock()
 
 # Add shock equation with increased government expenditures
 shock_pcex2 <- add_shock(shock_pcex2,
-                         equation = "r = 0.035",
+                         variable = "r",
+                         value = 0.035,
                          desc = "Increase in the rate of interest on bills", start = 5, end = 50
 )
 
 # Create new scenario with this shock
 model_pcex2 <- add_scenario(model_pcex2,
                             name = "expansion", origin = "baseline",
-                            origin_period = 100, shock = shock_pcex2
+                            origin_start=1, origin_end=100, shock = shock_pcex2
 )
 
 # Simulate shock
@@ -249,3 +250,4 @@ plot_simulation(
   model = model_pcex2, scenario = c("expansion"), from = 1, to = 50,
   expressions = c("Yd", "C", "V")
 )
+

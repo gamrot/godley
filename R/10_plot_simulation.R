@@ -86,7 +86,7 @@ plot_simulation <- function(model,
     m <- model[[i]]$result
 
     exprs <- lapply(expressions, function(x) {
-      gsub(godley:::.pvar(names(m)), "m\\[, '\\1'\\]", x, perl = T)
+      gsub(.pvar(names(m)), "m\\[, '\\1'\\]", x, perl = T)
     })
     exprs <- purrr::map(exprs, function(x) parse(text = x))
 

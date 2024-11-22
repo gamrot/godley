@@ -145,10 +145,10 @@ shock_lp1 <- create_shock()
 
 # Add shock equation with increased government expenditures and create new scenario with this shock
 shock_lp1 <- shock_lp1 %>%
-  add_shock(equation = "G = 59", desc = "", start = 5, end = 40)
+  add_shock(variable = "G", value = 59, desc = "", start = 5, end = 40)
 
 model_lp1 <- model_lp1 %>%
-  add_scenario(name = "expansion", origin = "baseline", origin_period = 50, shock = shock_lp1)
+  add_scenario(name = "expansion", origin = "baseline", origin_start=1, origin_end=50, shock = shock_lp1)
 
 # Simulate shock
 model_lp1 <- simulate_scenario(model_lp1,
@@ -167,3 +167,4 @@ model_sen <- simulate_scenario(model_sen, max_iter = 350, periods = 50, hidden_t
 
 # plot sensitivity results for alpha1
 plot_simulation(model = model_sen, scenario = "sensitivity", take_all = T, from = 1, to = 50, expressions = c("Y"))
+

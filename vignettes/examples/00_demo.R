@@ -28,13 +28,15 @@ model_sim <- model_sim |>
 # add shock — a permanent increase in government expenditures
 shock <- create_shock() |>
   add_shock(
-    equation = "G_d = 25",
+    variable = "G_d",
+    value = 25,
     desc = "permanent increase in government expenditures",
     start = 5,
     end = 50
   ) |>
   add_shock(
-    equation = "alpha1 = 0.3",
+    variable = "alpha1",
+    value = 0.3,
     desc = "",
     start = 5,
     end = NA
@@ -44,7 +46,7 @@ model_sim <- model_sim |>
   add_scenario(
     name = "expansion",
     origin = "baseline",
-    origin_period = 1,
+    origin_start = 1,
     shock = shock
   ) |>
   simulate_scenario(
@@ -120,7 +122,7 @@ model_sim <- model_sim |>
   add_scenario(
     name = "expansion",
     origin = "baseline",
-    origin_period = 1
+    origin_start = 1
   )
 
 # WARNING - overwriting an existing scenario
@@ -182,7 +184,8 @@ plot_simulation(
 
 shock <- create_shock() |>
   add_shock(
-    equation = "mu_S = 0.25",
+    variable = "mu_S",
+    value = 0.25,
     desc = "What happens if there is an increase in the propensity to import in the South?",
     start = 5,
     end = 60

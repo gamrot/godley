@@ -104,8 +104,10 @@ Next you need to add appropriate equation:
 ```{r}
 # Add shock equation with increased government expenditures
 shock_simex <- add_shock(shock_simex,
-  equation = "G_d = 25",
-  desc = "Increase in government expenditures", start = 5, end = 50
+  variable = "G_d",
+  value = 25,
+  desc = "Increase in government expenditures", 
+  start = 5, end = 50
 )
 ```
 
@@ -114,7 +116,9 @@ Then you need to create new shock scenario:
 # Create new scenario with this shock
 model_simex <- add_scenario(model_simex,
   name = "expansion", origin = "baseline",
-  origin_period = 100, shock = shock_simex
+  origin_start = 1,
+  origin_end = 100, 
+  shock = shock_simex
 )
 ```
 

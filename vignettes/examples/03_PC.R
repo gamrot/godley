@@ -59,10 +59,10 @@ plot_simulation(
 shock_pc <- create_shock()
 
 shock_pc <- shock_pc |>
-  add_shock(equation = "r = 0.035", desc = "Increase in the rate of interest on bills", start = 5, end = 50)
+  add_shock(variable="r", value=0.035, desc = "Increase in the rate of interest on bills", start = 5, end = 50)
 
 model_pc <- model_pc |>
-  add_scenario(name = "expansion", origin = "baseline", origin_period = 100, shock = shock_pc)
+  add_scenario(name = "expansion", origin = "baseline", origin_start=1, origin_end=100, shock = shock_pc)
 
 # Simulate shock
 model_pc <- simulate_scenario(model_pc,
