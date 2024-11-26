@@ -85,3 +85,4 @@ model_sen <- simulate_scenario(model_sen, max_iter = 350, periods = 100, hidden_
 # plot sensitivity results for alpha1
 plot_simulation(model = model_sen, scenario = "sensitivity", take_all = T, from = 1, to = 50, expressions = c("Y"))
 plot_simulation(model = model_sen, scenario = "sensitivity", take_all = T, from = 1, to = 50, expressions = c("C_d"))
+

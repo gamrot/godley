@@ -193,7 +193,7 @@ shock <- create_shock() |>
 
 model_open <- model_open |>
   add_scenario(
-    name = "expansion", origin = "baseline", origin_period = 100,
+    name = "expansion", origin = "baseline", origin_start=1, origin_end=100,
     shock = shock
   )
 
@@ -235,7 +235,7 @@ plot_simulation(
 
 # what happens with the gold reserves of both countries?
 
-plot_series(
+plot_simulation(
   model = model_open, scenario = "expansion", from = 1, to = 60,
   expressions = c("or_S", "or_N")
 )
@@ -243,7 +243,7 @@ plot_series(
 # However, here it is nice to see what?s happening with the balance sheet of the
 # Southern central bank:
 
-plot_series(
+plot_simulation(
   model = model_open, scenario = "expansion", from = 1, to = 60,
   expressions = c(
     "deltaBcb_S = Bcb_S - dplyr::lag(Bcb_S)",
@@ -268,7 +268,7 @@ plot_simulation(
   take_all = T,
   from = 1,
   to = 100,
-  expressions = c("Y", "C_d")
+  expressions = c("Y_N", "C_N")
 )
 
 
@@ -299,3 +299,4 @@ plot_simulation(
     "C_d"
   )
 )
+
