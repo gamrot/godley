@@ -1,7 +1,7 @@
 #' Calculate 1 order lag difference of a variable in model
 #'
 #' @export
-#'
+#' @import tibble
 #' @param x variable name
 #'
 #' @details this is a special function to be used exclusively in model equation strings e.g. "x = d(y) + z"
@@ -84,9 +84,9 @@ simulate_scenario <- function(model,
 
   # prepare if unprepared
   if (is.null(model$prepared)) {
-    model <- godley:::prepare(model, info)
+    model <- prepare(model, info)
   } else if (model$prepared[[1]] == F) {
-    model <- godley:::prepare(model, info)
+    model <- prepare(model, info)
   }
 
   # create list of all scenarios
@@ -153,10 +153,10 @@ simulate_scenario <- function(model,
         periods <- nrow(model[[model[[scenario]]$origin]]$result)
       }
       if (is.na(start_date) &
-        class(model[[model[[scenario]]$origin]]$result$time) == "Date") {
+          inherits(model[[model[[scenario]]$origin]]$result$time, "Date")) {
         start_date <- min(model[[model[[scenario]]$origin]]$result$time)
       }
-      model <- godley:::prepare_scenario_matrix(model, scenario, periods)
+      model <- prepare_scenario_matrix(model, scenario, periods)
     }
 
     if (is.na(periods)) periods <- 100
@@ -178,9 +178,9 @@ simulate_scenario <- function(model,
     dimnames(m) <- list(c(1:periods), colnames(origin))
 
     if (method == "Gauss") {
-      m <- godley:::run_gauss_seidel(m, calls, periods, max_iter, tol)
+      m <- run_gauss_seidel(m, calls, periods, max_iter, tol)
     } else if (method == "Newton") {
-      m <- godley:::run_newton(m, calls, periods, max_iter, tol)
+      m <- run_newton(m, calls, periods, max_iter, tol)
     }
 
     # Check if hidden is fulfilled
@@ -197,8 +197,9 @@ simulate_scenario <- function(model,
 
     if (any(abs(m[, hl] - m[, hr]) >= hidden_tol) & length(abs(m[, hl] - m[, hr])) > 0) {
       stop("Hidden equation is not fulfilled
-Plesae check the model try again
-If the problem persists, try `hidden = FALSE` or change the tolerance level")
+Please check the model try again
+If the problem persists, try `hidden = FALSE` or change the tolerance level
+or change the method to `Newton`")
     }
 
     m <- tibble::tibble(data.frame(m))

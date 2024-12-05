@@ -11,7 +11,7 @@ find_adjacency <- function(equations) {
   rownames(km) <- equations$lhs
   colnames(km) <- equations$lhs
   k <- equations %>%
-    dplyr::mutate(rhs = stringr::str_extract_all(.data$rhs, godley:::.pvar(equations$lhs)))
+    dplyr::mutate(rhs = stringr::str_extract_all(.data$rhs, .pvar(equations$lhs)))
   for (var in seq_along(k$lhs)) {
     km[k$lhs[[var]], k$rhs[[var]]] <- 1
   }
@@ -85,23 +85,23 @@ prep_equations <- function(equations_sep,
                            variables_exo) {
   x <- equations_sep %>%
     dplyr::mutate(
-      rhs = gsub(godley:::.pvar(equations_sep$lhs),
+      rhs = gsub(.pvar(equations_sep$lhs),
         "m\\[.i, '\\1'\\]", .data$rhs,
         perl = T
       ),
-      rhs = gsub(godley:::.pvarlag_1(equations_sep$lhs),
+      rhs = gsub(.pvarlag_1(equations_sep$lhs),
         "m\\[.i - 1,'\\1'\\]", .data$rhs,
         perl = T
       ),
-      rhs = gsub(godley:::.pvarlag_2(equations_sep$lhs),
+      rhs = gsub(.pvarlag_2(equations_sep$lhs),
         "m\\[.i - 2,'\\1'\\]", .data$rhs,
         perl = T
       ),
-      rhs = gsub(godley:::.pvarlag_3(equations_sep$lhs),
+      rhs = gsub(.pvarlag_3(equations_sep$lhs),
         "m\\[.i - 3,'\\1'\\]", .data$rhs,
         perl = T
       ),
-      rhs = gsub(godley:::.pvarlag_4(equations_sep$lhs),
+      rhs = gsub(.pvarlag_4(equations_sep$lhs),
         "m\\[.i - 4,'\\1'\\]", .data$rhs,
         perl = T
       )
@@ -110,23 +110,23 @@ prep_equations <- function(equations_sep,
   if (!rlang::is_empty(variables_exo$lhs)) {
     x <- x %>%
       dplyr::mutate(
-        rhs = gsub(godley:::.pvar(variables_exo$lhs),
+        rhs = gsub(.pvar(variables_exo$lhs),
           "m\\[.i, '\\1'\\]", .data$rhs,
           perl = T
         ),
-        rhs = gsub(godley:::.pvarlag_1(variables_exo$lhs),
+        rhs = gsub(.pvarlag_1(variables_exo$lhs),
           "m\\[.i - 1,'\\1'\\]", .data$rhs,
           perl = T
         ),
-        rhs = gsub(godley:::.pvarlag_2(variables_exo$lhs),
+        rhs = gsub(.pvarlag_2(variables_exo$lhs),
           "m\\[.i - 2,'\\1'\\]", .data$rhs,
           perl = T
         ),
-        rhs = gsub(godley:::.pvarlag_3(variables_exo$lhs),
+        rhs = gsub(.pvarlag_3(variables_exo$lhs),
           "m\\[.i - 3,'\\1'\\]", .data$rhs,
           perl = T
         ),
-        rhs = gsub(godley:::.pvarlag_4(variables_exo$lhs),
+        rhs = gsub(.pvarlag_4(variables_exo$lhs),
           "m\\[.i - 4,'\\1'\\]", .data$rhs,
           perl = T
         )
@@ -161,16 +161,16 @@ prepare <- function(model, info = FALSE) {
   checkmate::assert_logical(info)
 
   # Check correctness of equations entered by the user
-  res <- godley:::validate_model_input(model, info)
+  res <- validate_model_input(model, info)
   equations_sep <- res[[1]]
   variables_exo <- res[[2]]
   functions <- res[[3]]
 
   # Prepare them for the simulation process
-  km <- godley:::find_adjacency(equations_sep)
-  blocks <- godley:::find_blocks(km)
+  km <- find_adjacency(equations_sep)
+  blocks <- find_blocks(km)
   equations_sep$block <- blocks
-  calls <- godley:::prep_equations(equations_sep, variables_exo)
+  calls <- prep_equations(equations_sep, variables_exo)
 
   if (length(functions) != 0) {
     for (fun in functions) {

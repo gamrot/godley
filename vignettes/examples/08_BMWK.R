@@ -60,7 +60,7 @@ model_bmwk <- model_bmwk |>
   add_equation("Ms = Mh", hidden = T)
 
 # Simulate model
-model_bmwk <- simulate_scenario(model_bmwk, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-05, method = "Gauss")
+model_bmwk <- simulate_scenario(model_bmwk, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-05, method = "Newton")
 
 # Plot results
 plot_simulation(
@@ -70,10 +70,10 @@ plot_simulation(
 
 # Scenario 1: Increase in autonomous consumption expenditures
 shock <- create_shock() |>
-  add_shock(equation = "rl = 0.035", desc = "Increase in autonomous consumption expenditures", start = 5, end = 100)
+  add_shock(variable = "rl", value = 0.035, desc = "Increase in autonomous consumption expenditures", start = 5, end = 100)
 
 model_bmwk <- model_bmwk |>
-  add_scenario(name = "expansion", origin = "baseline", origin_period = 100, shock = shock)
+  add_scenario(name = "expansion", origin = "baseline", origin_start = 1, origin_end = 100, shock = shock)
 
 model_bmwk <- simulate_scenario(model_bmwk, scenario = "expansion", max_iter = 350, periods = 100, hidden_tol = 10, tol = 1e-05, method = "Gauss")
 
@@ -84,14 +84,15 @@ plot_simulation(
 
 # Scenario 2: Increase in the propensity to save
 shock2 <- create_shock() |>
-  add_shock(equation = "rl = 0.015", desc = "Increase in the propensity to save", start = 5, end = 100)
+  add_shock(variable = "rl", value = 0.035, desc = "Increase in the propensity to save", start = 5, end = 100)
 
 model_bmwk <- model_bmwk |>
-  add_scenario(name = "expansion2", origin = "baseline", origin_period = 100, shock = shock2)
+  add_scenario(name = "expansion2", origin = "baseline", origin_start = 1, origin_end = 100, shock = shock2)
 
-model_bmwk <- simulate_scenario(model_bmwk, scenario = "expansion2", max_iter = 350, periods = 100, hidden_tol = .1, tol = 1e-05, method = "Gauss")
+model_bmwk <- simulate_scenario(model_bmwk, scenario = "expansion2", max_iter = 350, periods = 100, hidden_tol = .1, tol = 1e-05, method = "Newton")
 
 plot_simulation(
   model = model_bmwk, scenario = "expansion2", from = 1, to = 50,
   expressions = c("Y")
 )
+

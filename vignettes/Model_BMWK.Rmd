@@ -122,7 +122,8 @@ Next you need to add appropriate equation:
 ```{r}
 # Add shock equation
 shock_bmwk <- add_shock(shock_bmwk,
-  equation = "rl = 0.035",
+  variable = "rl",
+  value = 0.035,
   desc = "Increase in the interest rate", start = 5, end = 50
 )
 ```
@@ -132,7 +133,9 @@ Then you need to create new shock scenario:
 # Create new scenario with this shock
 model_bmwk <- add_scenario(model_bmwk,
   name = "expansion", origin = "baseline",
-  origin_period = 100, shock = shock_bmwk
+  origin_start = 1,
+  origin_end = 100, 
+  shock = shock_bmwk
 )
 ```
 

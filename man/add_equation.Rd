@@ -9,11 +9,7 @@ add_equation(model, ...)
 \arguments{
 \item{model}{SFC model object}
 
-\item{equation}{string equation in format: 'x = y + z - a * b + (c + d) / e + f[-1]'}
-
-\item{hidden}{logical, indicates if equation should be written as hidden, defaults to FALSE}
-
-\item{desc}{string equation description}
+\item{...}{additional arguments passed to the function.}
 }
 \value{
 updated SFC model object containing added equation

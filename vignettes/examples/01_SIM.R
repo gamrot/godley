@@ -54,14 +54,14 @@ shock_sim <- create_shock()
 
 # Add shock equation with increased government expenditures
 shock_sim <- add_shock(shock_sim,
-  equation = "G_d = 25",
+  variable = "G_d",
+  value = 25,
   desc = "Increase in government expenditures", start = 5, end = 50
 )
 
 # Create new scenario with this shock
 model_sim <- add_scenario(model_sim,
-  name = "expansion", origin = "baseline",
-  origin_period = 1, shock = shock_sim
+  name = "expansion", origin = "baseline", shock = shock_sim
 )
 
 # Simulate shock
@@ -85,3 +85,4 @@ model_sen <- simulate_scenario(model_sen, max_iter = 350, periods = 100, hidden_
 # plot sensitivity results for alpha1
 plot_simulation(model = model_sen, scenario = "sensitivity", take_all = T, from = 1, to = 50, expressions = c("Y"))
 plot_simulation(model = model_sen, scenario = "sensitivity", take_all = T, from = 1, to = 50, expressions = c("C_d"))
+

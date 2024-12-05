@@ -131,7 +131,8 @@ Based on calculated simulation you can display results for desired set of variab
 ```{r, out.width="100%"}
 # Plot results
 plot_simulation(
-  model = model_disinf, scenario = c("baseline"), from = 1, to = 40,
+  model = model_disinf, scenario = c("baseline"), 
+  from = 1, to = 40,
   expressions = c("p", "UC", "UCp = UC/p")
 )
 ```
@@ -139,7 +140,8 @@ plot_simulation(
 ```{r, out.width="100%"}
 # Plot results
 plot_simulation(
-  model = model_disinf, scenario = c("baseline"), from = 1, to = 40,
+  model = model_disinf, scenario = c("baseline"), 
+  from = 1, to = 40,
   expressions = c("inflation = (p - dplyr::lag(p)) / dplyr::lag(p)")
 )
 ```
@@ -147,7 +149,8 @@ plot_simulation(
 ```{r, out.width="100%"}
 # Plot results
 plot_simulation(
-  model = model_disinf, scenario = c("baseline"), from = 1, to = 40,
+  model = model_disinf, scenario = c("baseline"), 
+  from = 1, to = 40,
   expressions = c(
     "ydhs_ss = alpha0 / (1 - alpha1 - alpha2*sigma_T * (UC/p))",
     "ydhs", "c", "s"
@@ -173,8 +176,10 @@ Next you need to add appropriate equation:
 ```{r}
 # Add shock equation
 shock_disinf <- add_shock(shock_disinf,
-  equation = "phi = 0.3",
-  desc = "Increase in the costing margins", start = 5, end = 50
+  variable = "phi",
+  value = 0.3,
+  desc = "Increase in the costing margins", 
+  start = 5, end = 50
 )
 ```
 
@@ -183,7 +188,9 @@ Then you need to create new shock scenario:
 # Create new scenario with this shock
 model_disinf <- add_scenario(model_disinf,
   name = "expansion1", origin = "baseline",
-  origin_period = 100, shock = shock_disinf
+  origin_start = 1,
+  origin_end = 100,
+  shock = shock_disinf
 )
 ```
 
@@ -237,8 +244,10 @@ Next you need to add appropriate equation:
 ```{r}
 # Add shock equation
 shock_disinf <- add_shock(shock_disinf,
-  equation = "Omega0   = -1",
-  desc = "Increase in the target real wage", start = 5, end = 100
+  variable = "Omega0",
+  value = -1,
+  desc = "Increase in the target real wage", 
+  start = 5, end = 100
 )
 ```
 
@@ -247,7 +256,9 @@ Then you need to create new shock scenario:
 # Create new scenario with this shock
 model_disinf <- add_scenario(model_disinf,
   name = "expansion2", origin = "baseline",
-  origin_period = 100, shock = shock_disinf
+  origin_start = 1,
+  origin_end = 100, 
+  shock = shock_disinf
 )
 ```
 

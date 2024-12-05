@@ -151,8 +151,10 @@ Next you need to add appropriate equation:
 ```{r}
 # Add shock equation
 shock_dis <- add_shock(shock_dis,
-  equation = "phi = 0.35",
-  desc = "One-shot increase in the costing margin", start = 5, end = 40
+  variable = "phi",
+  value = 0.35,
+  desc = "One-shot increase in the costing margin", 
+  start = 5, end = 40
 )
 ```
 
@@ -161,7 +163,9 @@ Then you need to create new shock scenario:
 # Create new scenario with this shock
 model_dis <- add_scenario(model_dis,
   name = "expansion1", origin = "baseline",
-  origin_period = 100, shock = shock_dis
+  origin_start = 1,
+  origin_end = 100, 
+  shock = shock_dis
 )
 ```
 
@@ -207,8 +211,10 @@ Next you need to add appropriate equation:
 ```{r}
 # Add shock equation
 shock_dis <- add_shock(shock_dis,
-  equation = "sigma_T  = 0.25",
-  desc = "Increase in the target inventories to sales ratio", start = 5, end = 50
+  variable = "sigma_T",
+  value = 0.25,
+  desc = "Increase in the target inventories to sales ratio", 
+  start = 5, end = 50
 )
 ```
 
@@ -217,7 +223,9 @@ Later you need to create new shock scenario:
 # Create new scenario with this shock
 model_dis <- add_scenario(model_dis,
   name = "expansion2", origin = "baseline",
-  origin_period = 100, shock = shock_dis
+  origin_start = 1,
+  origin_end = 100,
+  shock = shock_dis
 )
 ```
 

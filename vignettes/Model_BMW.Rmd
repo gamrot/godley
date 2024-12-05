@@ -124,8 +124,10 @@ Next you need to add appropriate equation:
 ```{r}
 # Add shock equation with increase in autonomous consumption expenditures
 shock_bmw <- add_shock(shock_bmw,
-  equation = "alpha0 = 30",
-  desc = "Increase in autonomous consumption expenditures", start = 5, end = 50
+  variable = "alpha0",
+  value = 30,
+  desc = "Increase in autonomous consumption expenditures", 
+  start = 5, end = 50
 )
 ```
 
@@ -134,7 +136,9 @@ Then you need to create new shock scenario:
 # Create new scenario with this shock
 model_bmw <- add_scenario(model_bmw,
   name = "expansion1", origin = "baseline",
-  origin_period = 100, shock = shock_bmw
+  origin_start = 1,
+  origin_end = 100, 
+  shock = shock_bmw
 )
 ```
 
@@ -169,8 +173,10 @@ Next you need to add appropriate equation:
 ```{r}
 # Add shock equation with increased propensity to save
 shock_bmw <- add_shock(shock_bmw,
-  equation = "alpha1 = 0.7",
-  desc = "Increase in the propensity to save", start = 5, end = 50
+  variable = "alpha1",
+  value = 0.7,
+  desc = "Increase in the propensity to save", 
+  start = 5, end = 50
 )
 ```
 
@@ -179,7 +185,9 @@ Later you need to create new shock scenario:
 # Create new scenario with this shock
 model_bmw <- add_scenario(model_bmw,
   name = "expansion2", origin = "baseline",
-  origin_period = 100, shock = shock_bmw
+  origin_start = 1,
+  origin_end = 100, 
+  shock = shock_bmw
 )
 ```
 

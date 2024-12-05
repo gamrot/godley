@@ -22,7 +22,7 @@ Please complete exogenous variables and initial values
   # 3 Check if provided equations do not contain invalid characters
   all_equations <- model$equations$equation
   for (i in all_equations) {
-    if (stringr::str_detect(i, "[§£@#${};:'\\\\~`?]")) {
+    if (stringr::str_detect(i, "[\u00A7\u00A3@#\\${};:'\\\\~?]")) {
       stop("Invalid character(s) in equation
 Please check: ", i, "
 ")
