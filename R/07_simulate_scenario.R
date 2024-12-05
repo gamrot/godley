@@ -1,7 +1,7 @@
 #' Calculate 1 order lag difference of a variable in model
 #'
 #' @export
-#'
+#' @import tibble
 #' @param x variable name
 #'
 #' @details this is a special function to be used exclusively in model equation strings e.g. "x = d(y) + z"

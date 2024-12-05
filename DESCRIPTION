@@ -15,7 +15,6 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Imports: dplyr,
-  tibble,
   stringr,
   tidyr,
   igraph,
@@ -28,7 +27,8 @@ Imports: dplyr,
   checkmate,
   vecsets,
   lubridate,
-  data.table
+  data.table,
+  tibble
 RoxygenNote: 7.3.2
 Suggests: 
     knitr,
