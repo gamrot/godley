@@ -28,7 +28,8 @@ Imports: dplyr,
   vecsets,
   lubridate,
   data.table,
-  tibble
+  tibble,
+  visNetwork
 RoxygenNote: 7.3.2
 Suggests: 
     knitr,

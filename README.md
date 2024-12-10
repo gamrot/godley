@@ -145,6 +145,13 @@ plot_simulation(
 
 ![Scenario baseline](man/figures/images/Scenario_baseline.png)
 
+You can even see your model as a graph and verify if it contains feedback cycles!
+``` r
+plot_cycles(model_sim)
+```
+![Cycles](man/figures/images/Cycles.png)
+
+### Templates 📝
 And one more thing (if you're lazy like me), you can create models with "templates" using `create_model(template = "SIM")`. You can choose from `SIM`, `SIMEX`, `PC`, `PCEX`, `LP`, `REG`, `OPEN`, `BMW`, `BMWK`, `DIS` and `DISINF`. Basically all models from Godley & Lavoie (2007).
 
 ### Shocks ⚡
@@ -240,7 +247,8 @@ Here's a list of package's most important functions.
 `add_variable()` - adds variables\
 `add_equation()` - adds equations\
 `simulate_scenario()` - simulates selected scenario(s)\
-`plot_simulation()` - plots simulation results
+`plot_simulation()` - plots simulation results\
+`plot_cycles()` - plots model as graph. Shows feedback cycles\
 
 `create_shock()` - creates a shock object\
 `add_shock()` - adds shock parameters\
