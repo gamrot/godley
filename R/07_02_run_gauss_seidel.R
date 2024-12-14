@@ -1,3 +1,39 @@
+#' Restore equation notation for warning messages
+#'
+#' This function is designed to take an internally processed equation string, 
+#' commonly used in model computations (e.g., `m[.i, 'Var']`), and restore it 
+#' to a more original or readable format (e.g., `Var`). It is particularly 
+#' useful for warning messages, where presenting the equation in its original 
+#' form can help the user identify issues more quickly. The function also 
+#' handles lagged variables (e.g., `m[.i - 1, 'Var']` → `Var[-1]`).
+#'
+#' @param eq_line A character string representing an equation with internal indexing.
+#'
+#' @return A character string where the internal indexing notation has been restored to 
+#' a more user-friendly, original form.
+#'
+#' @examples
+#' # Original internal form:
+#' eq <- "m[.i - 1, 'H_h'] + exp(1)^(m[.i, 'alpha1'] * log(m[.i, 'Yd']))"
+#' # After restoring:
+#' restore_equation(eq)
+#' # "H_h[-1] + exp(1)^(alpha1 * log(Yd))"
+#'
+#' # Uncomment the optional gsub line in the function if you want:
+#' # "exp(1)^(...)" to become simply "exp(...)".
+restore_equation <- function(eq_line) {
+  # Replace m[.i - k, 'Var'] or m[.i - k, "Var"] with Var[-k]
+  eq_line_mod <- gsub("m\\[\\.i\\s*-\\s*(\\d+)\\s*,\\s*['\"](.*?)['\"]\\]", "\\2[-\\1]", eq_line)
+  
+  # Replace m[.i, 'Var'] or m[.i, "Var"] with Var
+  eq_line_mod <- gsub("m\\[\\.i\\s*,\\s*['\"](.*?)['\"]\\]", "\\1", eq_line_mod)
+  
+  # Optional: convert exp(1)^(...) to exp(...)
+  # eq_line_mod <- gsub("exp\\(1\\)\\^\\((.*?)\\)", "exp(\\1)", eq_line_mod)
+  
+  return(eq_line_mod)
+}
+
 # ' Gauss Seidel algorithm
 # '
 # ' @author João Macalós
@@ -7,7 +43,7 @@
 # ' @param periods total number of rows (periods) in the model
 # ' @param max_iter maximum number of iterations allowed per block per period
 # ' @param tol tolerance accepted to determine convergence
-# ' @param echo if TRUE, print the progress of the algorithm
+# ' @param verbose if TRUE, print the progress of the algorithm
 # '
 # ' @details This algorithm simulates the model by recursion by using
 # ' nested for loops. At each round of iteration, the values calculated
@@ -23,14 +59,14 @@ run_gauss_seidel <- function(m,
                              periods,
                              max_iter,
                              tol,
-                             echo = FALSE) {
+                             verbose = FALSE) {
 
   #checks
   checkmate::assert_matrix(m)
   checkmate::assert_number(periods, lower = 1)
   checkmate::assert_number(max_iter, lower = 1)
   checkmate::assert_numeric(tol)
-  checkmate::assert_logical(echo)
+  checkmate::assert_logical(verbose)
 
   exprs <- purrr::map(calls$rhs, function(x) parse(text = x))
 
@@ -59,24 +95,47 @@ run_gauss_seidel <- function(m,
         # m[.i, block_names[[.block]]] <- 1
 
         if (is.na(m[.i, .id]) | !is.finite(m[.i, .id])) {
-          warning("Gauss-Seidel algorithm failed.
-During computation NaN or Inf was obtained in ", exprs[[.id]], " equation
-Please check if equations are correctly specified or change initial values")
+          warning("\n Gauss-Seidel algorithm failed.",
+                  "\n During computation NaN or Inf was obtained in ",
+                  exprs[[.id]], " equation",
+                  "\n Please check if equations are correctly specified or change initial values")
           return(m)
         }
       } else { # If cyclical block, use Gauss-Seidel algorithm
         for (.ite in 1:max_iter) {
           for (.v in .id) {
-            if (echo == TRUE) {message("\r",calls$lhs[.v], "/period: ", .i," /iter:", .ite ,appendLF = T)}
+            
+            # if (verbose == TRUE) {message("\r",calls$lhs[.v], "/period: ", .i," /iter:", .ite ,appendLF = T)}
+            if (verbose == TRUE) {
+              # At the start of each period, print a header once
+              if (.ite == 1 && .v == .id[1]) {
+                message("\nSimulating scenario expansion (1 of 1)")
+                message("Period: ", .i)
+              }
+              
+              # At the start of each iteration, print an iteration header
+              if (.v == .id[1]) {
+                message(" Iteration: ", .ite)
+              }
+              
+              # Print each variable on its own line, indented for clarity
+              message("   ", calls$lhs[.v], ": value = ", m[.i, .v])
+            }
+            
+            
             if (!checkmate::test_number(suppressMessages(eval(exprs[[.v]])), na.ok = T)) next
 
             m[.i, .v] <- suppressMessages(eval(exprs[[.v]]))
-
+            
             if (is.na(m[.i, .v]) | !is.finite(m[.i, .v])) {
-              warning(message = paste("Gauss-Seidel algorithm failed in cyclical block with variables:",
+              warning(message = paste0("\nGauss-Seidel algorithm failed in cyclical block with variables: ",
                                       paste0(calls$lhs[.id], collapse = ", "),
-                                      "\n During computation NaN or Inf was obtained in equation for", calls$lhs[.v], ":\n", exprs[[.v]], "
-Check if equations are correctly specified or change initial values."))
+                                      "\nDuring computation NaN or Inf was obtained in equation for ",
+                                      calls$lhs[.v], ":\n",
+                                      restore_equation(as.character(exprs[[.v]])), 
+                                      "\nCheck if equations are correctly specified or change initial values.",
+                                      "\nFor more details, try running simulate_scenario(..., verbose = TRUE)."
+              ))
               return(m)
             }
             checks[[.v]] <- suppressMessages(abs(m[.i, .v] - holdouts[[.v]]) / (holdouts[[.v]] + 1e-05))
@@ -85,10 +144,13 @@ Check if equations are correctly specified or change initial values."))
           # m[.i, block_names[[.block]]] <- .ite
 
           if (any(!is.finite(checks[.id]) | is.na(checks[.id]))) {
-            warning(paste0("Gauss-Seidel algorithm failed to converge
-Please check the initial values to exclude any division by zero or other invalid operations
-Problem occured in ", paste0(.id, collapse = ", "), " equations block
-If the problem persists, try a different method"))
+            warning(paste0(
+              "Gauss-Seidel algorithm failed to converge.",
+              "\nProblem occured in ",
+              paste0(.id, collapse = ", "),
+              " equations block.",
+              "\n Please check the initial values to exclude any division by zero or other invalid operations.",
+              "\n If the problem persists, try a different method."))
             return(m)
           }
 
