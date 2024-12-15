@@ -14,10 +14,8 @@ A character string where the internal indexing notation has been restored to
 a more user-friendly form.
 }
 \description{
-This function is designed to take an internally processed equation string, 
-commonly used in model computations (e.g., `m[.i, 'Var']`), and restore it 
-to a more original or readable format (e.g., `Var`). It is particularly 
-useful for warning messages, where presenting the equation in its original 
-form can help the user identify issues more quickly. The function also 
-handles lagged variables (e.g., `m[.i - 1, 'Var']` → `Var[-1]`).
+This function converts an internally processed equation expression (e.g., `m[.i, 'Var']`) 
+into a more readable format (e.g., `Var`). The function handles lagged variables,
+transforming expressions such as `m[.i - 1, 'Var']` into `Var[-1]`.
+It is intended for use in warning messages.
 }
