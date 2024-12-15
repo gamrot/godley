@@ -10,17 +10,7 @@
 #' @param eq_line A character string representing an equation with internal indexing.
 #'
 #' @return A character string where the internal indexing notation has been restored to 
-#' a more user-friendly, original form.
-#'
-#' @examples
-#' # Original internal form:
-#' eq <- "m[.i - 1, 'H_h'] + exp(1)^(m[.i, 'alpha1'] * log(m[.i, 'Yd']))"
-#' # After restoring:
-#' restore_equation(eq)
-#' # "H_h[-1] + exp(1)^(alpha1 * log(Yd))"
-#'
-#' # Uncomment the optional gsub line in the function if you want:
-#' # "exp(1)^(...)" to become simply "exp(...)".
+#' a more user-friendly form.
 restore_equation <- function(eq_line) {
   # Replace m[.i - k, 'Var'] or m[.i - k, "Var"] with Var[-k]
   eq_line_mod <- gsub("m\\[\\.i\\s*-\\s*(\\d+)\\s*,\\s*['\"](.*?)['\"]\\]", "\\2[-\\1]", eq_line)

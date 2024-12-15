@@ -7,10 +7,6 @@
 #' @param eq A character string representing an equation.
 #'
 #' @return A logical value indicating whether the parentheses are balanced (`TRUE`) or not (`FALSE`).
-#'
-#' @examples
-#' check_parentheses_balance("(a + b) * (c + d)")  # returns TRUE
-#' check_parentheses_balance("(a + b * (c + d)")   # returns FALSE
 
 check_parentheses_balance <- function(eq) {
   # Split the equation into individual characters
