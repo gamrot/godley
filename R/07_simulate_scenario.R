@@ -215,7 +215,7 @@ simulate_scenario <- function(model,
         )
       })
       
-      stop(
+      error_message <- paste0(
         "\nThe following hidden (redundant) equation(s) are not fulfilled:\n",
         paste(eq_messages, collapse = "\n"),
         "\n\nHidden equations serve as a critical check on the model's water tight accounting,",
@@ -229,6 +229,13 @@ simulate_scenario <- function(model,
         " - Changing the solution method (e.g., from 'Gauss' to 'Newton') to improve convergence.\n",
         " - Trying `hidden = FALSE` to ignore these redundant checks if appropriate.\n"
       )
+      if (!verbose) {
+        error_message <- paste0(
+          error_message,
+          "\nInclude the simulate_scenario(..., verbose = TRUE) parameter to receive detailed information about the error sources."
+        )
+      }
+      stop(error_message)
     }
 
     m <- tibble::tibble(data.frame(m))

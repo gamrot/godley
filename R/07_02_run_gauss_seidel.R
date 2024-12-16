@@ -116,14 +116,23 @@ run_gauss_seidel <- function(m,
             m[.i, .v] <- suppressMessages(eval(exprs[[.v]]))
             
             if (is.na(m[.i, .v]) | !is.finite(m[.i, .v])) {
-              warning(message = paste0("\nGauss-Seidel algorithm failed in cyclical block with variables: ",
-                                      paste0(calls$lhs[.id], collapse = ", "),
-                                      "\nDuring computation NaN or Inf was obtained in equation for ",
-                                      calls$lhs[.v], ":\n",
-                                      restore_equation(as.character(exprs[[.v]])), 
-                                      "\nCheck if equations are correctly specified or change initial values.",
-                                      "\nFor more details, try running simulate_scenario(..., verbose = TRUE)."
-              ))
+              warning_message <- paste0(
+                "\nGauss-Seidel algorithm failed in cyclical block with variables: ",
+                paste0(calls$lhs[.id], collapse = ", "),
+                "\nDuring computation NaN or Inf was obtained in equation for ",
+                calls$lhs[.v], ":\n",
+                restore_equation(as.character(exprs[[.v]])), 
+                "\nCheck if equations are correctly specified or change initial values."
+              )
+              
+              if (!verbose) {
+                warning_message <- paste0(
+                  warning_message,
+                  "\nFor more details, try running simulate_scenario(..., verbose = TRUE)."
+                )
+              }
+              
+              warning(message = warning_message)
               return(m)
             }
             checks[[.v]] <- suppressMessages(abs(m[.i, .v] - holdouts[[.v]]) / (holdouts[[.v]] + 1e-05))
