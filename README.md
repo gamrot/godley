@@ -11,7 +11,7 @@ By employing godley, users can create fully fledged post-keynesian and MMT model
 
 The package is named after Wynne Godley (1926–2010), a prominent British post-Keynesian economist and a leading figure in the development of SFC modeling.
 
-#### Installation ⚙️
+### Installation ⚙️
 
 `godley` is currently hosted on GitHub. To install the development version directly, please use `devtools` package:
 
@@ -20,7 +20,7 @@ install.packages("devtools")
 devtools::install_github("gamrot/godley")
 ```
 
-#### Usage Example 📊
+### Usage Example 📊
 
 Below is a brief illustration of how to set up and simulate a simple SFC model using godley. The example is based on the well-known "SIM" model from Monetary Economics by Godley & Lavoie (2007).
 
@@ -138,7 +138,7 @@ model_sim$baseline$result
 ## #   theta <dbl>, G_d <dbl>, W <dbl>
 ```
 
-#### Visualizations 🎨
+### Visualizations 🎨
 
 **godley** provides support for customized visualizations.\
 Simulation outcomes can be plotted using the `plot_simulation()` function, where users can specify the variables or expressions of interest. In the example below, the plot displays Income, Government spending, and Taxes expressions.  
@@ -160,10 +160,10 @@ plot_cycles(model_sim)
 ```
 ![](man/figures/images/Cycles.png)
 
-#### Templates 📝
+### Templates 📝
 **godley** includes predefined templates to streamline model creation. These templates are accessible through `create_model(template = "SIM")`. Available templates include `SIM`, `SIMEX`, `PC`, `PCEX`, `LP`, `REG`, `OPEN`, `BMW`, `BMWK`, `DIS`, and `DISINF` -- covering all models presented in Godley & Lavoie (2007).
 
-#### Shocks ⚡
+### Shocks ⚡
 
 The package supports the introduction and simulation of shocks within the model.
 
@@ -221,7 +221,7 @@ plot_simulation(
 
 ![](man/figures/images/Scenario_expansion.png)
 
-#### Sensitivity 🧙
+### Sensitivity 🧙
 
 The **godley** package allows for the assessment of simulation result sensitivity to specific parameter values. For example, the effect of small adjustments to `alpha1` on short-term dynamics can be analyzed by first creating a new model object with `create_sensitivity()` and specifying the upper and lower bounds for the parameter of interest. Once the sensitivity scenarios are generated, the simulations can be executed:
 
@@ -244,11 +244,11 @@ plot_simulation(
 
 ![](man/figures/images/Sensitivity.png)
 
-#### Additional examples ⭐
+### Additional examples ⭐
 
 More examples and detailed information about **godley** functions and model setups are available at the [package website](https://gamrot.github.io/godley/).
 
-#### Key Functions 🔧
+### Key Functions 🔧
 
 - `create_model()`: Create an SFC model.
 - `add_variable()`: Add variables to the model.
@@ -261,7 +261,7 @@ More examples and detailed information about **godley** functions and model setu
 - `add_scenario()`: Add a new scenario to an existing model.
 - `create_sensitivity()`: Generate sensitivity scenarios for selected parameters.
 
-#### Similar work 👪
+### Similar work 👪
 
 The following packages also provide approaches to stock-flow consistent modeling:
   
@@ -269,6 +269,6 @@ The following packages also provide approaches to stock-flow consistent modeling
 - [bimets](https://github.com/andrea-luciani/bimets): Offers time series and econometric tools for empirical models.
 - [pysolve3](https://github.com/gpetrini/pysolve3): A Python-based solver for SFC models.
 
-#### Getting help 🐛
+### Getting help 🐛
 
 If any issues arise or bugs are encountered, please file a report with a minimal reproducible example at [https://github.com/gamrot/godley/issues](https://github.com/gamrot/godley/issues).
