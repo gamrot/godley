@@ -232,7 +232,7 @@ simulate_scenario <- function(model,
       if (!verbose) {
         error_message <- paste0(
           error_message,
-          "\nInclude the simulate_scenario(..., verbose = TRUE) parameter to receive detailed information about the error sources."
+          "\nInclude the simulate_scenario(..., verbose = TRUE) parameter to get more details on the root causes of issues during execution."
         )
       }
       stop(error_message)
