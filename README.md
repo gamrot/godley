@@ -142,7 +142,7 @@ model_sim$baseline$result
 
 ### Visualizations 🎨
 
-The **godley** package provides customized visualization capabilities to enhance the analysis of simulation outcomes.\
+The **godley** package provides customized visualization capabilities to enhance the analysis of simulation outcomes.
 
 Users can leverage the `plot_simulation()` function to create plots, specifying the variables or expressions of interest. For instance, in the example below, the plot illustrates the expressions for Income, Government Spending, and Taxes.
 
