@@ -13,7 +13,7 @@ simulate_scenario(
   max_iter = 350,
   tol = 1e-05,
   hidden_tol = 0.1,
-  info = FALSE
+  verbose = FALSE
 )
 }
 \arguments{
@@ -33,7 +33,7 @@ simulate_scenario(
 
 \item{hidden_tol}{numeric error tolerance to accept the equality of hidden equations, defaults to 0.1.}
 
-\item{info}{logical to tell if additional model info should be displayed}
+\item{verbose}{logical to tell if additional model verbose should be displayed}
 }
 \value{
 updated model containing simulated scenario(s)

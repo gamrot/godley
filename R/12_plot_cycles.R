@@ -20,7 +20,7 @@ plot_cycles <- function(model, save_file = NULL) {
   checkmate::assert_class(model, "SFC")
   checkmate::assert_character(save_file, len = 1, null.ok = TRUE)
   
-  res <- validate_model_input(model, info = FALSE)
+  res <- validate_model_input(model, verbose = FALSE)
   calls <- attr(model$prepared, "calls")
   if (is.null(calls)) {
     model <- prepare(model)
