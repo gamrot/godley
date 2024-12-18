@@ -76,7 +76,7 @@ model_sim$variables
 ## 16 W      1         Wage rate
 ```
 
-Then, specify the system of equations that governs the model. This step is supported by a dedicated function, which appends an `$equations` tibble to the model. Lags can be indicated by `[-1]`, and first differences by `d()`. These can be combined to create more complex expressions; for instance, `d(H_s[-1])` denotes a lagged difference.
+Then, specify the system of equations that governs the model. A dedicated function supports this step and appends a tibble to the model — specifically,  `$equations`. Lags can be indicated by `[-1]`, and first differences by `d()`. These can be combined to create more complex expressions; for instance, `d(H_s[-1])` denotes a lagged difference.
 
 ``` r
 model_sim <- model_sim |>
@@ -142,8 +142,9 @@ model_sim$baseline$result
 
 ### Visualizations 🎨
 
-**godley** provides support for customized visualizations.\
-Simulation outcomes can be plotted using the `plot_simulation()` function, where users can specify the variables or expressions of interest. In the example below, the plot displays Income, Government spending, and Taxes expressions.  
+The **godley** package provides customized visualization capabilities to enhance the analysis of simulation outcomes.\
+
+Users can leverage the `plot_simulation()` function to create plots, specifying the variables or expressions of interest. For instance, in the example below, the plot illustrates the expressions for Income, Government Spending, and Taxes.
 
 ``` r
 plot_simulation(
@@ -162,14 +163,16 @@ plot_cycles(model_sim)
 ```
 ![](man/figures/images/Cycles.png)
 
+These features provide an intuitive way to interpret and communicate the results of macroeconomic simulations.
+
 ### Templates 📝
 **godley** includes predefined templates to streamline model creation. These templates are accessible through `create_model(template = "SIM")`. Available templates include `SIM`, `SIMEX`, `PC`, `PCEX`, `LP`, `REG`, `OPEN`, `BMW`, `BMWK`, `DIS`, and `DISINF` -- covering all models presented in Godley & Lavoie (2007).
 
 ### Shocks ⚡
 
-The package supports the introduction and simulation of shocks within the model.
+The package enables the introduction and simulation of shocks within the model. 
 
-For instance, an increase in government spending can be simulated by first creating a shock object with `create_shock()` and then applying `add_shock()` to introduce a 20% increase in government spending between Q1 2017 and Q4 2020. 
+For example, a 20% increase in government spending can be simulated by first creating a shock object using `create_shock()` and then applying it with `add_shock()` for the period between Q1 2017 and Q4 2020.
 
 Shock values can be defined explicitly (`value`), as a relative rate (`rate`), or as an absolute increment (`absolute`):
 
