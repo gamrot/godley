@@ -9,7 +9,9 @@ By employing godley, users can create fully fledged post-keynesian and MMT model
 - visualize dynamic scenarios, and
 - study the implications of various macroeconomic structures on key variables.
 
-The package is named after Wynne Godley (1926–2010), a prominent British post-Keynesian economist and a leading figure in the development of SFC modeling.
+The package offers the flexibility to support both theoretical frameworks and data-driven scenarios.
+
+It is named in honor of Wynne Godley (1926–2010), a prominent British post-Keynesian economist and a leading figure in SFC modeling.
 
 ### Installation ⚙️
 
@@ -20,7 +22,7 @@ install.packages("devtools")
 devtools::install_github("gamrot/godley")
 ```
 
-### Usage Example 📊
+### Example 📊
 
 Below is a brief illustration of how to set up and simulate a simple SFC model using godley. The example is based on the well-known "SIM" model from Monetary Economics by Godley & Lavoie (2007).
 
@@ -30,7 +32,7 @@ First, define the model structure:
 model_sim <- create_model(name = "SFC SIM")
 ```
 
-Next, incorporate variables into the model by using the `add_variable()` function, which adds a `$variables` tibble to the model. Each variable can be assigned an initial value, either a single scalar (representing a theoretical starting point) or a complete vector of real data.
+To include variables in your model, use the `add_variable()` function. This function adds a `$variables` tibble to the model. Each variable can be assigned an initial value, either a single scalar (representing a theoretical starting point) or a complete vector of real data.
 
 ``` r
 model_sim <- model_sim |>
@@ -74,7 +76,7 @@ model_sim$variables
 ## 16 W      1         Wage rate
 ```
 
-Then, specify the system of equations governing the model. A dedicated function supports this step and adds an `$equations` tibble to the model. Lags can be indicated by `[-1]`, and first differences by `d()`. Combine both, for example, use `d(H_s[-1])` for a lagged difference.
+Then, specify the system of equations that governs the model. This step is supported by a dedicated function, which appends an `$equations` tibble to the model. Lags can be indicated by `[-1]`, and first differences by `d()`. These can be combined to create more complex expressions; for instance, `d(H_s[-1])` denotes a lagged difference.
 
 ``` r
 model_sim <- model_sim |>
@@ -110,7 +112,7 @@ model_sim$equations
 ## 12 H_s = H_h                            TRUE   "Money equilibrium"
 ```
 
-With all variables and equations defined, the model can be solved over a specified time horizon using the `simulate_scenario()` function. The function allows selecting the number of periods, choosing a simulation method (`Newton` or `Gauss`), and optionally specifying a starting quarter date. The simulation results are stored in a `$result` tibble within the `$baseline` scenario.
+With all variables and equations defined, the model is ready to be solved over a given time horizon. This can be done using the `simulate_scenario()` function. The function allows selecting the number of periods, choosing a simulation method (`Newton` or `Gauss`), and optionally specifying a starting quarter date. The simulation results are stored in a `$result` tibble within the `$baseline` scenario.
 
 ``` r
 model_sim <- model_sim |>
