@@ -150,18 +150,18 @@ prep_equations <- function(equations_sep,
 #' @export
 #'
 #' @param model SFC model object
-#' @param info logical to tell if additional model info should be displayed
+#' @param verbose logical to tell if additional model verbose should be displayed
 #'
 #' @return verified and prepared SFC model object
 
-prepare <- function(model, info = FALSE) {
+prepare <- function(model, verbose = FALSE) {
   # argument check
   # type
   checkmate::assert_class(model, "SFC")
-  checkmate::assert_logical(info)
+  checkmate::assert_logical(verbose)
 
   # Check correctness of equations entered by the user
-  res <- validate_model_input(model, info)
+  res <- validate_model_input(model, verbose)
   equations_sep <- res[[1]]
   variables_exo <- res[[2]]
   functions <- res[[3]]
