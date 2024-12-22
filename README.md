@@ -33,9 +33,9 @@ The resulting model is an S3 object (a list) of the SFC class.
 model_sim <- create_model(name = "SFC SIM")
 ```
 
-Use the `add_variable()` function to include variables in the model. This function creates a `$variables` tibble within the model.  
-The following characters are not allowed in variable names: \"§£\@#\${};:'\\\~\`? !%\^&\*()-+=\[\]\|\<,\>/. As a best practice, use letters, numbers, and underscores (`_`) for naming variables.  
-Each variable can be assigned an initial value, either a single scalar (representing a theoretical starting point) or a complete vector of real data.
+Use the `add_variable()` function to include variables in the model. This function creates a `$variables` tibble within the model. 
+
+The following characters are not allowed in variable names: \"§£\@#\${};:'\\\~\`? !%\^&\*()-+=\[\]\|\<,\>/. As a best practice, use letters, numbers, and underscores (`_`) for naming variables. Each variable can be assigned an initial value, either a single scalar (representing a theoretical starting point) or a complete vector of real data.
 
 ``` r
 model_sim <- model_sim |>
@@ -91,8 +91,7 @@ Equations must adhere to the following rules:
     * **Lags**: Add a negative lag order in square brackets to a variable. For example, the first lag of consumption is written as `C_s[-1]`, and the third lag as `C_s[-3]`. The package supports lags up to the fourth order, which is particularly useful for quarterly data. This syntax mirrors the behavior of the `lag()` function in R.
     * **First differences**: The first difference, e.g., `C_s - C_s[-1]`, can be written as `d(C_s)`. This is equivalent to the `diff()` function in R. Note that this operation is defined only for the first difference; higher-order differences, such as the third difference, must be expressed explicitly, e.g., `C_s - C_s[-3]`.
     * **Lagged differences**: Combine the above two operations, e.g., `d(C_s[-1])`.
-
-6. Each variable being defined can only appear on the left-hand side of a single equation. It is not allowed to have multiple different equations for the same variable (though exact duplicates are flagged with an appropriate message).
+6. Each variable being defined can appear on the left-hand side of a single equation. It is not allowed to have multiple different equations for the same variable (exact duplicates are flagged with an appropriate message).
 
 ``` r
 model_sim <- model_sim |>
@@ -128,7 +127,7 @@ model_sim$equations
 ## 12 H_s = H_h                            TRUE   "Money equilibrium"
 ```
 
-With all variables and equations defined, the model is ready to be solved over a given time horizon. This can be done using the `simulate_scenario()` function. The function starts by validating the user-defined model through the prepare() function, which is also accessible in the package's exported environment.
+With all variables and equations defined, the model is ready to be solved over a given time horizon. This can be done using the `simulate_scenario()` function. The function starts by validating the user-defined model through the `prepare()` function, which is also accessible in the package's exported environment.
 
 The function allows choosing a simulation method (`Newton` or `Gauss`), selecting the number of periods and a starting date. Specifying an initial period is optional; if omitted, periods will simply be numbered consecutively with natural numbers.  
 
