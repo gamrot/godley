@@ -35,7 +35,11 @@ model_sim <- create_model(name = "SFC SIM")
 
 Use the `add_variable()` function to include variables in the model. This function creates a `$variables` tibble within the model. 
 
-The following characters are not allowed in variable names: \"§£\@#\${};:'\\\~\`? !%\^&\*()-+=\[\]\|\<,\>/. As a best practice, use letters, numbers, and underscores (`_`) for naming variables. Each variable can be assigned an initial value, either a single scalar (representing a theoretical starting point) or a complete vector of real data.
+⚠️ **Remarks:**  
+
+- The following characters are not permitted in variable names: `§`, `£`, `\@`, `#`, `$`, `{`, `}`, `;`, `:`, `'`, `\`, `~`, `` ` ``, `?`, `!`, `%`, `^`, `&`, `*`, `(`, `)`, `-`, `+`, `=`, `[`, `]`, `|`, `<`, `,`, `>`, `/`.  
+- For best practices, use only letters, numbers, and underscores (`_`) when naming variables.  
+- Each variable can be initialized with either a single scalar (representing a theoretical starting point) or a full vector of real data.  
 
 ``` r
 model_sim <- model_sim |>
@@ -81,10 +85,10 @@ model_sim$variables
 
 Then, specify the system of equations that governs the model. This can be done using the `add_equation()` function by providing the equations in text form. The model will then include a `$equations` tibble.  
 
-Equations must adhere to the following rules:
+Equations must adhere to the following rules:  
 
-1. The following characters are not allowed: §£\@#${};:'\\~\`. 
-2. Some characters are permitted but will be treated as operators (ignored when reading variable names): !%^&*()-+=[]|<,>/.
+1. The following characters are **not allowed**: `§`, `£`, `\@`, `#`, `$`, `{`, `}`, `;`, `:`, `'`, `\`, `~`, `` ` ``.  
+2. Some characters are **acceptable but treated as operators** (ignored when reading variable names): `!`, `%`, `^`, `&`, `*`, `(`, `)`, `-`, `+`, `=`, `[`, `]`, `|`, `<`, `,`, `>`, `/`.  
 3. The left-hand side must contain a variable that the equation defines, written in its untransformed form. For example, `C_s` for consumption. Constructs like `C_s*2` or `log(C_s)` are not allowed on the left-hand side. If an operator or function appears on the left, the entire expression will be treated as the variable name.
 4. An equals sign `=` must separate the left-hand side from the right-hand side.
 5. The right-hand side should contain the rest of the equation, written using variable names, standard operators, and functions available in R. For convenience, the package also includes commonly used operations on matrix columns, such as lags and differences:
