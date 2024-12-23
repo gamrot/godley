@@ -1,12 +1,12 @@
 # godley
 
-`godley` is an R package for simulating stock-flow consistent (SFC) macroeconomic models.
+`godley` is an R package for simulating *stock-flow consistent* (SFC) macroeconomic models.
 
 By employing godley, users can create fully fledged post-keynesian and MMT models of the economy to:
 
-- analyze parameter changes,
+- analyze the sensitivity of parameter changes,
 - impose policy or exogenous shocks,
-- visualize dynamic scenarios, and
+- visualize diverse dynamic macroeconomic scenarios, and
 - study the implications of various macroeconomic structures on key variables.
 
 The package offers the flexibility to support both theoretical frameworks and data-driven scenarios.
@@ -15,7 +15,7 @@ It is named in honor of Wynne Godley (1926–2010), a prominent British post-Key
 
 ### Installation ⚙️
 
-`godley` is currently hosted on GitHub. To install the development version directly, please use `devtools` package:
+`godley` is currently hosted on GitHub [github.com/gamrot/godley](https://github.com/gamrot/godley). To install the development version directly, please use `devtools` package:
 
 ``` r
 install.packages("devtools")
@@ -24,15 +24,22 @@ devtools::install_github("gamrot/godley")
 
 ### Example 📊
 
-Below is a brief illustration of how to set up and simulate a simple SFC model using godley. The example is based on the well-known "SIM" model from Monetary Economics by Godley & Lavoie (2007).
+The following demonstrates a basic example of using the package to simulate a baseline scenario in the classic SIM model (Godley & Lavoie, *Monetary Economics*, 2007).
 
-First, define the model structure:
+To define the model structure, start by creating an empty model with the `create_model()` function.  
+The resulting model is an S3 object (a list) of the SFC class.
 
 ``` r
 model_sim <- create_model(name = "SFC SIM")
 ```
 
-To include variables in your model, use the `add_variable()` function. This function adds a `$variables` tibble to the model. Each variable can be assigned an initial value, either a single scalar (representing a theoretical starting point) or a complete vector of real data.
+Use the `add_variable()` function to include variables in the model. This function creates a `$variables` tibble within the model. 
+
+⚠️ **Remarks:**  
+
+- The following characters are not permitted in variable names: `§`, `£`, `\@`, `#`, `$`, `{`, `}`, `;`, `:`, `'`, `\`, `~`, `` ` ``, `?`, `!`, `%`, `^`, `&`, `*`, `(`, `)`, `-`, `+`, `=`, `[`, `]`, `|`, `<`, `,`, `>`, `/`.  
+- For best practices, use only letters, numbers, and underscores (`_`) when naming variables.  
+- Each variable can be initialized with either a single scalar (representing a theoretical starting point) or a full vector of real data.  
 
 ``` r
 model_sim <- model_sim |>
@@ -76,7 +83,19 @@ model_sim$variables
 ## 16 W      1         Wage rate
 ```
 
-Then, specify the system of equations that governs the model. A dedicated function supports this step and appends a tibble to the model — specifically,  `$equations`. Lags can be indicated by `[-1]`, and first differences by `d()`. These can be combined to create more complex expressions; for instance, `d(H_s[-1])` denotes a lagged difference.
+Then, specify the system of equations that governs the model. This can be done using the `add_equation()` function by providing the equations in text form. The model will then include a `$equations` tibble.  
+
+Equations must adhere to the following rules:  
+
+1. The following characters are **not allowed**: `§`, `£`, `\@`, `#`, `$`, `{`, `}`, `;`, `:`, `'`, `\`, `~`, `` ` ``.  
+2. Some characters are **acceptable but treated as operators** (ignored when reading variable names): `!`, `%`, `^`, `&`, `*`, `(`, `)`, `-`, `+`, `=`, `[`, `]`, `|`, `<`, `,`, `>`, `/`.  
+3. The left-hand side must contain a variable that the equation defines, written in its untransformed form. For example, `C_s` for consumption. Constructs like `C_s*2` or `log(C_s)` are not allowed on the left-hand side. If an operator or function appears on the left, the entire expression will be treated as the variable name.
+4. An equals sign `=` must separate the left-hand side from the right-hand side.
+5. The right-hand side should contain the rest of the equation, written using variable names, standard operators, and functions available in R. For convenience, the package also includes commonly used operations on matrix columns, such as lags and differences:
+    * **Lags**: Add a negative lag order in square brackets to a variable. For example, the first lag of consumption is written as `C_s[-1]`, and the third lag as `C_s[-3]`. The package supports lags up to the fourth order, which is particularly useful for quarterly data. This syntax mirrors the behavior of the `lag()` function in R.
+    * **First differences**: The first difference, e.g., `C_s - C_s[-1]`, can be written as `d(C_s)`. This is equivalent to the `diff()` function in R. Note that this operation is defined only for the first difference; higher-order differences, such as the third difference, must be expressed explicitly, e.g., `C_s - C_s[-3]`.
+    * **Lagged differences**: Combine the above two operations, e.g., `d(C_s[-1])`.
+6. Each variable being defined can appear on the left-hand side of a single equation. It is not allowed to have multiple different equations for the same variable (exact duplicates are flagged with an appropriate message).
 
 ``` r
 model_sim <- model_sim |>
@@ -112,7 +131,22 @@ model_sim$equations
 ## 12 H_s = H_h                            TRUE   "Money equilibrium"
 ```
 
-With all variables and equations defined, the model is ready to be solved over a given time horizon. This can be done using the `simulate_scenario()` function. The function allows selecting the number of periods, choosing a simulation method (`Newton` or `Gauss`), and optionally specifying a starting quarter date. The simulation results are stored in a `$result` tibble within the `$baseline` scenario.
+With all variables and equations defined, the model is ready to be solved over a given time horizon. This can be done using the `simulate_scenario()` function. The function starts by validating the user-defined model through the `prepare()` function, which is also accessible in the package's exported environment.
+
+The function allows choosing a simulation method (`Newton` or `Gauss`), selecting the number of periods and a starting date. Specifying an initial period is optional; if omitted, periods will simply be numbered consecutively with natural numbers.  
+
+By default, equations are solved using the Gauss method. Independent equations for a specific period are resolved in a single iteration. Interdependent equations are grouped into loops and solved iteratively. For the first period, the method uses the provided initial values (`init`). In subsequent iterations, it relies on the results of the previous iteration for all variables. The process continues until the solution converges within the specified tolerance (`tol`) or the maximum number of iterations (`max_iter`) is reached. If any period produces a value of `Inf`, `NaN`, or `NA`, the process is stopped, and an error message is displayed.  
+
+Before solving equations, their order is determined to:  
+
+1. Solve endogenous variables first, allowing them to be used as exogenous variables later.  
+2. Group interdependent equations into loops, ensuring proper substitution of exogenous variables.  
+
+The Newton method works similarly but uses the Newton-Raphson algorithm to solve interdependent equations. This algorithm is implemented via the `rootSolve::multiroot()` function.  
+
+During the model-building phase, setting the `info = TRUE` argument can be helpful. This returns the result of the `prepare()` function, providing details on the classification of all variables (endogenous/exogenous) and other summary information about the input data.  
+
+Simulation results are saved in a `$result` tibble linked to the scenario being simulated (e.g., the baseline scenario is stored as `$baseline`).
 
 ``` r
 model_sim <- model_sim |>
@@ -144,7 +178,8 @@ model_sim$baseline$result
 
 The **godley** package provides customized visualization capabilities to enhance the analysis of simulation outcomes.
 
-Users can leverage the `plot_simulation()` function to create plots, specifying the variables or expressions of interest. For instance, in the example below, the plot illustrates the expressions for Income, Government Spending, and Taxes.
+Users can leverage the `plot_simulation()` function to create plots, by specifying the time range with `from` and `to`, along with a list of `expressions`. These expressions can include variable names or calculations derived from them, such as `G_s/Y`. In the example below, the plot displays the expressions for Income, Government Spending, and Taxes.
+
 
 ``` r
 plot_simulation(
@@ -156,7 +191,7 @@ plot_simulation(
 
 ![](man/figures/images/Scenario_baseline.png)
 
-In addition to plotting variables over time, the `plot_cycles()` function can be used to visualize the model structure and identify loops in the interdependencies between variables.
+Beyond plotting variables over time, the `plot_cycles()` function provides a way to visualize the model's structure and detect loops in the interdependencies between variables.
 
 ``` r
 plot_cycles(model_sim)
@@ -166,15 +201,23 @@ plot_cycles(model_sim)
 These features provide an intuitive way to interpret and communicate the results of macroeconomic simulations.
 
 ### Templates 📝
-**godley** includes predefined templates to streamline model creation. These templates are accessible through `create_model(template = "SIM")`. Available templates include `SIM`, `SIMEX`, `PC`, `PCEX`, `LP`, `REG`, `OPEN`, `BMW`, `BMWK`, `DIS`, and `DISINF` -- covering all models presented in Godley & Lavoie (2007).
+
+To streamline model creation, **godley** comes with predefined templates. Rather than starting with an empty model and manually adding equations each time, users can reuse a previously created model or choose from the classic SFC models (Godley & Lavoie, 2007) included in the package. These templates are available through the `template` argument in the `create_model()` function. The available templates include `SIM`, `SIMEX`, `PC`, `PCEX`, `LP`, `REG`, `OPEN`, `BMW`, `BMWK`, `DIS`, and `DISINF`, covering all models presented in Godley & Lavoie (2007).
 
 ### Shocks ⚡
 
-The package enables the introduction and simulation of shocks within the model. 
+The package allows users to introduce and simulate shocks within the model.
+
+An alternative shock scenario is defined by:
+
+1. **Shock parameters** (which variable is affected, when it occurs, and what value it takes),  
+2. **Simulation** (how many future periods the new scenario should cover).  
+
+To create a shock, begin by initializing an empty S3 object (list) of the `SFC_shock` class using the `create_shock()` function.
+Next, add the shock parameters for selected variables (`variable`) using the `add_shock()` function. Shock values can be defined explicitly (`value`), as a relative rate (`rate`), or as an absolute increment (`absolute`).
 
 For example, a 20% increase in government spending can be simulated by first creating a shock object using `create_shock()` and then applying it with `add_shock()` for the period between Q1 2017 and Q4 2020.
 
-Shock values can be defined explicitly (`value`), as a relative rate (`rate`), or as an absolute increment (`absolute`):
 
 ``` r
 sim_shock <- create_shock() |>
@@ -228,7 +271,11 @@ plot_simulation(
 
 ### Sensitivity 🧙
 
-The **godley** package allows for the assessment of simulation result sensitivity to specific parameter values. For example, the effect of small adjustments to `alpha1` on short-term dynamics can be analyzed by first creating a new model object with `create_sensitivity()` and specifying the upper and lower bounds for the parameter of interest. Once the sensitivity scenarios are generated, the simulations can be executed:
+The **godley** package allows for the assessment of simulation result sensitivity to specific parameter values. For example, the effect of small adjustments to `alpha1` on short-term dynamics can be analyzed by first creating a new model object with `create_sensitivity()` and specifying the upper and lower bounds for the parameter of interest. 
+
+The `create_sensitivity()` function generates a new SFC object based on an existing model and automatically adds multiple scenarios. These scenarios differ only in the value of the selected parameter (`variable`), which is varied across a specified range defined by `lower`, `upper`, and `step`.
+
+Once the sensitivity scenarios are generated, the simulations can be executed:
 
 ``` r
 model_sens <- model_sim |>
@@ -238,7 +285,7 @@ model_sens <- model_sim |>
   simulate_scenario(periods = 100, start_date = "2015-01-01")
 ```
 
-To enable a comparative analysis of outcomes, all sensitivity scenarios can be displayed together by selecting those that match the specified name:
+The results can be displayed in a plot. To visualize multiple scenarios that share the same `scenario` substring in their names, set the `take_all = TRUE` argument.
 
 ``` r
 plot_simulation(
