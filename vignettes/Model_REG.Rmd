@@ -263,7 +263,7 @@ Later you need to create new shock scenario:
 model_reg <- add_scenario(model_reg,
   name = "expansion3", origin = "baseline",
   origin_start = 1,
-  origin_end = 100, 
+  origin_end = 100,
   shock = shock_reg
 )
 ```

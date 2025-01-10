@@ -89,4 +89,3 @@ plot_simulation(
   model = model_simex, scenario = c("baseline", "expansion"), from = 1, to = 50,
   expressions = c("C_s / alpha1")
 )
-

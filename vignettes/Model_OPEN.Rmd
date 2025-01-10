@@ -181,8 +181,8 @@ Then you need to create new shock scenario:
 # Create new scenario with this shock
 model_open <- add_scenario(model_open,
   name = "expansion", origin = "baseline",
-  origin_start= 1,
-  origin_end = 100, 
+  origin_start = 1,
+  origin_end = 100,
   shock = shock_open
 )
 ```

@@ -11,21 +11,21 @@
 check_parentheses_balance <- function(eq) {
   # Split the equation into individual characters
   chars <- strsplit(eq, "")[[1]]
-  
+
   # Filter out only parentheses characters
   parens <- chars[chars %in% c("(", ")")]
-  
+
   # If there are no parentheses, the equation is trivially balanced
   if (length(parens) == 0) {
     return(TRUE)
   }
-  
+
   # Map opening parentheses to +1 and closing parentheses to -1
   vals <- ifelse(parens == "(", 1, -1)
-  
+
   # Compute the cumulative sum of the parentheses values
   cs <- cumsum(vals)
-  
+
   # The equation is balanced if:
   # 1) The cumulative sum never becomes negative.
   # 2) The final cumulative sum returns to zero.
@@ -61,7 +61,7 @@ Please complete exogenous variables and initial values
       stop("Invalid character(s) in equation. Please check: ", i, "")
     }
   }
-  
+
   # 4. Verify that the equations are properly balanced in terms of parentheses
   for (eq in all_equations) {
     if (!check_parentheses_balance(eq)) {

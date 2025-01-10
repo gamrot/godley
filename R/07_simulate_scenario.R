@@ -49,7 +49,7 @@ d <- function(x) {
 #' @param verbose logical to tell if additional model verbose should be displayed
 #'
 #' @return updated model containing simulated scenario(s)
-#' 
+#'
 
 simulate_scenario <- function(model,
                               scenario,
@@ -154,7 +154,7 @@ simulate_scenario <- function(model,
         periods <- nrow(model[[model[[scenario]]$origin]]$result)
       }
       if (is.na(start_date) &
-          inherits(model[[model[[scenario]]$origin]]$result$time, "Date")) {
+        inherits(model[[model[[scenario]]$origin]]$result$time, "Date")) {
         start_date <- min(model[[model[[scenario]]$origin]]$result$time)
       }
       model <- prepare_scenario_matrix(model, scenario, periods)
@@ -195,13 +195,13 @@ simulate_scenario <- function(model,
       )
     hl <- h$lhs
     hr <- h$rhs
-    
+
     # Check if hidden equations are fulfilled
     diffs <- m[, hl, drop = FALSE] - m[, hr, drop = FALSE]
-    
+
     # Identify any hidden equations that fail the tolerance criterion
     failing_equations <- which(apply(abs(diffs), 2, max) >= hidden_tol)
-    
+
     if (length(failing_equations) > 0) {
       # Construct a detailed message for each failing equation
       eq_messages <- sapply(failing_equations, function(i) {
@@ -209,12 +209,12 @@ simulate_scenario <- function(model,
         eq_rhs <- h$rhs[i]
         max_diff <- max(abs(diffs[, i]))
         paste0(
-          "Hidden equation '", eq_lhs, " = ", eq_rhs, 
-          "' does not hold within the hidden tolerance of ", hidden_tol, 
+          "Hidden equation '", eq_lhs, " = ", eq_rhs,
+          "' does not hold within the hidden tolerance of ", hidden_tol,
           ". Maximum difference observed: ", max_diff
         )
       })
-      
+
       error_message <- paste0(
         "\nThe following hidden (redundant) equation(s) are not fulfilled:\n",
         paste(eq_messages, collapse = "\n"),

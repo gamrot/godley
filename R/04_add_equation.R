@@ -37,14 +37,14 @@ add_equation <- function(model, ...) {
 }
 
 #' Add single equation to the model
-#' 
+#'
 #' helper for add_equation()
-#' 
+#'
 #' @param model SFC model object
 #' @param equation string equation in format: 'x = y + z - a * b + (c + d) / e + f[-1]'
 #' @param hidden logical, indicates if equation should be written as hidden, defaults to FALSE
 #' @param desc string equation description
-#' 
+#'
 add_equation_single <- function(model,
                                 equation,
                                 hidden = FALSE,

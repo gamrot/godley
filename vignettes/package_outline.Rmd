@@ -160,7 +160,7 @@ To add shock equation to SFC shock object please use ```add_shock()``` function 
 ```{r}
 # add shock equation for increased government expenditures
 sim_shock <- add_shock(
-  shock = sim_shock, 
+  shock = sim_shock,
   variable = "G_d",
   value = 25,
   desc = "Increase in government expenditures", start = 5, end = 10
@@ -182,7 +182,7 @@ To add new shock scenario to SFC model please use ```add_scenario()``` function 
 model_sim <- add_scenario(
   model = model_sim, name = "expansion", origin = "baseline",
   origin_start = 1,
-  origin_end = 100, 
+  origin_end = 100,
   shock = sim_shock
 )
 ```

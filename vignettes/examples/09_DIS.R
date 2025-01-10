@@ -88,7 +88,7 @@ shock <- create_shock() |>
   add_shock(variable = "phi", value = 0.35, desc = "One-shot increase in the costing margin", start = 5, end = 40)
 
 model_dis <- model_dis |>
-  add_scenario(name = "expansion", origin = "baseline", origin_start=1, origin_end=100, shock = shock)
+  add_scenario(name = "expansion", origin = "baseline", origin_start = 1, origin_end = 100, shock = shock)
 
 model_dis <- simulate_scenario(model_dis, scenario = "expansion", max_iter = 350, periods = 40, hidden_tol = .1, tol = 1e-05, method = "Gauss")
 
@@ -102,7 +102,7 @@ shock2 <- create_shock() |>
   add_shock(variable = "sigma_T", value = 0.25, desc = "Increase in the target inventories to sales ratio", start = 5, end = 50)
 
 model_dis <- model_dis |>
-  add_scenario(name = "expansion2", origin = "baseline", origin_start=1, origin_end=100, shock = shock2)
+  add_scenario(name = "expansion2", origin = "baseline", origin_start = 1, origin_end = 100, shock = shock2)
 
 model_dis <- simulate_scenario(model_dis, scenario = "expansion2", max_iter = 350, periods = 50, hidden_tol = .1, tol = 1e-05, method = "Gauss")
 
@@ -115,4 +115,3 @@ plot_simulation(
   model = model_dis, scenario = "expansion2", from = 1, to = 50,
   expressions = c("delta_inv = inv - dplyr::lag(inv)", "delta_inv_E = inv_E - dplyr::lag(inv_E)")
 )
-

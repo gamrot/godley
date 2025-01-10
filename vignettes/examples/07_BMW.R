@@ -72,16 +72,16 @@ shock <- create_shock() |>
     desc = "Increase in autonomous consumption expenditures",
     start = 5,
     end = 50
-    )
+  )
 
 model_bmw <- model_bmw |>
   add_scenario(
     name = "expansion",
     origin = "baseline",
     origin_start = 1,
-    origin_end = 100, 
+    origin_end = 100,
     shock = shock
-    )
+  )
 
 model_bmw <- simulate_scenario(model_bmw, scenario = "expansion", max_iter = 350, periods = 100, hidden_tol = 10, tol = 1e-05, method = "Newton")
 
@@ -97,16 +97,16 @@ plot_simulation(
 
 # Scenario 2: Increase in the propensity to save
 shock2 <- create_shock() |>
-  add_shock(variable = "alpha1", value=0.7, desc = "Increase in the propensity to save", start = 5, end = 50)
+  add_shock(variable = "alpha1", value = 0.7, desc = "Increase in the propensity to save", start = 5, end = 50)
 
 model_bmw <- model_bmw |>
   add_scenario(
     name = "expansion2",
     origin = "baseline",
     origin_start = 1,
-    origin_end = 100, 
+    origin_end = 100,
     shock = shock2
-    )
+  )
 
 model_bmw <- simulate_scenario(
   model_bmw,
@@ -116,7 +116,7 @@ model_bmw <- simulate_scenario(
   hidden_tol = .1,
   tol = 1e-05,
   method = "Newton"
-  )
+)
 
 plot_simulation(
   model = model_bmw, scenario = "expansion2", from = 1, to = 50,
@@ -127,4 +127,3 @@ plot_simulation(
   model = model_bmw, scenario = "expansion2", from = 1, to = 50,
   expressions = c("YK = Y / dplyr::lag(K)")
 )
-

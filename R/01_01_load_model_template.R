@@ -159,7 +159,7 @@ load_model_template <- function(model_template_name) {
       add_variable("CGE", desc = "") |>
       add_variable("YDEr", desc = "") |>
       add_variable("pebl", desc = "") |>
-      add_variable("Bh", desc = "") 
+      add_variable("Bh", desc = "")
 
     # parameters
     model <- model |>
@@ -394,9 +394,9 @@ load_model_template <- function(model_template_name) {
       add_variable("W") |>
       add_variable("DA") |>
       add_variable("KT")
-    
+
     # Add equations
-    model<- model |>
+    model <- model |>
       add_equation("Cs = Cd") |>
       add_equation("Is = Id") |>
       add_equation("Ns = Nd") |>
@@ -450,7 +450,7 @@ load_model_template <- function(model_template_name) {
       add_variable("W") |>
       add_variable("DA") |>
       add_variable("KT")
-    
+
     # Add equations
     model <- model |>
       add_equation("Cs = Cd") |>
@@ -515,9 +515,9 @@ load_model_template <- function(model_template_name) {
       add_variable("ydhs") |>
       add_variable("mh") |>
       add_variable("ydhs_E")
-    
+
     # Add equations
-    model<- model |>
+    model <- model |>
       add_equation("y = s_E + inv_E - inv[-1]") |>
       add_equation("inv_T = sigma_T * s_E") |>
       add_equation("inv_E = inv[-1] + gamma * (inv_T - inv[-1])") |>
@@ -595,7 +595,7 @@ load_model_template <- function(model_template_name) {
       add_variable("ydhs") |>
       add_variable("yd") |>
       add_variable("ydhs_E")
-    
+
     # Add equations
     model <- model |>
       add_equation("y = s_E + inv_E - inv[-1]") |>
@@ -651,8 +651,8 @@ load_model_template <- function(model_template_name) {
       add_variable("theta", init = 0.2, desc = "Tax rate") |>
       add_variable("G_d", init = 20, desc = "Government demand") |>
       add_variable("W", init = 1, desc = "Wage rate")
-    
-    
+
+
     # Add equations
     model <- model |>
       add_equation("C_s = C_d", desc = "Consumption") |>

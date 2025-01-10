@@ -82,8 +82,8 @@ plot_simulation <- function(model,
   }
 
   results <- model$baseline$result %>% dplyr::select(time)
-  
-  
+
+
   for (i in scenario) {
     m <- model[[i]]$result
 
