@@ -125,7 +125,7 @@ shock_open <- add_shock(shock_open,
 
 model_open <- add_scenario(model_open,
   name = "expansion", origin = "baseline",
-  origin_start=1, origin_end=100, shock = shock_open
+  origin_start = 1, origin_end = 100, shock = shock_open
 )
 
 # Simulate shock
