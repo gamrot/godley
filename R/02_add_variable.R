@@ -37,14 +37,14 @@ add_variable <- function(model, ...) {
 }
 
 #' Add single variable to the model
-#' 
+#'
 #' helper for add_variable()
-#' 
+#'
 #' @param model SFC model object
 #' @param name string name for added variable
 #' @param init numeric initial value, defaults to 1e-05
 #' @param desc string variable description
-#' 
+#'
 
 add_variable_single <- function(model,
                                 name,

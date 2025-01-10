@@ -113,7 +113,7 @@ Next you need to add appropriate equation:
 shock_pc <- add_shock(shock_pc,
   variable = "r",
   value = 0.035,
-  desc = "Increase in the rate of interest on bills", 
+  desc = "Increase in the rate of interest on bills",
   start = 5, end = 50
 )
 ```
@@ -124,7 +124,7 @@ Then you need to create new shock scenario:
 model_pc <- add_scenario(model_pc,
   name = "expansion", origin = "baseline",
   origin_start = 1,
-  origin_end = 100, 
+  origin_end = 100,
   shock = shock_pc
 )
 ```

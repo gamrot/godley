@@ -80,4 +80,3 @@ plot_simulation(
   model = model_lp, scenario = c("baseline"), from = 1, to = 100,
   expressions = c("Y", "V")
 )
-

@@ -134,7 +134,7 @@ Then you need to create new shock scenario:
 model_bmwk <- add_scenario(model_bmwk,
   name = "expansion", origin = "baseline",
   origin_start = 1,
-  origin_end = 100, 
+  origin_end = 100,
   shock = shock_bmwk
 )
 ```

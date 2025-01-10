@@ -95,4 +95,3 @@ plot_simulation(
   model = model_bmwk, scenario = "expansion2", from = 1, to = 50,
   expressions = c("Y")
 )
-
