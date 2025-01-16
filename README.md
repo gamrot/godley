@@ -191,14 +191,12 @@ plot_simulation(
 
 ![](man/figures/images/Scenario_baseline.png)
 
-Beyond plotting variables over time, the `plot_cycles()` function provides a way to visualize the model's structure and detect loops in the interdependencies between variables.
+Beyond plotting variables over time, the `plot_cycles()` function provides a way to visualize the model's structure and uncover loops (feedback mechanisms and endogeneity) within the interdependencies between variables, offering an intuitive approach for interpreting and communicating the results of macroeconomic simulations.
 
 ``` r
 plot_cycles(model_sim)
 ```
 ![](man/figures/images/Cycles.png)
-
-These features provide an intuitive way to interpret and communicate the results of macroeconomic simulations.
 
 ### Templates 📝
 

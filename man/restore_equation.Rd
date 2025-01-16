@@ -10,11 +10,11 @@ restore_equation(eq_line)
 \item{eq_line}{A character string representing an equation with internal indexing.}
 }
 \value{
-A character string where the internal indexing notation has been restored to 
+A character string where the internal indexing notation has been restored to
 a more user-friendly form.
 }
 \description{
-This function converts an internally processed equation expression (e.g., `m[.i, 'Var']`) 
+This function converts an internally processed equation expression (e.g., `m[.i, 'Var']`)
 into a more readable format (e.g., `Var`). The function handles lagged variables,
 transforming expressions such as `m[.i - 1, 'Var']` into `Var[-1]`.
 It is intended for use in warning messages.
