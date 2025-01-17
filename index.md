@@ -189,14 +189,14 @@ plot_simulation(
 )
 ```
 
-![](man/figures/images/Scenario_baseline.png)
+![Plot of simulation results: baseline scenario](man/figures/images/Scenario_baseline.png)
 
 Beyond plotting variables over time, the `plot_cycles()` function provides a way to visualize the model's structure and uncover loops (feedback mechanisms and endogeneity) within the interdependencies between variables, offering an intuitive approach for interpreting and communicating the results of macroeconomic simulations.
 
 ``` r
 plot_cycles(model_sim)
 ```
-![](man/figures/images/Cycles.png)
+![Variables interdependencies](man/figures/images/Cycles.png)
 
 ### Templates 📝
 
@@ -265,7 +265,7 @@ plot_simulation(
 )
 ```
 
-![](man/figures/images/Scenario_expansion.png)
+![Plot of simulation results: shock scenario](man/figures/images/Scenario_expansion.png)
 
 ### Sensitivity 🧙
 
@@ -292,7 +292,7 @@ plot_simulation(
 )
 ```
 
-![](man/figures/images/Sensitivity.png)
+![Sensitivity analysis](man/figures/images/Sensitivity.png)
 
 ### Additional examples ⭐
 
