@@ -23,6 +23,7 @@ navbar:
     github:
       icon: fa-github
       href: https://github.com/gamrot/godley
+      aria-label: "GitHub repository"
 
 articles:
 - title: SFC models with godley package
