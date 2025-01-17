@@ -14,20 +14,22 @@ knitr::opts_chunk$set(
 )
 ```
 
-Please find below guidelines how godley package can be used to create the model BMWK — Kaldorian model with private bank money described by *Wynne Godley* and *Marc Lavoie* in Chapter 7 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+This guide explains how to use the `godley` package to create the BMWK model — a Kaldorian model with private bank money described by *Wynne Godley* and *Marc Lavoie* in Chapter 7 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
 
 ```{r setup}
 library(godley)
 ```
 
 ### Base scenario
-First you need to create empty SFC model:
+Start by creating an empty SFC model:
+
 ```{r}
 # Create empty model
 model_bmwk <- create_model(name = "SFC BMWK")
 ```
 
-Next you have to add variables:
+Define the variables for the model:
+
 ```{r}
 # Add variables
 model_bmwk <- model_bmwk |>
@@ -62,7 +64,8 @@ model_bmwk <- model_bmwk |>
   add_variable("KT")
 ```
 
-You also have to add equations:
+Establish the relationships between variables by adding equations:
+
 ```{r}
 # Add equations
 model_bmwk <- model_bmwk |>
@@ -89,7 +92,8 @@ model_bmwk <- model_bmwk |>
   add_equation("Ms = Mh", hidden = TRUE)
 ```
 
-Now you can simulate model (in this example for the next 100 periods using Gauss method):
+Now, you can simulate the model (in this example, the baseline scenario over 100 periods using the Gauss method):
+
 ```{r}
 # Simulate model
 model_bmwk <- simulate_scenario(model_bmwk,
@@ -98,7 +102,8 @@ model_bmwk <- simulate_scenario(model_bmwk,
 )
 ```
 
-Based on calculated simulation you can display results for desired set of variables:
+With the simulation estimated, you can create a plot to visualize the results for the variables of interest:
+
 ```{r, out.width="100%"}
 # Plot results
 plot_simulation(
@@ -107,18 +112,22 @@ plot_simulation(
 )
 ```
 
-Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
+*Note:* The above example uses the new pipe operator (`|>`), which requires R 4.1 or later.
 
 ### Shock scenario
-You can simulate now how a shock will affect the base scenario. In this example you will implement increase in the interest rate. \
-\
-First you need to create empty shock:
+With `godley` package we can simulate how shocks affect the economy (specifically, how they impact the base scenario).
+
+In this example, we simulate the effect of an increase in the interest rate.  
+
+First, initialize an empty shock object:
+
 ```{r}
 # Create empty shock
 shock_bmwk <- create_shock()
 ```
 
-Next you need to add appropriate equation:
+Define the shock by adding an appropriate equation:
+
 ```{r}
 # Add shock equation
 shock_bmwk <- add_shock(shock_bmwk,
@@ -128,7 +137,8 @@ shock_bmwk <- add_shock(shock_bmwk,
 )
 ```
 
-Then you need to create new shock scenario:
+Integrate the shock into the model by creating a new scenario:
+
 ```{r}
 # Create new scenario with this shock
 model_bmwk <- add_scenario(model_bmwk,
@@ -139,7 +149,8 @@ model_bmwk <- add_scenario(model_bmwk,
 )
 ```
 
-Now you can simulate new shock scenario:
+Simulate the scenario with the shock applied:
+
 ```{r}
 # Simulate shock
 model_bmwk <- simulate_scenario(model_bmwk,
@@ -148,7 +159,8 @@ model_bmwk <- simulate_scenario(model_bmwk,
 )
 ```
 
-You can also plot simulation results from the shock scenario:
+Plot the simulation outcomes:
+
 ```{r, out.width="100%"}
 # Plot results
 plot_simulation(
@@ -158,4 +170,4 @@ plot_simulation(
 ```
 
 ### References
-More information about model BMWK can be found in Chapter 7 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+For more details on BMWK model, refer to Chapter 7 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*

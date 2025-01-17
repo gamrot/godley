@@ -37,7 +37,7 @@ Use the `add_variable()` function to include variables in the model. This functi
 
 ⚠️ **Remarks:**  
 
-- The following characters are not permitted in variable names: `§`, `£`, `\@`, `#`, `$`, `{`, `}`, `;`, `:`, `'`, `\`, `~`, `` ` ``, `?`, `!`, `%`, `^`, `&`, `*`, `(`, `)`, `-`, `+`, `=`, `[`, `]`, `|`, `<`, `,`, `>`, `/`.  
+- The following characters are not permitted in variable names: `§`, `£`, `@`, `#`, `$`, `{`, `}`, `;`, `:`, `'`, `\`, `~`, `` ` ``, `?`, `!`, `%`, `^`, `&`, `*`, `(`, `)`, `-`, `+`, `=`, `[`, `]`, `|`, `<`, `,`, `>`, `/`.  
 - For best practices, use only letters, numbers, and underscores (`_`) when naming variables.  
 - Each variable can be initialized with either a single scalar (representing a theoretical starting point) or a full vector of real data.  
 
@@ -87,7 +87,7 @@ Then, specify the system of equations that governs the model. This can be done u
 
 Equations must adhere to the following rules:  
 
-1. The following characters are **not allowed**: `§`, `£`, `\@`, `#`, `$`, `{`, `}`, `;`, `:`, `'`, `\`, `~`, `` ` ``.  
+1. The following characters are **not allowed**: `§`, `£`, `@`, `#`, `$`, `{`, `}`, `;`, `:`, `'`, `\`, `~`, `` ` ``.  
 2. Some characters are **acceptable but treated as operators** (ignored when reading variable names): `!`, `%`, `^`, `&`, `*`, `(`, `)`, `-`, `+`, `=`, `[`, `]`, `|`, `<`, `,`, `>`, `/`.  
 3. The left-hand side must contain a variable that the equation defines, written in its untransformed form. For example, `C_s` for consumption. Constructs like `C_s*2` or `log(C_s)` are not allowed on the left-hand side. If an operator or function appears on the left, the entire expression will be treated as the variable name.
 4. An equals sign `=` must separate the left-hand side from the right-hand side.
@@ -191,14 +191,12 @@ plot_simulation(
 
 ![](man/figures/images/Scenario_baseline.png)
 
-Beyond plotting variables over time, the `plot_cycles()` function provides a way to visualize the model's structure and detect loops in the interdependencies between variables.
+Beyond plotting variables over time, the `plot_cycles()` function provides a way to visualize the model's structure and uncover loops (feedback mechanisms and endogeneity) within the interdependencies between variables, offering an intuitive approach for interpreting and communicating the results of macroeconomic simulations.
 
 ``` r
 plot_cycles(model_sim)
 ```
 ![](man/figures/images/Cycles.png)
-
-These features provide an intuitive way to interpret and communicate the results of macroeconomic simulations.
 
 ### Templates 📝
 

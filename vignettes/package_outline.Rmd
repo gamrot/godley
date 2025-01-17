@@ -2,7 +2,7 @@
 title: "godley — package outline"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{package outline}
+  %\VignetteIndexEntry{godley — package outline}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,27 +14,32 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Scenario simulation
-There are few steps that should be process in order to create and simulate baseline scenario. \
-Function ```create_model()``` creates a SFC object. \
-Functions ```add_variable()``` and ```add_equation()``` add attributes about variables and equations to the model as a new lines in SFC tibble. \
-Function ```simulate_scenario()``` prepares model for simulation and calculates final matrix for provided scenarios. \
+## Scenario Simulation
+
+There are a few steps to follow in order to create and simulate a baseline scenario.  
+
 
 ### 1. Model creation
-To create SFC model (SFC object) please use ```create_model()``` function as in example below:
+Use the `create_model()` function to create an SFC model (SFC object):
+
 ```{r}
 library(godley)
 model_sim <- create_model(name = "SFC model")
 ```
-where: \
-name — model name (required) \
-template — name of model template to upload (optional) \
-Note: Instead of manually adding variables and equations to the model (described below in steps 2. and 3.) user can upload model's attributes from templates available in the package. Available model templates are: SIM, SIMEX, PC, LP, REG, OPEN, BMW, BMWK, DIS and DISINF. 
+
+**Arguments:**  
+
+- `name`: Model name (required).  
+- `template`: Name of a model template to upload (optional).  
+
+*Note:* Users can bypass manually adding variables and equations (steps 2 and 3 below) by uploading model attributes from pre-defined templates included in the package. Available templates are: `SIM`, `SIMEX`, `PC`, `LP`, `REG`, `OPEN`, `BMW`, `BMWK`, `DIS`, and `DISINF`.
+
 
 ### 2. Adding variables
-To add variables to the SFC model please use ```add_variable()``` function as in example below:
+Use the `add_variable()` function to add variables to the model, creating new entries in the SFC tibble:
+
 ```{r}
-# add parameters
+# Add parameters
 model_sim <- add_variable(model = model_sim, name = "C_d", desc = "Consumption demand by households")
 model_sim <- add_variable(model = model_sim, name = "C_s", desc = "Consumption supply")
 model_sim <- add_variable(model = model_sim, name = "G_s", desc = "Government supply")
@@ -61,16 +66,20 @@ model_sim <- add_variable(model = model_sim, name = "theta", init = 0.2, desc = 
 model_sim <- add_variable(model = model_sim, name = "G_d", init = 20, desc = "Government demand")
 model_sim <- add_variable(model = model_sim, name = "W", init = 1, desc = "Wage rate")
 ```
-where: \
-model — model name (required) \
-name — variable name (required) \
-init — initial variable value (optional) \
-desc — variable description (optional) 
+
+**Arguments:**  
+
+- `model`: The name of the model (required).  
+- `name`: The name of the variable (required).  
+- `init`: The initial value of the variable (optional).  
+- `desc`: A description of the variable (optional).  
+
 
 ### 3. Adding equations
-To add equation to the SFC model please use ```add_equation()``` function as in example below:
+To add equations to the SFC model, also as new entries in the SFC tibble, use the `add_equation()` function:
+
 ```{r}
-# add equations
+# Add equations
 model_sim <- add_equation(model = model_sim, equation = "C_s = C_d", desc = "Consumption")
 model_sim <- add_equation(model = model_sim, equation = "G_s = G_d")
 model_sim <- add_equation(model = model_sim, equation = "T_s = T_d")
@@ -87,78 +96,91 @@ model_sim <- add_equation(
   hidden = TRUE
 )
 ```
-where: \
-model — model name (required) \
-equation —  equation formula (required) \
-desc — equation description (optional)\
-hidden — boolean argument that inform if equation should be hidden (optional) \
-Note: Hidden equation is an equation that is not simulate.
+
+**Arguments:**  
+
+- `model`: The name of the model (required).  
+- `equation`: The formula for the equation (required).  
+- `desc`: A description of the equation (optional).  
+- `hidden`: A boolean indicating whether the equation should be hidden (optional). Hidden equations are excluded from simulation.  
+
 
 ### 4. Change initial values (optional)
-To change initial values of parameters please use ```change_init()``` function as in example below:
+To change the initial values of parameters, use the `change_init()` function:
+
 ```{r}
-# change initial value for alpha1 parameter
+# Change initial value for alpha1 parameter
 model_sim <- change_init(model = model_sim, name = "alpha1", value = 0.5)
 ```
-where: \
-model — model name (required) \
-name —  name of parameter that will be changed (required) \
-value — new initial value for provided parameter (required)
+
+**Arguments:**  
+
+- `model`: The name of the model (required).  
+- `name`: The name of the parameter (required).  
+- `value`: The new initial value for the parameter (required).  
+
 
 ### 5. Simulating scenario(s)
-To simulate model please use ```simulate_scenario()``` function as in example below:
+Use the `simulate_scenario()` function to carry out the simulation for the specified scenarios:
+
 ```{r}
-# simulate baseline scenario
+# Simulate baseline scenario
 model_sim <- simulate_scenario(
   model = model_sim, scenario = "baseline", max_iter = 350, periods = 100,
   hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
 )
 ```
-where: \
-model — name of the SFC model (required) \
-scenario — name of scenario that will be calculated (optional) \
-max_iter — number of iteration in simulation (optional) \
-periods — number of simulating periods in simulation (optional) \
-hidden_tol — maximum error tolerated for hidden equations in simulation (optional) \
-tol — maximum error tolerated for algorithm until algorithm converge in simulation (optional) \
-method — 'Newton' or 'Gauss' calculation method in simulation (optional) \
-Note: If scenario name is not provided all not simulated scenarios will be calculated.
 
-## Model — plots
-To visualize model simulation please use ```plot_simulation()``` function as in example below:
+**Arguments:**  
+
+- `model`: The name of the SFC model (required).  
+- `scenario`: The name of the scenario to be simulated (optional).  
+- `max_iter`: The maximum number of iterations for the simulation (optional).  
+- `periods`: The number of simulation periods (optional).  
+- `hidden_tol`: The maximum allowable error for hidden equations (optional).  
+- `tol`: The maximum allowable error for the algorithm to converge during the simulation (optional).  
+- `method`: The calculation method to be used (`'Newton'` or `'Gauss'`) (optional).  
+
+*Note*: If scenario name is not provided all not simulated scenarios will be calculated.
+
+
+## Model — Plots
+To visualize model simulation, use the `plot_simulation()` function as shown below:
+
 ```{r, out.width="100%"}
-# plot results
+# Plot results
 plot_simulation(
   model = model_sim, scenario = "baseline", from = 1, to = 100,
   expressions = c("Y", "C_s / alpha1")
 )
 ```
-where: \
-model — name of SFC model that will be displayed on the chart (required) \
-scenario — name of scenario(s) that will be displayed on the chart (optional) \
-take_all — boolean indicating whether all scenarios containing the given scenario name strings should be displayed on the chart (optional) \
-from — first period that will be displayed on the chart (optional) \
-to — last period that will be displayed on the chart (optional) \
-expressions — variable names or equations that will be displayed on the chart (optional) 
 
-## Model — shock
-There are few steps that should be process in order to create and simulate shock scenario. \
-Function ```create_shock()``` creates a SFC shock tibble object. \
-Function ```add_shock()``` adds shock equations to the SFC shock object. \
-Function ```add_scenario()```  adds shock scenario to the SFC model. \
-Function ```simulate_scenario()``` calculates shock scenario(s). \
+**Arguments:**  
+
+- `model`: The name of the SFC model to be displayed on the chart (required).  
+- `scenario`: The name of the scenario(s) to include on the chart (optional).  
+- `take_all`: A boolean indicating whether all scenarios containing the specified scenario name strings should be displayed on the chart (optional).  
+- `from`: The starting period to be displayed on the chart (optional).  
+- `to`: The ending period to be displayed on the chart (optional).  
+- `expressions`: The variable names or equations to visualize on the chart (optional).  
+
+
+## Model — Shock
+To create and simulate a shock scenario, follow these steps:
 
 ### 1. Creating shock object
-To create SFC shock object please use ```create_shock()``` function as in example below:
+Use the `create_shock()` function to create an SFC shock tibble object:
+
 ```{r}
-# create shock
+# Create shock
 sim_shock <- create_shock()
 ```
 
 ### 2. Adding shock equations
-To add shock equation to SFC shock object please use ```add_shock()``` function as in example below:
+Use the `add_shock()` function to add shock equations to the SFC shock object:
+
 ```{r}
-# add shock equation for increased government expenditures
+# Add shock equation for increased government expenditures
 sim_shock <- add_shock(
   shock = sim_shock,
   variable = "G_d",
@@ -166,19 +188,22 @@ sim_shock <- add_shock(
   desc = "Increase in government expenditures", start = 5, end = 10
 )
 ```
-where: \
-shock — name of the shock object to which new equation will be added (required) \
-equation — new equation describing the applied shock (required) \
-desc — description of the applied shock (optional) \
-start — first period when shock will be applied (optional) \
-end — last period when shock will be applied (optional) 
-Note: 'start' and 'end' parameters are set by default to NA, so by default the shock will be applied to the whole simulation period
+
+**Arguments:**
+
+- `shock`: The name of the shock object where the new equation will be added (required).  
+- `equation`: The (new) equation describing the applied shock (required).  
+- `desc`: A description of the applied shock (optional).  
+- `start`: The initial period when the shock will be applied (optional).  
+- `end`: The final period during which the shock will be applied (optional).
+
+*Note*: 'start' and 'end' parameters are set by default to NA, so by default the shock will be applied to the whole simulation period
 
 ### 3. Adding shock scenario to the SFC model
-To add new shock scenario to SFC model please use ```add_scenario()``` function as in example below:
+Use the `add_scenario()` function to integrate the shock scenario into the SFC model:
 
 ```{r}
-# add shock scenario for increased government expenditures
+# Add shock scenario for increased government expenditures
 model_sim <- add_scenario(
   model = model_sim, name = "expansion", origin = "baseline",
   origin_start = 1,
@@ -186,18 +211,21 @@ model_sim <- add_scenario(
   shock = sim_shock
 )
 ```
-where: 
-model — name of the model to which new scenario will be added (required) \
-name — name of a new scenario (optional) \
-origin — name of baseline scenario (optional) \
-origin_period — period from the baseline scenario which will be used as initial period in new scenario (optional) \
-shock — name of created SFC_shock object (required)
+
+**Arguments:**  
+
+- `model`: The name of the model to which the new scenario will be added (required).  
+- `name`: The name of the new scenario (optional).  
+- `origin`: The name of the baseline scenario to use as a reference (optional).  
+- `origin_start`: The period from the baseline scenario to be used as the initial period in the new scenario (optional).
+- `origin_end`: The period from the baseline scenario to be used as the final period in the new scenario (optional).  
+- `shock`: The name of the created SFC shock object to be applied (required).  
 
 ### 4. Simulating shock scenario
-To simulate new shock scenario please use ```simulate_scenario()``` function:
+Use the `simulate_scenario()` function to simulate the shock scenario:
 
 ```{r}
-# calculate shock scenario for increased government expenditures
+# Calculate shock scenario for increased government expenditures
 model_sim <- simulate_scenario(
   model = model_sim, max_iter = 350, periods = 100, hidden_tol = 0.1,
   tol = 1e-08, method = "Gauss"
@@ -205,10 +233,10 @@ model_sim <- simulate_scenario(
 ```
 
 ## Model — sensitivity
-Sensitivity allows to create in separate SFC model multiple scenarios with changed initial value for selected variable. To create and simulate sensitivity please use ```create_sensitivity()``` and  ```simulate_scenario()``` functions as in example below:
+Sensitivity analysis allows the creation of multiple scenarios in a separate SFC model by changing the initial value of a selected variable. To create and simulate sensitivity, use the `create_sensitivity()` and `simulate_scenario()` functions as shown below:
  
 ```{r}
-# create and calculate sensitivity
+# Create and calculate sensitivity
 model_sen <- create_sensitivity(
   model_pass = model_sim, variable = "alpha1",
   lower = 0.1, upper = 0.8, step = 0.1
@@ -219,9 +247,11 @@ model_sen <- simulate_scenario(
   tol = 1e-08, method = "Gauss"
 )
 ```
-where: \
-model_pass — name of the SFC model or name of scenario template that will be used in sensitivity calculation (required) \
-variable — name of the variable that will be check in sensitivity calculation (required) \
-lower — minimum value of the variable that will be used in sensitivity calculation (optional) \
-upper — maximum value of the variable that will be used in sensitivity calculation (optional) \
-step — attribute describing by how many step the variable will be changed in sensitivity analysis (optional)
+
+**Arguments:**  
+
+- `model_pass`: The name of the SFC model or scenario template to be used for the sensitivity calculation (required).  
+- `variable`: The name of the variable to be analyzed in the sensitivity calculation (required).  
+- `lower`: The minimum value of the variable for the sensitivity calculation (optional).  
+- `upper`: The maximum value of the variable for the sensitivity calculation (optional).  
+- `step`: The increment by which the variable will change during the sensitivity analysis (optional).  

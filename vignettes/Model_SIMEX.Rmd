@@ -14,20 +14,22 @@ knitr::opts_chunk$set(
 )
 ```
 
-Please find below guidelines how godley package can be used to create model SIMEX — model with government money and expectations described by *Wynne Godley* and *Marc Lavoie* in Chapter 3 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+This document provides guidelines on how to use the **godley** package to create the SIMEX model — a model with government money and expectations, as described by *Wynne Godley* and *Marc Lavoie* in Chapter 3 of *Monetary Economics: An Integrated Approach to Credit, Money, Income, Production, and Wealth.*
 
 ```{r setup}
 library(godley)
 ```
 
 ### Base scenario
-First you need to create empty SFC model:
+Start by initializing an empty SFC (Stock-Flow Consistent) model:
+
 ```{r}
 # Create empty model
 model_simex <- create_model(name = "SFC SIMEX")
 ```
 
-Next you have to add variables:
+Define the variables for the model:
+
 ```{r}
 # Add variables
 model_simex <- model_simex |>
@@ -51,7 +53,8 @@ model_simex <- model_simex |>
   add_variable("W", init = 1, desc = "Wage rate")
 ```
 
-You also have to add equations:
+Establish the relationships between variables by adding equations:
+
 ```{r}
 # Add equations
 model_simex <- model_simex |>
@@ -71,16 +74,18 @@ model_simex <- model_simex |>
   add_equation("H_s = H_h", desc = "Money equilibrium", hidden = TRUE)
 ```
 
-Now you can simulate model (in this example for the next 100 periods using Newton method):
+Now, you can simulate the model (in this example, we calculate the baseline scenario over 100 periods using the Newton method)
+
 ```{r}
 # Simulate model
 model_simex <- simulate_scenario(model_simex,
   scenario = "baseline", max_iter = 350, periods = 100,
-  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+  hidden_tol = 0.1, tol = 1e-05, method = "Newton"
 )
 ```
 
-Based on calculated simulation you can display results for desired set of variables:
+With the simulation estimated, visualize the results for the variables of interest:
+
 ```{r, out.width="100%"}
 # Plot results
 plot_simulation(
@@ -89,40 +94,41 @@ plot_simulation(
 )
 ```
 
-Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
+*Note:* The above example uses the new pipe operator (`|>`), which requires R 4.1 or later.
 
 ### Shock scenario
-You can simulate how a shock will affect the base scenario. In this example you will implement an increased government expenditures. \
-\
-First you need to create empty shock:
+With `godley` package you can simulate how shocks affect the economy (specifically, how they impact the base scenario).
+
+In this example, we introduce an increase in government expenditures.
+
+First, initialize an empty shock object:
+
 ```{r}
 # Create empty shock
 shock_simex <- create_shock()
 ```
 
-Next you need to add appropriate equation:
+Define the shock by adding an appropriate equation:
+
 ```{r}
 # Add shock equation with increased government expenditures
 shock_simex <- add_shock(shock_simex,
-  variable = "G_d",
-  value = 25,
-  desc = "Increase in government expenditures",
-  start = 5, end = 50
+  variable = "G_d", value = 25,
+  desc = "Increase in government expenditures", start = 5, end = 50
 )
 ```
 
-Then you need to create new shock scenario:
+Integrate the shock into the model by creating a new scenario:
+
 ```{r}
 # Create new scenario with this shock
 model_simex <- add_scenario(model_simex,
-  name = "expansion", origin = "baseline",
-  origin_start = 1,
-  origin_end = 100,
-  shock = shock_simex
+  name = "expansion", origin = "baseline", shock = shock_simex
 )
 ```
 
-Now you can simulate new shock scenario:
+Simulate the scenario with the shock applied:
+
 ```{r}
 # Simulate shock
 model_simex <- simulate_scenario(model_simex,
@@ -131,7 +137,8 @@ model_simex <- simulate_scenario(model_simex,
 )
 ```
 
-You can also display results from the shock scenario:
+Finally, plot the simulation outcomes:
+
 ```{r, out.width="100%"}
 # Plot results
 plot_simulation(
@@ -141,4 +148,4 @@ plot_simulation(
 ```
 
 ### References
-More information about model SIMEX can be found in Chapter 3 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+For more details on SIMEX model, refer to Chapter 3 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*

@@ -14,20 +14,22 @@ knitr::opts_chunk$set(
 )
 ```
 
-Please find below guidelines how godley package can be used to create model LP — model with long-term bonds, capital gains and liquidity preference described by *Wynne Godley* and *Marc Lavoie* in Chapter 5 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+This guide explains how to use the `godley` package to create the LP model — a model with long-term bonds, capital gains and liquidity preference, as described by *Wynne Godley* and *Marc Lavoie* in Chapter 5 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
 
 ```{r setup}
 library(godley)
 ```
 
 ### Base scenario
-First you need to create empty SFC model:
+Start by initializing an empty SFC (Stock-Flow Consistent) model:
+
 ```{r}
 # Create empty model
 model_lp <- create_model(name = "SFC LP")
 ```
 
-Next you have to add variables:
+Define the variables for the model:
+
 ```{r}
 # Add variables
 model_lp <- model_lp |>
@@ -70,7 +72,8 @@ model_lp <- model_lp |>
   add_variable("chi", init = 0.1, desc = "")
 ```
 
-You also have to add equations:
+Establish the relationships between variables by adding equations:
+
 ```{r}
 # Add equations
 model_lp <- model_lp |>
@@ -100,16 +103,18 @@ model_lp <- model_lp |>
   add_equation("Hs = Hh", desc = "Money equilibrium", hidden = TRUE)
 ```
 
-Now you can simulate model (in this example for the next 100 periods using Gauss method):
+Now, you can simulate the model (in this example, we calculate the baseline scenario over 100 periods using the Gauss method)
+
 ```{r}
 # Simulate model
 model_lp <- simulate_scenario(model_lp,
   scenario = "baseline", max_iter = 350, periods = 100,
-  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+  hidden_tol = 0.1, tol = 1e-05, method = "Gauss"
 )
 ```
 
-Based on calculated simulation you can display simulation results for desired set of variables:
+With the simulation estimated, visualize the results for the variables of interest:
+
 ```{r, out.width="100%"}
 # Plot results
 plot_simulation(
@@ -118,7 +123,7 @@ plot_simulation(
 )
 ```
 
-Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
+*Note:* The above example uses the new pipe operator (`|>`), which requires R 4.1 or later.
 
 ### References
-More information about model LP can be found in Chapter 5 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+For more details on LP model, refer to Chapter 5 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*

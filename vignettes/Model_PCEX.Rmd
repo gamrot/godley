@@ -14,21 +14,24 @@ knitr::opts_chunk$set(
 )
 ```
 
-Please find below guidelines how godley package can be used to create models PCEX — models with government money and portfolio choice with expectations described by *Wynne Godley* and *Marc Lavoie* in Chapter 4 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+This guide explains how to use the `godley` package to create PCEX models — models with government money and portfolio choice with expectations, as described by *Wynne Godley* and *Marc Lavoie* in Chapter 4 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
 
 ```{r setup}
 library(godley)
 ```
 
 ### Model PCEX - random shocks
-In this example expectations are subject to a random process, described in equation with a new variable "Ra" normally distributed with mean equal to 0: ```Yd_e = Yd * (1 + Ra)``` \
-To create this model first you need to create empty SFC model:
+In this example, expectations follow a random process, modeled by an equation with a new variable "Ra," which is normally distributed with a mean of 0:  
+```Yd_e = Yd * (1 + Ra)```. 
+
+To create this model, first initialize an empty SFC model:
 ```{r}
 # Create empty model
 model_pcex <- create_model(name = "SFC PCEX")
 ```
 
-Next you have to add variables:
+Then, add variables to the model:
+
 ```{r}
 # Add variables
 model_pcex <- model_pcex |>
@@ -58,7 +61,8 @@ model_pcex <- model_pcex |>
   add_variable("lambda2", init = 0.01, desc = "")
 ```
 
-you also have to add equations:
+Define the relationships between variables by adding equations:
+
 ```{r}
 # Add equations
 model_pcex <- model_pcex |>
@@ -81,7 +85,8 @@ model_pcex <- model_pcex |>
   add_equation("H_h = H_s", hidden = T)
 ```
 
-Now you can simulate model (in this example for the next 100 periods using Newton method):
+Now, you can simulate the model (in this example, the baseline scenario over 100 periods using the Newton method):
+
 ```{r}
 # Simulate model
 model_pcex <- simulate_scenario(model_pcex,
@@ -90,7 +95,8 @@ model_pcex <- simulate_scenario(model_pcex,
 )
 ```
 
-Based on calculated simulation you can display results for desired set of variables:
+With the simulation estimated, you can create a plot to visualize the results for the variables of interest:
+
 ```{r, out.width="100%"}
 # Plot results
 plot_simulation(
@@ -99,17 +105,19 @@ plot_simulation(
 )
 ```
 
-Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
+*Note:* The above example uses the new pipe operator (`|>`), which requires R 4.1 or later.
 
 ### Model PCEX1 - adaptive expectations
-In this example we assume that expectations about current disposable income are based on actual disposable income from the previous period. \
-To apply this model first you need to create empty SFC model:
+In this scenario, we assume that expectations about current disposable income are based on the actual disposable income from the previous period.  
+
+To apply this model, first create an empty SFC model:  
 ```{r}
 # Create empty model
 model_pcex1 <- create_model(name = "SFC PCEX1")
 ```
 
-Next you have to add variables:
+Next, define relevant variables:
+
 ```{r}
 # Add variables
 model_pcex1 <- model_pcex1 |>
@@ -138,7 +146,9 @@ model_pcex1 <- model_pcex1 |>
   add_variable("lambda2", init = 0.01, desc = "")
 ```
 
-you also have to change equation about expected disposable income from previous example to ```Yd_e = Yd[-1]```:
+Following that, update the equation for expected disposable income from the previous example to:  
+```Yd_e = Yd[-1]```  
+
 ```{r}
 # Add equations
 model_pcex1 <- model_pcex1 |>
@@ -160,7 +170,8 @@ model_pcex1 <- model_pcex1 |>
   add_equation("H_h = H_s", hidden = T)
 ```
 
-Now you can simulate model (in this example for the next 100 periods using Newton method):
+Now, you can simulate the model (in this example, the baseline scenario over 100 periods using the Newton method):
+
 ```{r}
 # Simulate model
 model_pcex1 <- simulate_scenario(model_pcex1,
@@ -169,7 +180,8 @@ model_pcex1 <- simulate_scenario(model_pcex1,
 )
 ```
 
-Based on calculated simulation you can display results for desired set of variables:
+With the simulation estimated, you can create a plot to visualize the results for the variables of interest:
+
 ```{r, out.width="100%"}
 # Plot results
 plot_simulation(
@@ -178,12 +190,14 @@ plot_simulation(
 )
 ```
 
-Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1).
+*Note:* The above example uses the new pipe operator (`|>`), which requires R 4.1 or later.
 
 #### Shock - increase in the propensity to consume out of disposable income
 
-Now you can simulate what will happen with economy if the propensity to consume out of disposable income increase to 0.7.\
-First you need to create empty shock object and add new equation for ```alpha1```:
+Now you can simulate the impact on the economy if the propensity to consume out of disposable income increases to 0.7.  
+
+First, create an empty shock object and add a new equation for ```alpha1```:  
+
 ```{r}
 # Create empty shock
 shock_pcex1 <- create_shock()
@@ -205,7 +219,7 @@ model_pcex1 <- add_scenario(model_pcex1,
 )
 ```
 
-Now you can simulate shock scenario:
+Now you can simulatem the shock scenario:
 ```{r}
 # Simulate shock
 model_pcex1 <- simulate_scenario(model_pcex1,
@@ -214,7 +228,8 @@ model_pcex1 <- simulate_scenario(model_pcex1,
 )
 ```
 
-Based on results you can plot national income, evolution of consumption, expected disposable income and lagged wealth:
+Finally, once you have the results, you can plot national income, the evolution of consumption, expected disposable income, and lagged wealth.
+
 ```{r, out.width="100%"}
 # Plot results
 plot_simulation(
@@ -232,14 +247,19 @@ plot_simulation(
 ```
 
 ### Model PCEX2 - where the propensity to consume reacts negatively to higher interest rates
-In this example we assume that expectations about current disposable income are based on actual disposable income from the previous period like in previous example but the propensity to consume reacts negatively to higher interest rates. To apply this model we need to add two new variables ```iota``` and ```alpha10``` to variables used in PCEX1 and add one additional equation ```alpha1 = alpha10 - iota * r[-1]```.\
-To apply this model first you need to create empty SFC model:
+
+Here, we assume that expectations regarding current disposable income are based on the previous period’s actual disposable income, as in the previous example. However, the propensity to consume now reacts negatively to higher interest rates (decreases as interest rates rise). To apply this model, we need to add two new variables, `iota` and `alpha10`, to those used in PCEX1, and include an additional equation:  
+```alpha1 = alpha10 - iota * r[-1]```.
+
+To begin, create an empty SFC model:
+
 ```{r}
 # Create empty model
 model_pcex2 <- create_model(name = "SFC PCEX2")
 ```
 
-Next you have to add variables:
+Then, define the variables for the model:
+
 ```{r}
 # Add variables
 model_pcex2 <- model_pcex2 |>
@@ -270,7 +290,8 @@ model_pcex2 <- model_pcex2 |>
   add_variable("lambda2", init = 0.01, desc = "")
 ```
 
-You also have to add equations: 
+Specify the relationships between variables by adding equations:
+
 ```{r}
 # Add equations
 model_pcex2 <- model_pcex2 |>
@@ -293,7 +314,8 @@ model_pcex2 <- model_pcex2 |>
   add_equation("H_h = H_s", hidden = T)
 ```
 
-Now you can simulate model (in this example for the next 100 periods using Newton method):
+Now, you can simulate the model (in this example, the baseline scenario over 100 periods using the Newton method):
+
 ```{r}
 # Simulate model
 model_pcex2 <- simulate_scenario(model_pcex2,
@@ -302,7 +324,8 @@ model_pcex2 <- simulate_scenario(model_pcex2,
 )
 ```
 
-Based on calculated simulation you can display results for desired set of variables:
+With the simulation estimated, you can create a plot to visualize the outcomes for the variables of interest:
+
 ```{r, out.width="100%"}
 # Plot results
 plot_simulation(
@@ -311,12 +334,13 @@ plot_simulation(
 )
 ```
 
-Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
+*Note:* The above example uses the new pipe operator (`|>`), which requires R 4.1 or later.
 
 #### Shock - increase in the rate of interest on bills
 
-Now you can simulate what will happen with the economy if the rate of interest on bills increase by 100 points.\
-First you need to create empty shock object and add new equation for ```r```:
+Now, you can simulate the effects on the economy of a 100-point increase in the interest rate on bills.  
+
+To start, create an empty shock object and add a new equation for `r`:  
 ```{r}
 # Create empty shock
 shock_pcex2 <- create_shock()
@@ -338,7 +362,8 @@ model_pcex2 <- add_scenario(model_pcex2,
 )
 ```
 
-Now you can simulate shock scenario:
+Afterward, you can simulate the shock scenario:
+
 ```{r}
 # Simulate shock
 model_pcex2 <- simulate_scenario(model_pcex2,
@@ -347,7 +372,8 @@ model_pcex2 <- simulate_scenario(model_pcex2,
 )
 ```
 
-Based on results you can plot national income, evolution of consumption, expected disposable income and lagged wealth:
+With these results, you can visualize national income, the evolution of consumption, expected disposable income, and lagged wealth:
+
 ```{r, out.width="100%"}
 # Plot results
 plot_simulation(
@@ -366,4 +392,4 @@ plot_simulation(
 ```
 
 ### References
-More information about models PC with expectations can be found in Chapter 4 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+For more details on PC models with expectations (PCEX), see Chapter 4 of *Monetary Economics: An Integrated Approach to Credit, Money, Income, Production, and Wealth.*

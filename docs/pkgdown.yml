@@ -1,19 +1,20 @@
-pandoc: '2.18'
-pkgdown: 2.0.5
+pandoc: 3.1.1
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
-  01_Model_SIM: 01_Model_SIM.html
-  02_Model_SIMEX: 02_Model_SIMEX.html
-  03_Model_PC: 03_Model_PC.html
-  04_Model_LP: 04_Model_LP.html
-  05_Model_REG: 05_Model_REG.html
-  06_Model_OPEN: 06_Model_OPEN.html
-  07_Model_BMW: 07_Model_BMW.html
-  08_Model_BMWK: 08_Model_BMWK.html
-  09_Model_DIS: 09_Model_DIS.html
-  10_Model_DISINF: 10_Model_DISINF.html
-last_built: 2022-07-07T14:03Z
+  Model_BMW: Model_BMW.html
+  Model_BMWK: Model_BMWK.html
+  Model_DIS: Model_DIS.html
+  Model_DISINF: Model_DISINF.html
+  Model_LP: Model_LP.html
+  Model_OPEN: Model_OPEN.html
+  Model_PC: Model_PC.html
+  Model_PCEX: Model_PCEX.html
+  Model_REG: Model_REG.html
+  Model_SIM: Model_SIM.html
+  Model_SIMEX: Model_SIMEX.html
+  package_outline: package_outline.html
+last_built: 2025-01-17T15:23Z
 urls:
   reference: https://gamrot.github.io/godley/reference
   article: https://gamrot.github.io/godley/articles
-
