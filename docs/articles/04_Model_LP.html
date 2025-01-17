@@ -5,104 +5,91 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="godley">
 <title>Model LP • godley</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.1.0/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Model LP">
-<meta property="og:description" content="godley">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Model LP">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
-    
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
-    
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
     <a class="navbar-brand me-2" href="../index.html">godley</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
-    
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/01_Model_SIM.html">Model SIM</a>
-    <a class="dropdown-item" href="../articles/02_Model_SIMEX.html">Model SIMEX</a>
-    <a class="dropdown-item" href="../articles/03_Model_PC.html">Model PC</a>
-    <a class="dropdown-item" href="../articles/04_Model_LP.html">Model LP</a>
-    <a class="dropdown-item" href="../articles/05_Model_REG.html">Model REG</a>
-    <a class="dropdown-item" href="../articles/06_Model_OPEN.html">Model OPEN</a>
-    <a class="dropdown-item" href="../articles/07_Model_BMW.html">Model BMW</a>
-    <a class="dropdown-item" href="../articles/08_Model_BMWK.html">Model BMWK</a>
-    <a class="dropdown-item" href="../articles/09_Model_DIS.html">Model DIS</a>
-    <a class="dropdown-item" href="../articles/10_Model_DISINF.html">Model DISINF</a>
-  </div>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/package_outline.html">godley — package outline</a></li>
+    <li><a class="dropdown-item" href="../articles/01_Model_SIM.html">Model SIM</a></li>
+    <li><a class="dropdown-item" href="../articles/02_Model_SIMEX.html">Model SIMEX</a></li>
+    <li><a class="dropdown-item" href="../articles/03_Model_PC.html">Model PC</a></li>
+    <li><a class="dropdown-item" href="../articles/04_Model_LP.html">Model LP</a></li>
+    <li><a class="dropdown-item" href="../articles/05_Model_REG.html">Model REG</a></li>
+    <li><a class="dropdown-item" href="../articles/06_Model_OPEN.html">Model OPEN</a></li>
+    <li><a class="dropdown-item" href="../articles/07_Model_BMW.html">Model BMW</a></li>
+    <li><a class="dropdown-item" href="../articles/08_Model_BMWK.html">Model BMWK</a></li>
+    <li><a class="dropdown-item" href="../articles/09_Model_DIS.html">Model DIS</a></li>
+    <li><a class="dropdown-item" href="../articles/10_Model_DISINF.html">Model DISINF</a></li>
+    <li><a class="dropdown-item" href="../articles/11_Model_PCEX.html">Model PCEX</a></li>
+  </ul>
 </li>
       </ul>
-<form class="form-inline my-2 my-lg-0" role="search">
-        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
-</form>
-
-      <ul class="navbar-nav">
-<li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/gamrot/godley">
-    <span class="fa fa-github"></span>
-     
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/gamrot/godley"><span class="fa fa-github"></span></a></li>
       </ul>
 </div>
 
-    
+
   </div>
 </nav><div class="container template-article">
 
 
 
-<script src="04_Model_LP_files/htmlwidgets-1.5.4/htmlwidgets.js"></script><script src="04_Model_LP_files/plotly-binding-4.10.0/plotly.js"></script><script src="04_Model_LP_files/typedarray-0.1/typedarray.min.js"></script><link href="04_Model_LP_files/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet">
-<script src="04_Model_LP_files/crosstalk-1.2.0/js/crosstalk.min.js"></script><link href="04_Model_LP_files/plotly-htmlwidgets-css-2.5.1/plotly-htmlwidgets.css" rel="stylesheet">
-<script src="04_Model_LP_files/plotly-main-2.5.1/plotly-latest.min.js"></script><div class="row">
+<link href="04_Model_LP_files/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="04_Model_LP_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="04_Model_LP_files/plotly-binding-4.10.4/plotly.js"></script><script src="04_Model_LP_files/typedarray-0.1/typedarray.min.js"></script><link href="04_Model_LP_files/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="04_Model_LP_files/crosstalk-1.2.1/js/crosstalk.min.js"></script><link href="04_Model_LP_files/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="04_Model_LP_files/plotly-main-2.11.1/plotly-latest.min.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>Model LP</h1>
+
+      <h1>Model LP</h1>
             
       
-      
+
       <div class="d-none name"><code>04_Model_LP.Rmd</code></div>
     </div>
 
     
     
-<p>Please find below guidelines how godley package can be used to create
-model LP — model with long-term bonds, capital gains and liquidity
-preference described by <em>Wynne Godley</em> and <em>Marc Lavoie</em>
-in Chapter 5 in <em>Monetary Economics. An Integrated Approach to
-Credit, Money, Income, Production and Wealth.</em></p>
+<p>This guide explains how to use the <code>godley</code> package to
+create the LP model — a model with long-term bonds, capital gains and
+liquidity preference, as described by <em>Wynne Godley</em> and <em>Marc
+Lavoie</em> in Chapter 5 of <em>Monetary Economics. An Integrated
+Approach to Credit, Money, Income, Production and Wealth.</em></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">godley</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="base-scenario">Base scenario<a class="anchor" aria-label="anchor" href="#base-scenario"></a>
 </h3>
-<p>First you need to create empty SFC model:</p>
+<p>Start by initializing an empty SFC (Stock-Flow Consistent) model:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create empty model</span></span>
 <span><span class="va">model_lp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_model.html">create_model</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"SFC LP"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Empty model created</span></span></code></pre></div>
-<p>Next you have to add variables:</p>
+<p>Define the variables for the model:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add variables</span></span>
 <span><span class="va">model_lp</span> <span class="op">&lt;-</span> <span class="va">model_lp</span> <span class="op">|&gt;</span></span>
@@ -123,7 +110,7 @@ Credit, Money, Income, Production and Wealth.</em></p>
 <span>  <span class="fu"><a href="../reference/add_variable.html">add_variable</a></span><span class="op">(</span><span class="st">"Bcb"</span>, desc <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/add_variable.html">add_variable</a></span><span class="op">(</span><span class="st">"BLs"</span>, desc <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/add_variable.html">add_variable</a></span><span class="op">(</span><span class="st">"ERrbl"</span>, desc <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/add_variable.html">add_variable</a></span><span class="op">(</span><span class="st">"rbl"</span>, desc <span class="op">=</span> <span class="st">""</span>, <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/add_variable.html">add_variable</a></span><span class="op">(</span><span class="st">"rbl"</span>, desc <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/add_variable.html">add_variable</a></span><span class="op">(</span><span class="st">"CGE"</span>, desc <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/add_variable.html">add_variable</a></span><span class="op">(</span><span class="st">"YDEr"</span>, desc <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/add_variable.html">add_variable</a></span><span class="op">(</span><span class="st">"pebl"</span>, desc <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -143,7 +130,8 @@ Credit, Money, Income, Production and Wealth.</em></p>
 <span>  <span class="fu"><a href="../reference/add_variable.html">add_variable</a></span><span class="op">(</span><span class="st">"lambda33"</span>, init <span class="op">=</span> <span class="fl">1.1</span>, desc <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/add_variable.html">add_variable</a></span><span class="op">(</span><span class="st">"lambda34"</span>, init <span class="op">=</span> <span class="op">-</span><span class="fl">0.03</span>, desc <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/add_variable.html">add_variable</a></span><span class="op">(</span><span class="st">"chi"</span>, init <span class="op">=</span> <span class="fl">0.1</span>, desc <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
-<p>You also have to add equations:</p>
+<p>Establish the relationships between variables by adding
+equations:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add equations</span></span>
 <span><span class="va">model_lp</span> <span class="op">&lt;-</span> <span class="va">model_lp</span> <span class="op">|&gt;</span></span>
@@ -159,7 +147,7 @@ Credit, Money, Income, Production and Wealth.</em></p>
 <span>  <span class="fu"><a href="../reference/add_equation.html">add_equation</a></span><span class="op">(</span><span class="st">"Bd = (VE * lambda20) + VE * (lambda22 * rb + lambda23 * ERrbl) + lambda24 * (YDEr)"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/add_equation.html">add_equation</a></span><span class="op">(</span><span class="st">"BLd = VE * (lambda30 + lambda32 * rb + lambda33 * ERrbl + lambda34 * (YDEr/VE))/pbl"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/add_equation.html">add_equation</a></span><span class="op">(</span><span class="st">"BLh = BLd"</span>, desc <span class="op">=</span> <span class="st">""</span>, hidden <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/add_equation.html">add_equation</a></span><span class="op">(</span><span class="st">"Bs = Bs[-1] + (G + rb[-1] * Bs[-1] + BLs[-1]) - (TX + rb[-1] * Bcb[-1]) </span></span>
+<span>  <span class="fu"><a href="../reference/add_equation.html">add_equation</a></span><span class="op">(</span><span class="st">"Bs = Bs[-1] + (G + rb[-1] * Bs[-1] + BLs[-1]) - (TX + rb[-1] * Bcb[-1])</span></span>
 <span><span class="st">               - ((BLs - BLs[-1]) * pbl)"</span>, desc <span class="op">=</span> <span class="st">""</span>, hidden <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/add_equation.html">add_equation</a></span><span class="op">(</span><span class="st">"Hs = Hs[-1] + (Bcb - Bcb[-1])"</span>, desc <span class="op">=</span> <span class="st">""</span>, hidden <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/add_equation.html">add_equation</a></span><span class="op">(</span><span class="st">"Bcb = Bs - Bh"</span>, desc <span class="op">=</span> <span class="st">""</span>, hidden <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -171,53 +159,56 @@ Credit, Money, Income, Production and Wealth.</em></p>
 <span>  <span class="fu"><a href="../reference/add_equation.html">add_equation</a></span><span class="op">(</span><span class="st">"Bh = Bd"</span>, desc <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/add_equation.html">add_equation</a></span><span class="op">(</span><span class="st">"pebl = pbl"</span>, desc <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/add_equation.html">add_equation</a></span><span class="op">(</span><span class="st">"Hs = Hh"</span>, desc <span class="op">=</span> <span class="st">"Money equilibrium"</span>, hidden <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Now you can simulate model (in this example for the next 100 periods
-using Gauss method):</p>
+<p>Now, you can simulate the model (in this example, we calculate the
+baseline scenario over 100 periods using the Gauss method)</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Simulate model</span></span>
-<span><span class="va">model_lp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_scenario.html">simulate_scenario</a></span><span class="op">(</span><span class="va">model_lp</span>, scenario <span class="op">=</span> <span class="st">"baseline"</span>, max_iter <span class="op">=</span> <span class="fl">350</span>, periods <span class="op">=</span> <span class="fl">100</span>, </span>
-<span>                              hidden_tol <span class="op">=</span> <span class="fl">0.1</span>, tol <span class="op">=</span> <span class="fl">1e-08</span>, method <span class="op">=</span> <span class="st">"Gauss"</span><span class="op">)</span></span>
+<span><span class="va">model_lp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_scenario.html">simulate_scenario</a></span><span class="op">(</span><span class="va">model_lp</span>,</span>
+<span>  scenario <span class="op">=</span> <span class="st">"baseline"</span>, max_iter <span class="op">=</span> <span class="fl">350</span>, periods <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  hidden_tol <span class="op">=</span> <span class="fl">0.1</span>, tol <span class="op">=</span> <span class="fl">1e-05</span>, method <span class="op">=</span> <span class="st">"Gauss"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; Model prepared successfully</span></span>
 <span><span class="co">#&gt; Simulating scenario baseline (1 of 1)</span></span>
 <span><span class="co">#&gt; Scenario(s) successfully simulated</span></span></code></pre></div>
-<p>Based on calculated simulation you can display simulation results for
-desired set of variables:</p>
+<p>With the simulation estimated, visualize the results for the
+variables of interest:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot results</span></span>
-<span><span class="fu"><a href="../reference/plot_simulation.html">plot_simulation</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">model_lp</span>, scenario <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"baseline"</span><span class="op">)</span>, from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fl">50</span>, </span>
-<span>                expressions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Y"</span>,<span class="st">"V"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div id="htmlwidget-eb8aab794a75a2eef208" style="width:100%;height:432.632880098888px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-eb8aab794a75a2eef208">{"x":{"visdat":{"4af4792a3e97":["function () ","plotlyVisDat"]},"cur_data":"4af4792a3e97","attrs":{"4af4792a3e97":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"y":[0,20.00000002,36.124000032124,49.1231688408902,60.0136618794751,69.1245733746395,76.7470933149678,83.1243587492424,88.4598012959022,92.9236184901998,96.6582035357394,99.7826875491659,102.396739774834,104.58374697641,106.413473426714,107.944286347931,109.225017792454,110.296522357295,111.192980422249,111.942988484365,112.570471369771,113.095445421874,113.534657011215,113.902116735061,114.209546347409,114.4667526762,114.681940455493,114.86197405177,115.012596433279,115.138612367417,115.244041690059,115.332247535998,115.406043621025,115.467783997836,115.519438148967,115.56265381215,115.598809542202,115.62905868613,115.65436617424,115.675539300857,115.69325347655,115.708073773343,115.720472950184,115.730846533689,115.739525435209,115.746786506714,115.752861372212,115.75794381642,115.762195966387,115.765753463253],"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],"name":"baseline: Y","hovertemplate":"Period: %{x: 0f} <br> Value %{y:0f}","type":"scatter","mode":"lines+markers","line":{"width":2},"marker":{"size":3},"inherit":true},"4af4792a3e97.1":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"y":[1e-07,16.124000096124,29.1231688920902,40.0136619204351,49.1245734074074,56.7470933411822,63.124358770214,68.4598013126794,72.9236185036216,76.6582035464768,79.7826875577558,82.3967397817057,84.5837469819074,86.4134734311121,87.9442863514494,89.2250177952691,90.2965223595473,91.1929804240504,91.9429884858061,92.5704713709236,93.0954454227964,93.5346570119529,93.9021167356517,94.2095463478816,94.4667526765777,94.6819404557955,94.8619740520122,95.0125964334719,95.1386123675722,95.2440416901823,95.332247536097,95.406043621104,95.4677839978997,95.5194381490181,95.5626538121909,95.5988095422345,95.6290586861562,95.6543661742611,95.6755393008738,95.6932534765636,95.7080737733535,95.7204729501928,95.7308465336961,95.7395254352146,95.7467865067184,95.7528613722151,95.7579438164224,95.7621959663891,95.7657534632552,95.7687297891261],"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],"name":"baseline: V","hovertemplate":"Period: %{x: 0f} <br> Value %{y:0f}","type":"scatter","mode":"lines+markers","line":{"width":2},"marker":{"size":3},"inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"spikedistance":1000,"hovermode":"spikers","xaxis":{"domain":[0,1],"automargin":true,"title":"period"},"showlegend":true,"legend":{"xanchor":"left","x":1.02,"y":0.92},"title":{"text":"Scenario baseline"},"yaxis":{"domain":[0,1],"automargin":true,"title":[]}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"y":[0,20.00000002,36.124000032124,49.1231688408902,60.0136618794751,69.1245733746395,76.7470933149678,83.1243587492424,88.4598012959022,92.9236184901998,96.6582035357394,99.7826875491659,102.396739774834,104.58374697641,106.413473426714,107.944286347931,109.225017792454,110.296522357295,111.192980422249,111.942988484365,112.570471369771,113.095445421874,113.534657011215,113.902116735061,114.209546347409,114.4667526762,114.681940455493,114.86197405177,115.012596433279,115.138612367417,115.244041690059,115.332247535998,115.406043621025,115.467783997836,115.519438148967,115.56265381215,115.598809542202,115.62905868613,115.65436617424,115.675539300857,115.69325347655,115.708073773343,115.720472950184,115.730846533689,115.739525435209,115.746786506714,115.752861372212,115.75794381642,115.762195966387,115.765753463253],"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],"name":"baseline: Y","hovertemplate":["Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}"],"type":"scatter","mode":"lines+markers","line":{"color":"rgba(31,119,180,1)","width":2},"marker":{"color":"rgba(31,119,180,1)","size":3,"line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[1e-07,16.124000096124,29.1231688920902,40.0136619204351,49.1245734074074,56.7470933411822,63.124358770214,68.4598013126794,72.9236185036216,76.6582035464768,79.7826875577558,82.3967397817057,84.5837469819074,86.4134734311121,87.9442863514494,89.2250177952691,90.2965223595473,91.1929804240504,91.9429884858061,92.5704713709236,93.0954454227964,93.5346570119529,93.9021167356517,94.2095463478816,94.4667526765777,94.6819404557955,94.8619740520122,95.0125964334719,95.1386123675722,95.2440416901823,95.332247536097,95.406043621104,95.4677839978997,95.5194381490181,95.5626538121909,95.5988095422345,95.6290586861562,95.6543661742611,95.6755393008738,95.6932534765636,95.7080737733535,95.7204729501928,95.7308465336961,95.7395254352146,95.7467865067184,95.7528613722151,95.7579438164224,95.7621959663891,95.7657534632552,95.7687297891261],"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],"name":"baseline: V","hovertemplate":["Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}","Period: %{x: 0f} <br> Value %{y:0f}"],"type":"scatter","mode":"lines+markers","line":{"color":"rgba(255,127,14,1)","width":2},"marker":{"color":"rgba(255,127,14,1)","size":3,"line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script><p>Note: In above example new pipe operator was applied. It does not
-work in older R versions (before R 4.1).</p>
+<span><span class="fu"><a href="../reference/plot_simulation.html">plot_simulation</a></span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="va">model_lp</span>, scenario <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"baseline"</span><span class="op">)</span>, from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  expressions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Y"</span>, <span class="st">"V"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:100%;height:432.632880098888px;"></div>
+<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"visdat":{"1189529f30ea4":["function () ","plotlyVisDat"]},"cur_data":"1189529f30ea4","attrs":{"1189529f30ea4":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"y":[1.0000000000000001e-05,20.000008019999999,36.124013185584005,49.123178200656326,60.013668601638344,69.12457810548986,76.747096558637722,83.124360891544399,88.459802631054515,92.92361924149715,96.658203871710754,99.782687596179073,102.39673962690892,104.58374670284456,106.41347307799495,107.9442859603045,109.22501739145177,110.29652196044211,111.19298004113909,111.94298812624439,112.57047103873791,113.09544511978724,113.53465673837205,113.90211649070608,114.209546130105,114.46675248410087,114.68194028654082,114.86197390383033,115.01259630423587,115.13861225523925,115.24404159283297,115.33224745195707,115.40604354855422,115.46778393547784,115.51943809541436,115.56265376624062,115.59880950290807,115.62905865254817,115.65436614557848,115.67553927642491,115.69325345574723,115.7080737556485,115.72047293514878,115.73084652092456,115.73952542438138,115.74678649753652,115.75286136443843,115.75794380984028,115.76219596082163,115.76575345854877],"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],"name":"baseline: Y","hovertemplate":"Time: %{x: 0f} <br> Value %{y:0f}","type":"scatter","mode":"lines+markers","line":{"width":2},"marker":{"size":3},"inherit":true},"1189529f30ea4.1":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"y":[9.9999999999999995e-08,16.124006849584003,29.123173131856323,40.013664546598342,49.124574861457866,56.747093963412119,63.124358815363905,68.459800970110109,72.923617912741619,76.658202808706321,79.782686745775521,82.396738946586083,84.58374615858628,86.413472642588317,87.944285611979183,89.225017112791519,90.296521737513899,91.19297986279652,91.942987983570319,92.570470924598652,93.095445028475837,93.534656665322913,93.902116432266766,94.20954608335353,94.466752446699687,94.681940256619882,94.861973879893583,95.01259628508646,95.138612239919723,95.244041580577345,95.332247442152564,95.406043540710613,95.467783929202952,95.519438090394445,95.56265376222467,95.598809499695307,95.629058649977949,95.654366143522296,95.675539274779965,95.693253454431257,95.708073754595716,95.720472934306542,95.730846520250765,95.739525423842352,95.74678649710529,95.752861364093448,95.757943809564296,95.762195960600835,95.765753458372131,95.768729785008333],"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],"name":"baseline: V","hovertemplate":"Time: %{x: 0f} <br> Value %{y:0f}","type":"scatter","mode":"lines+markers","line":{"width":2},"marker":{"size":3},"inherit":true}},"layout":{"margin":{"b":70,"l":60,"t":60,"r":10},"spikedistance":1000,"hovermode":"spikers","xaxis":{"domain":[0,1],"automargin":true,"title":"time"},"showlegend":true,"legend":{"xanchor":"left","x":1.02,"y":0.92000000000000004},"title":{"text":"Scenario baseline","y":0.94999999999999996,"x":0.5,"xanchor":"center","yanchor":"top"},"yaxis":{"domain":[0,1],"automargin":true,"title":[]}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"y":[1.0000000000000001e-05,20.000008019999999,36.124013185584005,49.123178200656326,60.013668601638344,69.12457810548986,76.747096558637722,83.124360891544399,88.459802631054515,92.92361924149715,96.658203871710754,99.782687596179073,102.39673962690892,104.58374670284456,106.41347307799495,107.9442859603045,109.22501739145177,110.29652196044211,111.19298004113909,111.94298812624439,112.57047103873791,113.09544511978724,113.53465673837205,113.90211649070608,114.209546130105,114.46675248410087,114.68194028654082,114.86197390383033,115.01259630423587,115.13861225523925,115.24404159283297,115.33224745195707,115.40604354855422,115.46778393547784,115.51943809541436,115.56265376624062,115.59880950290807,115.62905865254817,115.65436614557848,115.67553927642491,115.69325345574723,115.7080737556485,115.72047293514878,115.73084652092456,115.73952542438138,115.74678649753652,115.75286136443843,115.75794380984028,115.76219596082163,115.76575345854877],"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],"name":"baseline: Y","hovertemplate":["Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}"],"type":"scatter","mode":"lines+markers","line":{"color":"rgba(31,119,180,1)","width":2},"marker":{"color":"rgba(31,119,180,1)","size":3,"line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[9.9999999999999995e-08,16.124006849584003,29.123173131856323,40.013664546598342,49.124574861457866,56.747093963412119,63.124358815363905,68.459800970110109,72.923617912741619,76.658202808706321,79.782686745775521,82.396738946586083,84.58374615858628,86.413472642588317,87.944285611979183,89.225017112791519,90.296521737513899,91.19297986279652,91.942987983570319,92.570470924598652,93.095445028475837,93.534656665322913,93.902116432266766,94.20954608335353,94.466752446699687,94.681940256619882,94.861973879893583,95.01259628508646,95.138612239919723,95.244041580577345,95.332247442152564,95.406043540710613,95.467783929202952,95.519438090394445,95.56265376222467,95.598809499695307,95.629058649977949,95.654366143522296,95.675539274779965,95.693253454431257,95.708073754595716,95.720472934306542,95.730846520250765,95.739525423842352,95.74678649710529,95.752861364093448,95.757943809564296,95.762195960600835,95.765753458372131,95.768729785008333],"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],"name":"baseline: V","hovertemplate":["Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}","Time: %{x: 0f} <br> Value %{y:0f}"],"type":"scatter","mode":"lines+markers","line":{"color":"rgba(255,127,14,1)","width":2},"marker":{"color":"rgba(255,127,14,1)","size":3,"line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script><p><em>Note:</em> The above example uses the new pipe operator
+(<code>|&gt;</code>), which requires R 4.1 or later.</p>
 </div>
 <div class="section level3">
 <h3 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
-<p>More information about model LP can be found in Chapter 5 in
-<em>Monetary Economics. An Integrated Approach to Credit, Money, Income,
-Production and Wealth.</em></p>
+<p>For more details on LP model, refer to Chapter 5 of <em>Monetary
+Economics. An Integrated Approach to Credit, Money, Income, Production
+and Wealth.</em></p>
 </div>
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
 
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p>
+
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>
 </div>
 
-  
 
-  
+
+
 
   </body>
 </html>

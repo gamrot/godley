@@ -1,5 +1,5 @@
-pandoc: '2.18'
-pkgdown: 2.0.5
+pandoc: 3.1.1
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   01_Model_SIM: 01_Model_SIM.html
@@ -12,8 +12,9 @@ articles:
   08_Model_BMWK: 08_Model_BMWK.html
   09_Model_DIS: 09_Model_DIS.html
   10_Model_DISINF: 10_Model_DISINF.html
-last_built: 2022-07-07T14:03Z
+  11_Model_PCEX: 11_Model_PCEX.html
+  package_outline: package_outline.html
+last_built: 2025-01-17T14:37Z
 urls:
   reference: https://gamrot.github.io/godley/reference
   article: https://gamrot.github.io/godley/articles
-

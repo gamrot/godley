@@ -19,3 +19,4 @@ into a more readable format (e.g., `Var`). The function handles lagged variables
 transforming expressions such as `m[.i - 1, 'Var']` into `Var[-1]`.
 It is intended for use in warning messages.
 }
+\keyword{internal}

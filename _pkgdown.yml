@@ -28,10 +28,10 @@ articles:
 - title: SFC models with godley package
   navbar: ~
   contents:
+  - package_outline
   - 01_Model_SIM
   - 02_Model_SIMEX
   - 03_Model_PC
-  - 11_Model_PCEX
   - 04_Model_LP
   - 05_Model_REG
   - 06_Model_OPEN
@@ -39,6 +39,7 @@ articles:
   - 08_Model_BMWK
   - 09_Model_DIS
   - 10_Model_DISINF
+  - 11_Model_PCEX
 
 reference:
 - title: Functions in godley package
@@ -50,5 +51,6 @@ reference:
   - plot_simulation
   - prepare
   - simulate_scenario
+  - plot_cycles
 
 url: https://gamrot.github.io/godley/
