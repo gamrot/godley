@@ -17,3 +17,4 @@ This function checks if all parentheses in a given equation string are correctly
 paired and balanced. If there are no parentheses, the equation is considered
 trivially balanced. It returns `TRUE` if the parentheses are balanced and `FALSE` otherwise.
 }
+\keyword{internal}

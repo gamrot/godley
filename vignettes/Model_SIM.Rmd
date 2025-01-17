@@ -16,20 +16,22 @@ knitr::opts_chunk$set(
 library(magrittr)
 ```
 
-Please find below guidelines how godley package can be used to create model SIM — the simplest model with government money described by *Wynne Godley* and *Marc Lavoie* in Chapter 3 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+This guide explains how to use the `godley` package to create the SIM model, the simplest model with government money, as described by *Wynne Godley* and *Marc Lavoie* in Chapter 3 of *Monetary Economics: An Integrated Approach to Credit, Money, Income, Production and Wealth.*
 
 ```{r setup}
 library(godley)
 ```
 
 ### Base scenario
-First you need to create empty SFC model:
+Start by initializing an empty SFC (Stock-Flow Consistent) model:
+
 ```{r}
 # Create empty model
 model_sim <- create_model(name = "SFC SIM")
 ```
 
-Next you have to add variables:
+Define the variables for the model:
+
 ```{r}
 # Add variables
 model_sim <- model_sim |>
@@ -51,7 +53,8 @@ model_sim <- model_sim |>
   add_variable("W", init = 1, desc = "Wage rate")
 ```
 
-You also have to add equations:
+Establish the relationships between variables by adding equations:
+
 ```{r}
 # Add equations
 model_sim <- model_sim |>
@@ -69,16 +72,18 @@ model_sim <- model_sim |>
   add_equation("H_s = H_h", desc = "Money equilibrium", hidden = TRUE)
 ```
 
-Now you can simulate model (in this example for the next 100 periods using Newton method):
+Now, you can simulate the model (in this example, we calculate the baseline scenario over 100 periods using the Newton method)
+
 ```{r}
 # Simulate model
 model_sim <- simulate_scenario(model_sim,
   scenario = "baseline", max_iter = 350, periods = 100,
-  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+  hidden_tol = 0.1, tol = 1e-05, method = "Newton"
 )
 ```
 
-Based on calculated simulation you can display results for desired set of variables:
+With the simulation estimated, visualize the results for the variables of interest:
+
 ```{r, out.width="100%"}
 # Plot results
 plot_simulation(
@@ -87,18 +92,22 @@ plot_simulation(
 )
 ```
 
-Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
+*Note:* The above example uses the new pipe operator (`|>`), which requires R 4.1 or later.
 
 ### Shock scenario
-With godley package you can simulate how a shock will affect the base scenario. In this example you will implement a permanent increase in government expenditures. \
-\
-First you need to create empty shock object:
+With `godley` package you can simulate how shocks affect the economy (specifically, how they impact the base scenario).
+
+In this example, we apply a permanent increase in government expenditures.
+
+First, initialize an empty shock object:
+
 ```{r}
 # Create empty shock
 shock_sim <- create_shock()
 ```
 
-Next you need to add appropriate equation:
+Define the shock by adding an appropriate equation:
+
 ```{r}
 # Add shock equation with increased government expenditures
 shock_sim <- add_shock(shock_sim,
@@ -108,25 +117,27 @@ shock_sim <- add_shock(shock_sim,
 )
 ```
 
-Later you need to create the shock scenario:
+Integrate the shock into the model by creating a new scenario:
+
 ```{r}
 # Create new scenario with this shock
 model_sim <- add_scenario(model_sim,
-  name = "expansion", origin = "baseline",
-  origin_start = 1, shock = shock_sim
+  name = "expansion", origin = "baseline", shock = shock_sim
 )
 ```
 
-Now you can simulate new shock scenario:
+Simulate the scenario with the shock applied:
+
 ```{r}
 # Simulate shock
 model_sim <- simulate_scenario(model_sim,
   scenario = "expansion", max_iter = 350, periods = 100,
-  hidden_tol = 0.1, tol = 1e-08, method = "Newton"
+  hidden_tol = 0.1, tol = 1e-05, method = "Newton"
 )
 ```
 
-You can also compare results from shock and base scenarios:
+Finally, compare the results of the base scenario with those of the shock scenario.
+
 ```{r, out.width="100%"}
 # Plot results
 plot_simulation(
@@ -150,4 +161,4 @@ plot_simulation(
 ```
 
 ### References
-More information about model SIM can be found in Chapter 3 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+For more details on SIM model, refer to Chapter 3 of *Monetary Economics: An Integrated Approach to Credit, Money, Income, Production and Wealth.*

@@ -14,20 +14,22 @@ knitr::opts_chunk$set(
 )
 ```
 
-Please find below guidelines how godley package can be used to create model OPEN — the simplest model with two-country system, each with its own currency, described by *Wynne Godley* and *Marc Lavoie* in Chapter 6 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+This guide explains how to use the `godley` package to create the OPEN model — the simplest two-country system, with each country having its own currency, as described by *Wynne Godley* and *Marc Lavoie* in Chapter 6 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
 
 ```{r setup}
 library(godley)
 ```
 
 ### Base scenario
-First you need to create empty SFC model:
+Start by creating an empty SFC model:
+
 ```{r}
 # Create empty model
 model_open <- create_model(name = "SFC OPEN")
 ```
 
-Next you have to add variables:
+Define the variables for the model:
+
 ```{r}
 # Add variables
 model_open <- model_open |>
@@ -82,7 +84,8 @@ model_open <- model_open |>
   add_variable("deltaor_N")
 ```
 
-You also have to add equations:
+Establish the relationships between variables by adding equations:
+
 ```{r}
 # Add equations
 model_open <- model_open |>
@@ -118,7 +121,8 @@ model_open <- model_open |>
   add_equation("deltaor_S = deltaor_N", hidden = TRUE)
 ```
 
-Now you can simulate model for the next 100 periods using Gauss method:
+Now, we can simulate the model (in this example, we calculate the baseline scenario over 100 periods using the Gauss method)
+
 ```{r}
 # Simulate model
 model_open <- simulate_scenario(model_open,
@@ -127,7 +131,8 @@ model_open <- simulate_scenario(model_open,
 )
 ```
 
-Based on calculated simulation you can display results for desired set of variables:
+With the simulation estimated, we can visualize the results for the variables of interest:
+
 ```{r, out.width="100%"}
 plot_simulation(
   model = model_open, scenario = "baseline", from = 1, to = 50,
@@ -154,18 +159,22 @@ plot_simulation(
 )
 ```
 
-Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
+*Note:* The above example uses the new pipe operator (`|>`), which requires R 4.1 or later.
 
 ### Shock scenario
-With godley package you can simulate how a shock will affect the base scenario. In this example you will implement an ever-falling gold reserves. \
-\
-First you need to create empty shock:
+With `godley` package we can simulate how shocks affect the economy (specifically, how they impact the base scenario).
+
+In this example we demonstrate the effect of ever-falling gold reserves.  
+
+First, initialize an empty shock object:
+
 ```{r}
 # Create empty shock
 shock_open <- create_shock()
 ```
 
-Next you need to add appropriate equation:
+Define the shock by adding an appropriate equation:
+
 ```{r}
 # Add shock equation
 shock_open <- add_shock(shock_open,
@@ -176,7 +185,8 @@ shock_open <- add_shock(shock_open,
 )
 ```
 
-Then you need to create new shock scenario:
+Integrate the shock into the model by creating a new scenario:
+
 ```{r}
 # Create new scenario with this shock
 model_open <- add_scenario(model_open,
@@ -187,7 +197,8 @@ model_open <- add_scenario(model_open,
 )
 ```
 
-Now you can simulate new shock scenario:
+Simulate the scenario with the shock applied:
+
 ```{r}
 # Simulate shock
 model_open <- simulate_scenario(model_open,
@@ -196,7 +207,8 @@ model_open <- simulate_scenario(model_open,
 )
 ```
 
-You can also plot simulation results from the shock scenario:
+Finally, display the results for this shock scenario:
+
 ```{r, out.width="100%"}
 plot_simulation(
   model = model_open, scenario = "expansion", from = 1, to = 50,
@@ -224,4 +236,4 @@ plot_simulation(
 ```
 
 ### References
-More information about model OPEN can be found in Chapter 6 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+For more details on OPEN model, refer to Chapter 6 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*

@@ -14,20 +14,22 @@ knitr::opts_chunk$set(
 )
 ```
 
-Please find below guidelines how godley package can be used to create model REG — model with two-region economy described by *Wynne Godley* and *Marc Lavoie* in Chapter 6 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+This guide explains how to use the `godley` package to create the REG model — a model with two-region economy, as described by *Wynne Godley* and *Marc Lavoie* in Chapter 6 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
 
 ```{r setup}
 library(godley)
 ```
 
 ### Base scenario
-First you need to create empty SFC model:
+Start by creating an empty SFC model:
+
 ```{r}
 # Create empty model
 model_reg <- create_model(name = "SFC REG")
 ```
 
-Next you have to add variables:
+Define the variables for the model:
+
 ```{r}
 # Add variables
 model_reg <- model_reg |>
@@ -74,7 +76,8 @@ model_reg <- model_reg |>
   add_variable("Bcb")
 ```
 
-You also have to add equations:
+Establish the relationships between variables by adding equations:
+
 ```{r}
 # Add equations
 model_reg <- model_reg |>
@@ -106,7 +109,8 @@ model_reg <- model_reg |>
   add_equation("Hs = Hh", desc = "Money equilibrium", hidden = TRUE)
 ```
 
-Now you can simulate model (in this example for the next 100 periods using Gauss method):
+Now, you can simulate the model (in this example, we calculate the baseline scenario over 100 periods using the Gauss method)
+
 ```{r}
 # Simulate model
 model_reg <- simulate_scenario(model_reg,
@@ -115,7 +119,8 @@ model_reg <- simulate_scenario(model_reg,
 )
 ```
 
-Based on calculated simulation you can display simulation results for desired set of variables:
+With the simulation estimated, visualize the results for the variables of interest:
+
 ```{r, out.width="100%"}
 # Plot results
 plot_simulation(
@@ -128,21 +133,23 @@ plot_simulation(
 )
 ```
 
-Note: In above example new pipe operator was applied. It does not work in older R versions (before R 4.1). 
+*Note:* The above example uses the new pipe operator (`|>`), which requires R 4.1 or later.
 
-### Shock scenarios 
-With godley package you can simulate how a shock will affect the base scenario. 
+### Shock scenario
+With `godley` package you can simulate how shocks affect the economy (specifically, how they impact the base scenario).
 
 #### Shock 1
-In this example you will implement an increase in the propensity to import of the South. \
-\
-First you need to create empty shock:
+In the first example, we propose to introduce an increase in the propensity to import in the South.  
+
+First, initialize an empty shock object:
+
 ```{r}
 # Create empty shock
 shock_reg <- create_shock()
 ```
 
-Next you need to add appropriate equation:
+Then, define the shock by adding an appropriate equation:
+
 ```{r}
 # Add shock equation with increased propensity to import of the South
 shock_reg <- add_shock(shock_reg,
@@ -153,7 +160,8 @@ shock_reg <- add_shock(shock_reg,
 )
 ```
 
-Then you need to create new shock scenario:
+Integrate the shock into the model by creating a new scenario:
+
 ```{r}
 # Create new scenario with this shock
 model_reg <- add_scenario(model_reg,
@@ -164,7 +172,8 @@ model_reg <- add_scenario(model_reg,
 )
 ```
 
-Now you can simulate new shock scenario:
+Simulate the scenario with the shock applied:
+
 ```{r}
 # Simulate shock
 model_reg <- simulate_scenario(model_reg,
@@ -173,7 +182,8 @@ model_reg <- simulate_scenario(model_reg,
 )
 ```
 
-You can also display results from the shock scenario:
+Finally, plot the simulation outcomes:
+
 ```{r, out.width="100%"}
 plot_simulation(
   model = model_reg, scenario = "expansion1", from = 1, to = 50,
@@ -186,15 +196,17 @@ plot_simulation(
 ```
 
 #### Shock 2
-In this example you will implement an increase in the government expenditures of the South. \
-\
-First you need to create empty shock:
+Another example implements an increase in government expenditures in the South.  
+
+First, initialize an empty shock object:
+
 ```{r}
 # Create empty shock
 shock_reg <- create_shock()
 ```
 
-Next you need to add appropriate equation:
+Add an appropriate equation:
+
 ```{r}
 # Add shock equation with increased government expenditures of the South
 shock_reg <- add_shock(shock_reg,
@@ -205,7 +217,8 @@ shock_reg <- add_shock(shock_reg,
 )
 ```
 
-Later you need to create new shock scenario:
+Integrate the shock into the model by creating a new scenario:
+
 ```{r}
 # Create new scenario with this shock
 model_reg <- add_scenario(model_reg,
@@ -216,7 +229,8 @@ model_reg <- add_scenario(model_reg,
 )
 ```
 
-Now you can simulate new shock scenario:
+Simulate the model with the shock applied:
+
 ```{r}
 # Simulate shock
 model_reg <- simulate_scenario(model_reg,
@@ -225,7 +239,8 @@ model_reg <- simulate_scenario(model_reg,
 )
 ```
 
-You can also display results from the shock scenario:
+Visualize the results for the shock scenario:
+
 ```{r, out.width="100%"}
 plot_simulation(
   model = model_reg, scenario = "expansion2", from = 1, to = 50,
@@ -238,15 +253,17 @@ plot_simulation(
 ```
 
 #### Shock 3
-In this example you will implement an increase in the propensity to save of the Southern households. \
-\
-First you need to create empty shock:
+In the final example, we suggest applying an increase to the propensity to save among Southern households.
+
+First, initialize an empty shock:
+
 ```{r}
 # Create empty shock
 shock_reg <- create_shock()
 ```
 
-Next you need to add appropriate equation:
+Add an appropriate equation:
+
 ```{r}
 # Add shock equation with increased government expenditures of the South
 shock_reg <- add_shock(shock_reg,
@@ -257,7 +274,8 @@ shock_reg <- add_shock(shock_reg,
 )
 ```
 
-Later you need to create new shock scenario:
+Integrate the shock into the model by creating a new scenario:
+
 ```{r}
 # Create new scenario with this shock
 model_reg <- add_scenario(model_reg,
@@ -268,7 +286,8 @@ model_reg <- add_scenario(model_reg,
 )
 ```
 
-Now you can simulate new shock scenario:
+Run the simulation with the shock applied:
+
 ```{r}
 # Simulate shock
 model_reg <- simulate_scenario(model_reg,
@@ -277,7 +296,8 @@ model_reg <- simulate_scenario(model_reg,
 )
 ```
 
-You can also display results from the shock scenario:
+Finally, plot the simulation outcomes:
+
 ```{r, out.width="100%"}
 plot_simulation(
   model = model_reg, scenario = "expansion3", from = 1, to = 50,
@@ -290,4 +310,4 @@ plot_simulation(
 ```
 
 ### References
-More information about model REG can be found in Chapter 6 in *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*
+For more details on REG model, refer to Chapter 6 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth.*

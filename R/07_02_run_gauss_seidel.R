@@ -9,6 +9,7 @@
 #'
 #' @return A character string where the internal indexing notation has been restored to
 #' a more user-friendly form.
+#' @keywords internal
 restore_equation <- function(eq_line) {
   # Replace m[.i - k, 'Var'] or m[.i - k, "Var"] with Var[-k]
   eq_line_mod <- gsub("m\\[\\.i\\s*-\\s*(\\d+)\\s*,\\s*['\"](.*?)['\"]\\]", "\\2[-\\1]", eq_line)

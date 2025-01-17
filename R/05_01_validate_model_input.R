@@ -7,7 +7,7 @@
 #' @param eq A character string representing an equation.
 #'
 #' @return A logical value indicating whether the parentheses are balanced (`TRUE`) or not (`FALSE`).
-
+#' @keywords internal
 check_parentheses_balance <- function(eq) {
   # Split the equation into individual characters
   chars <- strsplit(eq, "")[[1]]

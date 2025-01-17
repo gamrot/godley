@@ -41,8 +41,11 @@ model_pc <- model_pc |>
   add_equation("H_h = H_s", hidden = T)
 
 # Simulate model
-model_pc <- simulate_scenario(model_pc, scenario = "baseline", max_iter = 350, periods = 100, hidden_tol = 0.1, tol = 1e-05, method = "Gauss")
-
+model_pc <- simulate_scenario(
+  model_pc,
+  scenario = "baseline", max_iter = 350, periods = 100,
+  hidden_tol = 0.1, tol = 1e-08, method = "Gauss"
+)
 # Plot results
 plot_simulation(
   model = model_pc, scenario = c("baseline"), from = 1, to = 50,
