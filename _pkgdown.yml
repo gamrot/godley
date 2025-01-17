@@ -9,11 +9,6 @@ footer:
 home:
   sidebar:
     structure: [links, license]
-  links:
-  - text: Source code
-    href: https://github.com/gamrot/godley
-  - text: Bug report
-    href: https://github.com/gamrot/godley/issues
 
 navbar:
   structure:
