@@ -1,8 +1,8 @@
 ---
-title: "Introduction"
+title: "Package Outline"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction}
+  %\VignetteIndexEntry{Package Outline}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,13 +14,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Scenario Simulation
+## Scenario simulation
 
 There are a few steps to follow in order to create and simulate a baseline scenario.  
 
 
 ### 1. Model creation
-Use the `create_model()` function to create an SFC model (SFC object):
+Use the `create_model()` function to initialize an SFC model (SFC object):
 
 ```{r}
 library(godley)
@@ -32,11 +32,11 @@ model_sim <- create_model(name = "SFC model")
 - `name`: Model name (required).  
 - `template`: Name of a model template to upload (optional).  
 
-*Note:* Users can bypass manually adding variables and equations (steps 2 and 3 below) by uploading model attributes from pre-defined templates included in the package. Available templates are: `SIM`, `SIMEX`, `PC`, `LP`, `REG`, `OPEN`, `BMW`, `BMWK`, `DIS`, and `DISINF`.
+*Note:* Users can skip manually adding variables and equations (steps 2 and 3 below) by uploading model attributes from pre-defined templates included in the package. Available templates include: `SIM`, `SIMEX`, `PC`, `LP`, `REG`, `OPEN`, `BMW`, `BMWK`, `DIS`, and `DISINF`.
 
 
 ### 2. Adding variables
-Use the `add_variable()` function to add variables to the model, creating new entries in the SFC tibble:
+Add variables to the model using the `add_variable()` function. It incorporates variables by creating new entries in the SFC tibble:
 
 ```{r}
 # Add parameters
@@ -76,7 +76,7 @@ model_sim <- add_variable(model = model_sim, name = "W", init = 1, desc = "Wage 
 
 
 ### 3. Adding equations
-To add equations to the SFC model, also as new entries in the SFC tibble, use the `add_equation()` function:
+Add equations to the SFC model using the `add_equation()` function. This also creates new entries in the SFC tibble.
 
 ```{r}
 # Add equations
@@ -105,8 +105,8 @@ model_sim <- add_equation(
 - `hidden`: A boolean indicating whether the equation should be hidden (optional). Hidden equations are excluded from simulation.  
 
 
-### 4. Change initial values (optional)
-To change the initial values of parameters, use the `change_init()` function:
+### 4. Altering initial values (optional)
+If you want to modify the initial values of parameters, simply apply the `change_init()` function:
 
 ```{r}
 # Change initial value for alpha1 parameter
@@ -121,7 +121,7 @@ model_sim <- change_init(model = model_sim, name = "alpha1", value = 0.5)
 
 
 ### 5. Simulating scenario(s)
-Use the `simulate_scenario()` function to carry out the simulation for the specified scenarios:
+Now, you can simulate the specified scenarios by running the `simulate_scenario()` function:
 
 ```{r}
 # Simulate baseline scenario
@@ -144,8 +144,8 @@ model_sim <- simulate_scenario(
 *Note*: If scenario name is not provided all not simulated scenarios will be calculated.
 
 
-## Model — Plots
-To visualize model simulation, use the `plot_simulation()` function as shown below:
+## Model — plots
+Finally, to visualize the model simulation, use the `plot_simulation()` function:
 
 ```{r, out.width="100%"}
 # Plot results
@@ -164,12 +164,23 @@ plot_simulation(
 - `to`: The ending period to be displayed on the chart (optional).  
 - `expressions`: The variable names or equations to visualize on the chart (optional).  
 
+For a broader view of the model's structure, use `plot_cycles()` to see how variables are interconnected. It helps you see how the variables are interconnected and may reveal any loops, like feedback mechanisms or endogeneity.
 
-## Model — Shock
-To create and simulate a shock scenario, follow these steps:
+```{r, out.width="100%"}
+# Plot relationships
+plot_cycles(model = model_sim)
+```
+
+**Arguments:**  
+
+- `model`: The SFC model object generated using the `create_model()` function.  
+- `save_file`: The file name and path where the plot will be saved as an HTML file.
+
+## Model — simulating shock(s)
+Beyond the baseline scenario, you can explore how market disruptions affect the economy. To simulate a shock scenario, follow these steps:
 
 ### 1. Creating shock object
-Use the `create_shock()` function to create an SFC shock tibble object:
+Initialize a SFC shock tibble object using `create_shock()`:
 
 ```{r}
 # Create shock
@@ -177,7 +188,7 @@ sim_shock <- create_shock()
 ```
 
 ### 2. Adding shock equations
-Use the `add_shock()` function to add shock equations to the SFC shock object:
+Use `add_shock()` to define the shock equations:
 
 ```{r}
 # Add shock equation for increased government expenditures
@@ -200,7 +211,7 @@ sim_shock <- add_shock(
 *Note*: 'start' and 'end' parameters are set by default to NA, so by default the shock will be applied to the whole simulation period
 
 ### 3. Adding shock scenario to the SFC model
-Use the `add_scenario()` function to integrate the shock scenario into the SFC model:
+Integrate the shock into your model using `add_scenario()`:
 
 ```{r}
 # Add shock scenario for increased government expenditures
@@ -222,7 +233,7 @@ model_sim <- add_scenario(
 - `shock`: The name of the created SFC shock object to be applied (required).  
 
 ### 4. Simulating shock scenario
-Use the `simulate_scenario()` function to simulate the shock scenario:
+Run the simulation for the shock scenario:
 
 ```{r}
 # Calculate shock scenario for increased government expenditures
@@ -232,8 +243,8 @@ model_sim <- simulate_scenario(
 )
 ```
 
-## Model — sensitivity
-Sensitivity analysis allows the creation of multiple scenarios in a separate SFC model by changing the initial value of a selected variable. To create and simulate sensitivity, use the `create_sensitivity()` and `simulate_scenario()` functions as shown below:
+## Model — sensitivity analysis
+For a more comprehensive view, you can carry out sensitivity analysis. Sensitivity analysis allows the creation of multiple scenarios in a separate SFC model by modifying the initial value of a selected variable. To perform sensitivity analysis, use `create_sensitivity()` and `simulate_scenario()`:
  
 ```{r}
 # Create and calculate sensitivity
