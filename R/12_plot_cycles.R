@@ -48,8 +48,7 @@ plot_cycles <- function(model, save_file = NULL) {
   # Customize edges
   visgraph$edges$arrows <- "from"
   visgraph$edges$smooth <- TRUE # Add curvature to edges
-  visgraph$edges$color <- rep("gray", nrow(visgraph$edges)) # Style edges
-  visgraph$edges$highlight <- rep("black", nrow(visgraph$edges))
+  visgraph$edges$color <- lapply(1:nrow(visgraph$edges), function(x) list(color = "gray", highlight = "black"))
 
   # Customize nodes
   visgraph$nodes$title <- visgraph$nodes$id # Tooltips for nodes
