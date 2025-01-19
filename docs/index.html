@@ -239,13 +239,14 @@ The resulting model is an S3 object (a list) of the SFC class.</p>
 <span>  expressions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Y"</span>, <span class="st">"G_s"</span>, <span class="st">"T_s"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="float">
-<img src="reference/figures/images/Scenario_baseline.png" alt="Plot of simulation results: baseline scenario"><div class="figcaption">Plot of simulation results: baseline scenario</div>
+<img src="reference/figures/images/Scenario_baseline.png" alt="Baseline Scenario Plot: Simulation results for the baseline scenario, showing how Income, Government Spending, and Taxes are expected to evolve over time"><div class="figcaption">Baseline Scenario Plot: Simulation results for the baseline scenario, showing how Income, Government Spending, and Taxes are expected to evolve over time</div>
 </div>
-<p>Beyond plotting variables over time, the <code><a href="reference/plot_cycles.html">plot_cycles()</a></code> function provides a way to visualize the model’s structure and uncover loops (feedback mechanisms and endogeneity) within the interdependencies between variables, offering an intuitive approach for interpreting and communicating the results of macroeconomic simulations.</p>
+<p><br>
+Beyond plotting variables over time, the <code><a href="reference/plot_cycles.html">plot_cycles()</a></code> function provides a way to visualize the model’s structure and uncover loops (feedback mechanisms and endogeneity) within the interdependencies between variables, offering an intuitive approach for interpreting and communicating the results of macroeconomic simulations.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_cycles.html">plot_cycles</a></span><span class="op">(</span><span class="va">model_sim</span><span class="op">)</span></span></code></pre></div>
 <div class="float">
-<img src="reference/figures/images/Cycles.png" alt="Variables interdependencies"><div class="figcaption">Variables interdependencies</div>
+<img src="reference/figures/images/Cycles.png" alt="Interdependent Variables Graph: A network diagram illustrating the relationships between the variables in the model"><div class="figcaption">Interdependent Variables Graph: A network diagram illustrating the relationships between the variables in the model</div>
 </div>
 </div>
 <div class="section level3">
@@ -308,7 +309,7 @@ The resulting model is an S3 object (a list) of the SFC class.</p>
 <span>  to <span class="op">=</span> <span class="st">"2025-01-01"</span>, expressions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Y"</span>, <span class="st">"G_s"</span>, <span class="st">"T_s"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="float">
-<img src="reference/figures/images/Scenario_expansion.png" alt="Plot of simulation results: shock scenario"><div class="figcaption">Plot of simulation results: shock scenario</div>
+<img src="reference/figures/images/Scenario_expansion.png" alt="Shock Simulation Plot: Simulation results illustrating how the same variables (as in the baseline scenario) would evolve under the government expenditure expansion scenario"><div class="figcaption">Shock Simulation Plot: Simulation results illustrating how the same variables (as in the baseline scenario) would evolve under the government expenditure expansion scenario</div>
 </div>
 </div>
 <div class="section level3">
@@ -330,7 +331,7 @@ The resulting model is an S3 object (a list) of the SFC class.</p>
 <span>  to <span class="op">=</span> <span class="st">"2028-01-01"</span>, expressions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Y"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="float">
-<img src="reference/figures/images/Sensitivity.png" alt="Sensitivity analysis"><div class="figcaption">Sensitivity analysis</div>
+<img src="reference/figures/images/Sensitivity.png" alt="Multiple Scenarios Plot: Illustration of sensitivity analysis across different scenarios with varying alpha values"><div class="figcaption">Multiple Scenarios Plot: Illustration of sensitivity analysis across different scenarios with varying alpha values</div>
 </div>
 </div>
 <div class="section level3">
