@@ -189,14 +189,15 @@ plot_simulation(
 )
 ```
 
-![Plot of simulation results: baseline scenario](man/figures/images/Scenario_baseline.png)
+![Baseline Scenario Plot: Simulation results for the baseline scenario, showing how Income, Government Spending, and Taxes are expected to evolve over time](man/figures/images/Scenario_baseline.png)
 
+\
 Beyond plotting variables over time, the `plot_cycles()` function provides a way to visualize the model's structure and uncover loops (feedback mechanisms and endogeneity) within the interdependencies between variables, offering an intuitive approach for interpreting and communicating the results of macroeconomic simulations.
 
 ``` r
 plot_cycles(model_sim)
 ```
-![Variables interdependencies](man/figures/images/Cycles.png)
+![Interdependent Variables Graph: A network diagram illustrating the relationships between the variables in the model](man/figures/images/Cycles.png)
 
 ### Templates 📝
 
@@ -265,7 +266,7 @@ plot_simulation(
 )
 ```
 
-![Plot of simulation results: shock scenario](man/figures/images/Scenario_expansion.png)
+![Shock Simulation Plot: Simulation results illustrating how the same variables (as in the baseline scenario) would evolve under the government expenditure expansion scenario](man/figures/images/Scenario_expansion.png)
 
 ### Sensitivity 🧙
 
@@ -292,7 +293,7 @@ plot_simulation(
 )
 ```
 
-![Sensitivity analysis](man/figures/images/Sensitivity.png)
+![Multiple Scenarios Plot: Illustration of sensitivity analysis across different scenarios with varying alpha values](man/figures/images/Sensitivity.png)
 
 ### Additional examples ⭐
 
