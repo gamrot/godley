@@ -16,8 +16,7 @@ knitr::opts_chunk$set(
 
 ## Scenario simulation
 
-There are a few steps to follow in order to create and simulate a baseline scenario.  
-
+The objective of this vignette is to walk through a few steps needed to create and simulate a baseline scenario. To explore all the possibilities for simulating various	models with Godley, please refer to other, more detailed articles on [this website](https://gamrot.github.io/godley/) that focus on specific models.
 
 ### 1. Model creation
 Use the `create_model()` function to initialize an SFC model (SFC object):

@@ -11,8 +11,8 @@
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Stock-Flow-Consistent Model Simulator">
-<meta name="description" content="Define, simulate and validate SFC models. The accounting structure of SFC models are described in Godley and Lavoie (2007, ISBN:978-1-137-08599-3). The algorithms implemented to solve the models are described in Kinsella and O'Shea (2010) &lt;doi:10.2139/ssrn.1729205&gt; and Peressini and Sullivan (1988, ISBN:0-387-96614-5) and Joao Macalos.">
-<meta property="og:description" content="Define, simulate and validate SFC models. The accounting structure of SFC models are described in Godley and Lavoie (2007, ISBN:978-1-137-08599-3). The algorithms implemented to solve the models are described in Kinsella and O'Shea (2010) &lt;doi:10.2139/ssrn.1729205&gt; and Peressini and Sullivan (1988, ISBN:0-387-96614-5) and Joao Macalos.">
+<meta name="description" content="Define, simulate and validate SFC models. The accounting structure of SFC models follows the approach outlined in Godley and Lavoie (2007, ISBN:978-1-137-08599-3). The algorithms implemented to solve the models are based on the methodologies described by Kinsella and O'Shea (2010) &lt;doi:10.2139/ssrn.1729205&gt;, Peressini and Sullivan (1988, ISBN:0-387-96614-5), and Joao Macalos.">
+<meta property="og:description" content="Define, simulate and validate SFC models. The accounting structure of SFC models follows the approach outlined in Godley and Lavoie (2007, ISBN:978-1-137-08599-3). The algorithms implemented to solve the models are based on the methodologies described by Kinsella and O'Shea (2010) &lt;doi:10.2139/ssrn.1729205&gt;, Peressini and Sullivan (1988, ISBN:0-387-96614-5), and Joao Macalos.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -73,7 +73,7 @@
 <p>The package offers the flexibility to support both theoretical frameworks and data-driven scenarios.</p>
 <p>It is named in honor of Wynne Godley (1926–2010), a prominent British post-Keynesian economist and a leading figure in SFC modeling.</p>
 <div class="section level3">
-<h3 id="installation-️">Installation ⚙️<a class="anchor" aria-label="anchor" href="#installation-%EF%B8%8F"></a>
+<h3 id="installation-gear">Installation ⚙️<a class="anchor" aria-label="anchor" href="#installation-gear"></a>
 </h3>
 <p><code>godley</code> is currently hosted on GitHub <a href="https://github.com/gamrot/godley" class="external-link">github.com/gamrot/godley</a>. To install the development version directly, please use <code>devtools</code> package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -81,7 +81,7 @@
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"gamrot/godley"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="example-">Example 📊<a class="anchor" aria-label="anchor" href="#example-"></a>
+<h3 id="example-bar_chart">Example 📊<a class="anchor" aria-label="anchor" href="#example-bar_chart"></a>
 </h3>
 <p>The following demonstrates a basic example of using the package to simulate a baseline scenario in the classic SIM model (Godley &amp; Lavoie, <em>Monetary Economics</em>, 2007).</p>
 <p>To define the model structure, start by creating an empty model with the <code><a href="reference/create_model.html">create_model()</a></code> function.<br>
@@ -228,7 +228,7 @@ The resulting model is an S3 object (a list) of the SFC class.</p>
 <span><span class="co">## #   theta &lt;dbl&gt;, G_d &lt;dbl&gt;, W &lt;dbl&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="visualizations-">Visualizations 🎨<a class="anchor" aria-label="anchor" href="#visualizations-"></a>
+<h3 id="visualizations-art">Visualizations 🎨<a class="anchor" aria-label="anchor" href="#visualizations-art"></a>
 </h3>
 <p>The <strong>godley</strong> package provides customized visualization capabilities to enhance the analysis of simulation outcomes.</p>
 <p>Users can leverage the <code><a href="reference/plot_simulation.html">plot_simulation()</a></code> function to create plots, by specifying the time range with <code>from</code> and <code>to</code>, along with a list of <code>expressions</code>. These expressions can include variable names or calculations derived from them, such as <code>G_s/Y</code>. In the example below, the plot displays the expressions for Income, Government Spending, and Taxes.</p>
@@ -250,12 +250,12 @@ Beyond plotting variables over time, the <code><a href="reference/plot_cycles.ht
 </div>
 </div>
 <div class="section level3">
-<h3 id="templates-">Templates 📝<a class="anchor" aria-label="anchor" href="#templates-"></a>
+<h3 id="templates-pencil">Templates 📝<a class="anchor" aria-label="anchor" href="#templates-pencil"></a>
 </h3>
 <p>To streamline model creation, <strong>godley</strong> comes with predefined templates. Rather than starting with an empty model and manually adding equations each time, users can reuse a previously created model or choose from the classic SFC models (Godley &amp; Lavoie, 2007) included in the package. These templates are available through the <code>template</code> argument in the <code><a href="reference/create_model.html">create_model()</a></code> function. The available templates include <code>SIM</code>, <code>SIMEX</code>, <code>PC</code>, <code>PCEX</code>, <code>LP</code>, <code>REG</code>, <code>OPEN</code>, <code>BMW</code>, <code>BMWK</code>, <code>DIS</code>, and <code>DISINF</code>, covering all models presented in Godley &amp; Lavoie (2007).</p>
 </div>
 <div class="section level3">
-<h3 id="shocks-">Shocks ⚡<a class="anchor" aria-label="anchor" href="#shocks-"></a>
+<h3 id="shocks-zap">Shocks ⚡<a class="anchor" aria-label="anchor" href="#shocks-zap"></a>
 </h3>
 <p>The package allows users to introduce and simulate shocks within the model.</p>
 <p>An alternative shock scenario is defined by:</p>
@@ -313,7 +313,7 @@ Beyond plotting variables over time, the <code><a href="reference/plot_cycles.ht
 </div>
 </div>
 <div class="section level3">
-<h3 id="sensitivity-">Sensitivity 🧙<a class="anchor" aria-label="anchor" href="#sensitivity-"></a>
+<h3 id="sensitivity-mage">Sensitivity 🧙<a class="anchor" aria-label="anchor" href="#sensitivity-mage"></a>
 </h3>
 <p>The <strong>godley</strong> package allows for the assessment of simulation result sensitivity to specific parameter values. For example, the effect of small adjustments to <code>alpha1</code> on short-term dynamics can be analyzed by first creating a new model object with <code><a href="reference/create_sensitivity.html">create_sensitivity()</a></code> and specifying the upper and lower bounds for the parameter of interest.</p>
 <p>The <code><a href="reference/create_sensitivity.html">create_sensitivity()</a></code> function generates a new SFC object based on an existing model and automatically adds multiple scenarios. These scenarios differ only in the value of the selected parameter (<code>variable</code>), which is varied across a specified range defined by <code>lower</code>, <code>upper</code>, and <code>step</code>.</p>
@@ -335,12 +335,12 @@ Beyond plotting variables over time, the <code><a href="reference/plot_cycles.ht
 </div>
 </div>
 <div class="section level3">
-<h3 id="additional-examples-">Additional examples ⭐<a class="anchor" aria-label="anchor" href="#additional-examples-"></a>
+<h3 id="additional-examples-star">Additional examples ⭐<a class="anchor" aria-label="anchor" href="#additional-examples-star"></a>
 </h3>
 <p>More examples and detailed information about <strong>godley</strong> functions and model setups are available at the <a href="https://gamrot.github.io/godley/">package website</a>.</p>
 </div>
 <div class="section level3">
-<h3 id="key-functions-">Key Functions 🔧<a class="anchor" aria-label="anchor" href="#key-functions-"></a>
+<h3 id="key-functions-wrench">Key Functions 🔧<a class="anchor" aria-label="anchor" href="#key-functions-wrench"></a>
 </h3>
 <ul>
 <li>
@@ -366,7 +366,7 @@ Beyond plotting variables over time, the <code><a href="reference/plot_cycles.ht
 </ul>
 </div>
 <div class="section level3">
-<h3 id="similar-work-">Similar work 👪<a class="anchor" aria-label="anchor" href="#similar-work-"></a>
+<h3 id="similar-work-family">Similar work 👪<a class="anchor" aria-label="anchor" href="#similar-work-family"></a>
 </h3>
 <p>The following packages also provide approaches to stock-flow consistent modeling:</p>
 <ul>
@@ -379,7 +379,7 @@ Beyond plotting variables over time, the <code><a href="reference/plot_cycles.ht
 </ul>
 </div>
 <div class="section level3">
-<h3 id="getting-help-">Getting help 🐛<a class="anchor" aria-label="anchor" href="#getting-help-"></a>
+<h3 id="getting-help-bug">Getting help 🐛<a class="anchor" aria-label="anchor" href="#getting-help-bug"></a>
 </h3>
 <p>If any issues arise or bugs are encountered, please file a report with a minimal reproducible example at <a href="https://github.com/gamrot/godley/issues" class="external-link">https://github.com/gamrot/godley/issues</a>.</p>
 </div>
