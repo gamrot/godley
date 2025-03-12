@@ -15,8 +15,15 @@ It is named in honor of Wynne Godley (1926–2010), a prominent British post-Key
 
 ### Installation ⚙️
 
-`godley` is currently hosted on GitHub [github.com/gamrot/godley](https://github.com/gamrot/godley). To install the development version directly, please use `devtools` package:
+The `godley` package is now available on CRAN for easy installation via the `install.packages` command.
 
+To get the **stable version from CRAN**, simply run:
+
+```r
+install.packages("godley")
+```
+
+Otherwise, if you’d like the **development version from GitHub**, hosted at  [github.com/gamrot/godley](https://github.com/gamrot/godley), please use the `devtools` package:
 ``` r
 install.packages("devtools")
 devtools::install_github("gamrot/godley")

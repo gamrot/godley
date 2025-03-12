@@ -75,8 +75,12 @@
 <div class="section level3">
 <h3 id="installation-gear">Installation ⚙️<a class="anchor" aria-label="anchor" href="#installation-gear"></a>
 </h3>
-<p><code>godley</code> is currently hosted on GitHub <a href="https://github.com/gamrot/godley" class="external-link">github.com/gamrot/godley</a>. To install the development version directly, please use <code>devtools</code> package:</p>
+<p>The <code>godley</code> package is now available on CRAN for easy installation via the <code>install.packages</code> command.</p>
+<p>To get the <strong>stable version from CRAN</strong>, simply run:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"godley"</span><span class="op">)</span></span></code></pre></div>
+<p>Otherwise, if you’d like the <strong>development version from GitHub</strong>, hosted at <a href="https://github.com/gamrot/godley" class="external-link">github.com/gamrot/godley</a>, please use the <code>devtools</code> package:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"gamrot/godley"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -86,7 +90,7 @@
 <p>The following demonstrates a basic example of using the package to simulate a baseline scenario in the classic SIM model (Godley &amp; Lavoie, <em>Monetary Economics</em>, 2007).</p>
 <p>To define the model structure, start by creating an empty model with the <code><a href="reference/create_model.html">create_model()</a></code> function.<br>
 The resulting model is an S3 object (a list) of the SFC class.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_model.html">create_model</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"SFC SIM"</span><span class="op">)</span></span></code></pre></div>
 <p>Use the <code><a href="reference/add_variable.html">add_variable()</a></code> function to include variables in the model. This function creates a <code>$variables</code> tibble within the model.</p>
 <p>⚠️ <strong>Remarks:</strong></p>
@@ -97,7 +101,7 @@ The resulting model is an S3 object (a list) of the SFC class.</p>
 </li>
 <li>Each variable can be initialized with either a single scalar (representing a theoretical starting point) or a full vector of real data.</li>
 </ul>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_sim</span> <span class="op">&lt;-</span> <span class="va">model_sim</span> <span class="op">|&gt;</span></span>
 <span> <span class="fu"><a href="reference/add_variable.html">add_variable</a></span><span class="op">(</span><span class="st">"C_d"</span>, desc <span class="op">=</span> <span class="st">"Consumption demand by households"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span> <span class="fu"><a href="reference/add_variable.html">add_variable</a></span><span class="op">(</span><span class="st">"C_s"</span>, desc <span class="op">=</span> <span class="st">"Consumption supply"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -158,7 +162,7 @@ The resulting model is an S3 object (a list) of the SFC class.</p>
 </li>
 <li>Each variable being defined can appear on the left-hand side of a single equation. It is not allowed to have multiple different equations for the same variable (exact duplicates are flagged with an appropriate message).</li>
 </ol>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_sim</span> <span class="op">&lt;-</span> <span class="va">model_sim</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/add_equation.html">add_equation</a></span><span class="op">(</span><span class="st">"C_s = C_d"</span>, desc <span class="op">=</span> <span class="st">"Consumption"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/add_equation.html">add_equation</a></span><span class="op">(</span><span class="st">"G_s = G_d"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -202,7 +206,7 @@ The resulting model is an S3 object (a list) of the SFC class.</p>
 <p>The Newton method works similarly but uses the Newton-Raphson algorithm to solve interdependent equations. This algorithm is implemented via the <code><a href="https://rdrr.io/pkg/rootSolve/man/multiroot.html" class="external-link">rootSolve::multiroot()</a></code> function.</p>
 <p>During the model-building phase, setting the <code>info = TRUE</code> argument can be helpful. This returns the result of the <code><a href="reference/prepare.html">prepare()</a></code> function, providing details on the classification of all variables (endogenous/exogenous) and other summary information about the input data.</p>
 <p>Simulation results are saved in a <code>$result</code> tibble linked to the scenario being simulated (e.g., the baseline scenario is stored as <code>$baseline</code>).</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_sim</span> <span class="op">&lt;-</span> <span class="va">model_sim</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/simulate_scenario.html">simulate_scenario</a></span><span class="op">(</span></span>
 <span>    periods <span class="op">=</span> <span class="fl">100</span>, start_date <span class="op">=</span> <span class="st">"2015-01-01"</span>,</span>
@@ -232,7 +236,7 @@ The resulting model is an S3 object (a list) of the SFC class.</p>
 </h3>
 <p>The <strong>godley</strong> package provides customized visualization capabilities to enhance the analysis of simulation outcomes.</p>
 <p>Users can leverage the <code><a href="reference/plot_simulation.html">plot_simulation()</a></code> function to create plots, by specifying the time range with <code>from</code> and <code>to</code>, along with a list of <code>expressions</code>. These expressions can include variable names or calculations derived from them, such as <code>G_s/Y</code>. In the example below, the plot displays the expressions for Income, Government Spending, and Taxes.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_simulation.html">plot_simulation</a></span><span class="op">(</span></span>
 <span>  <span class="va">model_sim</span>, scenario <span class="op">=</span> <span class="st">"baseline"</span>,</span>
 <span>  from <span class="op">=</span> <span class="st">"2015-01-01"</span>, to <span class="op">=</span> <span class="st">"2023-01-01"</span>,</span>
@@ -243,7 +247,7 @@ The resulting model is an S3 object (a list) of the SFC class.</p>
 </div>
 <p><br>
 Beyond plotting variables over time, the <code><a href="reference/plot_cycles.html">plot_cycles()</a></code> function provides a way to visualize the model’s structure and uncover loops (feedback mechanisms and endogeneity) within the interdependencies between variables, offering an intuitive approach for interpreting and communicating the results of macroeconomic simulations.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_cycles.html">plot_cycles</a></span><span class="op">(</span><span class="va">model_sim</span><span class="op">)</span></span></code></pre></div>
 <div class="float">
 <img src="reference/figures/images/Cycles.png" alt="Interdependent Variables Graph: A network diagram illustrating the relationships between the variables in the model"><div class="figcaption">Interdependent Variables Graph: A network diagram illustrating the relationships between the variables in the model</div>
@@ -268,7 +272,7 @@ Beyond plotting variables over time, the <code><a href="reference/plot_cycles.ht
 </ol>
 <p>To create a shock, begin by initializing an empty S3 object (list) of the <code>SFC_shock</code> class using the <code><a href="reference/create_shock.html">create_shock()</a></code> function. Next, add the shock parameters for selected variables (<code>variable</code>) using the <code><a href="reference/add_shock.html">add_shock()</a></code> function. Shock values can be defined explicitly (<code>value</code>), as a relative rate (<code>rate</code>), or as an absolute increment (<code>absolute</code>).</p>
 <p>For example, a 20% increase in government spending can be simulated by first creating a shock object using <code><a href="reference/create_shock.html">create_shock()</a></code> and then applying it with <code><a href="reference/add_shock.html">add_shock()</a></code> for the period between Q1 2017 and Q4 2020.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_shock</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_shock.html">create_shock</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/add_shock.html">add_shock</a></span><span class="op">(</span></span>
 <span>    variable <span class="op">=</span> <span class="st">"G_d"</span>, rate <span class="op">=</span> <span class="fl">0.2</span>,</span>
@@ -276,7 +280,7 @@ Beyond plotting variables over time, the <code><a href="reference/plot_cycles.ht
 <span>    desc <span class="op">=</span> <span class="st">"permanent increase in government expenditures"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p>Once the shock has been defined, it can be incorporated into a new scenario using <code><a href="reference/add_scenario.html">add_scenario()</a></code>. The baseline scenario and corresponding time periods must first be specified. After establishing the shock scenario, the <code><a href="reference/simulate_scenario.html">simulate_scenario()</a></code> function can be executed again to generate the updated results.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_sim</span> <span class="op">&lt;-</span> <span class="va">model_sim</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/add_scenario.html">add_scenario</a></span><span class="op">(</span></span>
 <span>    name <span class="op">=</span> <span class="st">"expansion"</span>, origin <span class="op">=</span> <span class="st">"baseline"</span>,</span>
@@ -303,7 +307,7 @@ Beyond plotting variables over time, the <code><a href="reference/plot_cycles.ht
 <span><span class="co">## # … with 90 more rows, and 5 more variables: alpha1 &lt;dbl&gt;, alpha2 &lt;dbl&gt;,</span></span>
 <span><span class="co">## #   theta &lt;dbl&gt;, G_d &lt;dbl&gt;, W &lt;dbl&gt;</span></span></code></pre></div>
 <p>The results indicate that increased government expenditures have a positive effect on income, but a less favorable short-term impact on the government balance. This outcome can be visualized as follows:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_simulation.html">plot_simulation</a></span><span class="op">(</span></span>
 <span>  <span class="va">model_sim</span>, scenario <span class="op">=</span> <span class="st">"expansion"</span>,</span>
 <span>  to <span class="op">=</span> <span class="st">"2025-01-01"</span>, expressions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Y"</span>, <span class="st">"G_s"</span>, <span class="st">"T_s"</span><span class="op">)</span></span>
@@ -318,14 +322,14 @@ Beyond plotting variables over time, the <code><a href="reference/plot_cycles.ht
 <p>The <strong>godley</strong> package allows for the assessment of simulation result sensitivity to specific parameter values. For example, the effect of small adjustments to <code>alpha1</code> on short-term dynamics can be analyzed by first creating a new model object with <code><a href="reference/create_sensitivity.html">create_sensitivity()</a></code> and specifying the upper and lower bounds for the parameter of interest.</p>
 <p>The <code><a href="reference/create_sensitivity.html">create_sensitivity()</a></code> function generates a new SFC object based on an existing model and automatically adds multiple scenarios. These scenarios differ only in the value of the selected parameter (<code>variable</code>), which is varied across a specified range defined by <code>lower</code>, <code>upper</code>, and <code>step</code>.</p>
 <p>Once the sensitivity scenarios are generated, the simulations can be executed:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_sens</span> <span class="op">&lt;-</span> <span class="va">model_sim</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/create_sensitivity.html">create_sensitivity</a></span><span class="op">(</span></span>
 <span>    variable <span class="op">=</span> <span class="st">"alpha1"</span>, lower <span class="op">=</span> <span class="fl">0.1</span>, upper <span class="op">=</span> <span class="fl">0.8</span>, step <span class="op">=</span> <span class="fl">0.1</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/simulate_scenario.html">simulate_scenario</a></span><span class="op">(</span>periods <span class="op">=</span> <span class="fl">100</span>, start_date <span class="op">=</span> <span class="st">"2015-01-01"</span><span class="op">)</span></span></code></pre></div>
 <p>The results can be displayed in a plot. To visualize multiple scenarios that share the same <code>scenario</code> substring in their names, set the <code>take_all = TRUE</code> argument.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_simulation.html">plot_simulation</a></span><span class="op">(</span></span>
 <span>  <span class="va">model_sens</span>, scenario <span class="op">=</span> <span class="st">"sensitivity"</span>, take_all <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  to <span class="op">=</span> <span class="st">"2028-01-01"</span>, expressions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Y"</span><span class="op">)</span></span>
