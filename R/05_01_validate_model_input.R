@@ -177,7 +177,7 @@ Please remove one of the equations
   # 10. check if there are exogenous variables not defined by the user
   v <- vecsets::vsetdiff(variables_not_user, variables_endo)
   if (length(v) != 0) {
-    stop(paste0("These exogenous variables are not defined
+    warning(paste0("These exogenous variables are not defined
 Please add them to the model: ", paste0(v, collapse = ", "), "
 "))
   }
