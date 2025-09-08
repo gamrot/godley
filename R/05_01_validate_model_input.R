@@ -57,7 +57,7 @@ Please complete exogenous variables and initial values
   # 3 Check if provided equations do not contain invalid characters
   all_equations <- model$equations$equation
   for (i in all_equations) {
-    if (stringr::str_detect(i, "[\u00A7\u00A3@#\\${};:'\\\\~?]")) {
+    if (stringr::str_detect(i, "[\u00A7\u00A3@#\\;:'\\\\~?]")) {
       warning("Possible invalid character(s) in equation. Please check: ", i, "")
     }
   }
@@ -109,7 +109,7 @@ Please check: ", variables_user[i], "
     stringr::str_replace_all("[(]", "")
   # equations divided into lhs and rhs
   equations_sep <- tibble::tibble(equations) %>%
-    tidyr::separate(.data$equations, c("lhs", "rhs"), "=") %>%
+    tidyr::separate(.data$equations, c("lhs", "rhs"), "=", extra = "merge") %>% # allows <= in equations
     dplyr::mutate(
       lhs = stringr::str_squish(lhs),
       rhs = stringr::str_squish(rhs)
@@ -126,6 +126,7 @@ Please check: ", variables_user[i], "
     stringr::str_split(" ", simplify = T) %>%
     vecsets::vsetdiff(functions) %>%
     unique()
+  variables_eqs <- grep("^(if|else|\\{)", variables_eqs, invert = TRUE, value = TRUE) # remove if, else, {
   variables_eqs <- variables_eqs[suppressWarnings(is.na(as.numeric(variables_eqs)))]
   # variables not-defined by the user but present in equations
   variables_not_user <- vecsets::vsetdiff(variables_eqs, variables_user)
