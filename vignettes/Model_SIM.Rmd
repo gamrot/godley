@@ -78,7 +78,7 @@ Now, you can simulate the model (in this example, we calculate the baseline scen
 # Simulate model
 model_sim <- simulate_scenario(model_sim,
   scenario = "baseline", max_iter = 350, periods = 100,
-  hidden_tol = 0.1, tol = 1e-05, method = "Newton"
+  hidden_tol = 0.1, tol = 1e-05, method = "Broyden"
 )
 ```
 

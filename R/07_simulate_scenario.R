@@ -76,10 +76,10 @@ simulate_scenario <- function(model,
   checkmate::assert_string(method)
   checkmate::assert_logical(verbose)
   # conditions
-  if (!(method %in% c("Gauss", "Newton"))) {
+  if (!(method %in% c("Gauss", "Newton", "Broyden"))) {
     stop(
       "There is no method named ", method,
-      "Please choose from: Gauss, Newton"
+      "Please choose from: Gauss, Newton, Broyden"
     )
   }
 
@@ -180,8 +180,8 @@ simulate_scenario <- function(model,
 
     if (method == "Gauss") {
       m <- run_gauss_seidel(m, calls, periods, max_iter, tol, verbose)
-    } else if (method == "Newton") {
-      m <- run_newton(m, calls, periods, max_iter, tol)
+    } else if (method %in% c("Newton", "Broyden")) {
+      m <- run_newton(m, calls, method, periods, max_iter, tol)
     }
 
     # Check if hidden is fulfilled

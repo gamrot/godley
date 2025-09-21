@@ -13,26 +13,32 @@ prep_broyden <- function(.block) {
   return(.block)
 }
 
-# ' Newton Raphson solver implemented with \code{rootSolve::multiroot()}
+# ' Newton Raphson and Broyden solver implemented with \code{nleqslv::nleqslv()}
 # '
 # ' @author João Macalós
+# ' @editor Iwo Augustyński (2025) - switched from rootSolve::multiroot to nleqslv::nleqslv
+# ' @importFrom nleqslv nleqslv
 # '
 # ' @param m the initialized matrix obtained with code{prepare()} or \code{prepare_scenario_matrix()}
 # ' @param calls prepared equations with \code{prepare()}
+# ' @param method either "Newton" or "Broyden"
 # ' @param periods total number of rows (periods) in the model
 # ' @param max_iter maximum number of iterations allowed per block per period
 # ' @param tol tolerance accepted to determine convergence
+# ' @param ... additional arguments passed to \code{nleqslv()} control parameters
 # '
-# ' @details This function implements the Newton-Raphson method to solve the cyclical
-# ' blocks of equations. It relies on the \code{multiroot()} function from \code{rootSolve}.
+# ' @details This function implements the Newton-Raphson and Broyden methods to solve the cyclical
+# ' blocks of equations. It relies on the \code{nleqslv()} function from \code{nleqslv}.
 # '
 # ' @return simulated scenario matrix
 
 run_newton <- function(m,
                        calls,
+                       method,
                        periods,
                        max_iter,
                        tol,
+                       global = "dbldog",
                        ...) {
   blocks <- unique(sort(calls$block))
 
@@ -81,7 +87,7 @@ run_newton <- function(m,
         m[.i, idvar_] <- eval(exs_l[[.b]][[1]])
 
         if (is.na(m[.i, idvar_]) | !is.finite(m[.i, idvar_])) {
-          stop("Newton algorithm failed
+          stop("Algorithm failed
 During computation NaN or Inf was obtained in ", idvar_, " equation
 Please check if equations are correctly specified or change initial values")
         }
@@ -91,7 +97,7 @@ Please check if equations are correctly specified or change initial values")
           m[.i, idvar_] <- eval(exs_l[[.b]][[1]])
 
           if (is.na(m[.i, idvar_]) | !is.finite(m[.i, idvar_])) {
-            stop("Newton algorithm failed
+            stop("Algorithm failed
 During computation NaN or Inf was obtained in ", idvar_, " equation
 Please check if equations are correctly specified or change initial values")
           }
@@ -99,11 +105,17 @@ Please check if equations are correctly specified or change initial values")
           xstart <- m[.i - 1, idvar_]
           exs <- exs_nl[[.b]]
 
-          x <- rootSolve::multiroot(block_foo, xstart, max_iter, ctol = tol)
+          #x <- rootSolve::multiroot(block_foo, xstart, max_iter, ctol = tol)
+          x <- nleqslv::nleqslv(x = xstart, fn = block_foo, jac = NULL, method = method, 
+                                global = global, control = list(maxit = max_iter, xtol = tol, ...))
 
-          for (.v in seq_along(x$root)) {
-            m[.i, idvar_[[.v]]] <- x$root[.v]
-            # m[.i, block_names[[.b]]] <- x$iter
+          # for (.v in seq_along(x$root)) {
+          #   m[.i, idvar_[[.v]]] <- x$root[.v]
+          #   # m[.i, block_names[[.b]]] <- x$iter
+          # }
+          for (.v in seq_along(x$x)) {
+            m[.i, idvar_[[.v]]] <- x$x[.v]
+
           }
         }
       }
