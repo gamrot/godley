@@ -45,7 +45,7 @@ d <- function(x) {
 #' @param start_date character date to begin the simulation in the format "yyyy-mm-dd"
 #' @param tol numeric tolerance accepted to determine convergence, defaults to 1e-05
 #' @param hidden_tol numeric error tolerance to accept the equality of hidden equations, defaults to 0.1.
-#' @param method string name of method used to find solution chosen from: 'Gauss', 'Newton', defaults to 'Gauss'
+#' @param method string name of method used to find solution chosen from: 'Gauss', 'Newton', 'Broyden' defaults to 'Gauss'
 #' @param verbose logical to tell if additional model verbose should be displayed
 #'
 #' @return updated model containing simulated scenario(s)
@@ -181,7 +181,7 @@ simulate_scenario <- function(model,
     if (method == "Gauss") {
       m <- run_gauss_seidel(m, calls, periods, max_iter, tol, verbose)
     } else if (method %in% c("Newton", "Broyden")) {
-      m <- run_newton(m, calls, method, periods, max_iter, tol)
+      m <- run_newton_broyden(m, calls, method, periods, max_iter, tol, ...)
     }
 
     # Check if hidden is fulfilled

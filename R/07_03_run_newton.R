@@ -25,6 +25,7 @@ prep_broyden <- function(.block) {
 # ' @param periods total number of rows (periods) in the model
 # ' @param max_iter maximum number of iterations allowed per block per period
 # ' @param tol tolerance accepted to determine convergence
+# ' @param 
 # ' @param ... additional arguments passed to \code{nleqslv()} control parameters
 # '
 # ' @details This function implements the Newton-Raphson and Broyden methods to solve the cyclical
@@ -32,7 +33,7 @@ prep_broyden <- function(.block) {
 # '
 # ' @return simulated scenario matrix
 
-run_newton <- function(m,
+run_newton_broyden <- function(m,
                        calls,
                        method,
                        periods,
