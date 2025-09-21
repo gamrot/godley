@@ -1,10 +1,10 @@
-# ' Prep equations for Newton solvers
-# '
-# ' @author João Macalós
-# '
-# ' @param .block blocks of equations
-# '
-# ' @return blocks
+#' Prep equations for Newton solvers
+#'
+#' @author João Macalós
+#'
+#' @param .block blocks of equations
+#'
+#' @return blocks
 
 prep_broyden <- function(.block) {
   for (.i in seq_len(vctrs::vec_size(.block))) {
@@ -13,25 +13,25 @@ prep_broyden <- function(.block) {
   return(.block)
 }
 
-# ' Newton Raphson and Broyden solver implemented with \code{nleqslv::nleqslv()}
-# '
-# ' @author João Macalós
-# ' @editor Iwo Augustyński (2025) - switched from rootSolve::multiroot to nleqslv::nleqslv
-# ' @importFrom nleqslv nleqslv
-# '
-# ' @param m the initialized matrix obtained with code{prepare()} or \code{prepare_scenario_matrix()}
-# ' @param calls prepared equations with \code{prepare()}
-# ' @param method either "Newton" or "Broyden"
-# ' @param periods total number of rows (periods) in the model
-# ' @param max_iter maximum number of iterations allowed per block per period
-# ' @param tol tolerance accepted to determine convergence
-# ' @param 
-# ' @param ... additional arguments passed to \code{nleqslv()} control parameters
-# '
-# ' @details This function implements the Newton-Raphson and Broyden methods to solve the cyclical
-# ' blocks of equations. It relies on the \code{nleqslv()} function from \code{nleqslv}.
-# '
-# ' @return simulated scenario matrix
+#' Newton Raphson and Broyden solver implemented with \code{nleqslv::nleqslv()}
+#'
+#' @author João Macalós
+#' @editor Iwo Augustyński (2025) - switched from rootSolve::multiroot to nleqslv::nleqslv
+#' @importFrom nleqslv nleqslv
+#'
+#' @param m the initialized matrix obtained with code{prepare()} or \code{prepare_scenario_matrix()}
+#' @param calls prepared equations with \code{prepare()}
+#' @param method either "Newton" or "Broyden"
+#' @param periods total number of rows (periods) in the model
+#' @param max_iter maximum number of iterations allowed per block per period
+#' @param tol tolerance accepted to determine convergence
+#' @param global character, global strategy for nleqslv, see \code{nleqslv::nleqslv()} documentation, defaults to "dbldog"
+#' @param ... additional arguments passed to \code{nleqslv()} control parameters, see \code{nleqslv::nleqslv()} documentation
+#'
+#' @details This function implements the Newton-Raphson and Broyden methods to solve the cyclical
+#' blocks of equations. It relies on the \code{nleqslv()} function from \code{nleqslv}.
+#'
+#' @return simulated scenario matrix
 
 run_newton_broyden <- function(m,
                        calls,

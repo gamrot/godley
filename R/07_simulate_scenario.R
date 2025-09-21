@@ -46,6 +46,8 @@ d <- function(x) {
 #' @param tol numeric tolerance accepted to determine convergence, defaults to 1e-05
 #' @param hidden_tol numeric error tolerance to accept the equality of hidden equations, defaults to 0.1.
 #' @param method string name of method used to find solution chosen from: 'Gauss', 'Newton', 'Broyden' defaults to 'Gauss'
+#' @param global character, global strategy for nleqslv, see \code{nleqslv::nleqslv()} documentation, defaults to "dbldog"
+#' @param ... additional arguments passed to \code{nleqslv()} control parameters, see \code{nleqslv::nleqslv()} documentation
 #' @param verbose logical to tell if additional model verbose should be displayed
 #'
 #' @return updated model containing simulated scenario(s)
@@ -59,6 +61,8 @@ simulate_scenario <- function(model,
                               max_iter = 350,
                               tol = 1e-05,
                               hidden_tol = 0.1,
+                              global = "dbldog",
+                              ...,
                               verbose = FALSE) {
   # argument check
   # type
@@ -74,6 +78,7 @@ simulate_scenario <- function(model,
   checkmate::assert_number(hidden_tol, lower = 0)
   checkmate::assert_number(tol, lower = 0)
   checkmate::assert_string(method)
+  checkmate::assert_string(global)
   checkmate::assert_logical(verbose)
   # conditions
   if (!(method %in% c("Gauss", "Newton", "Broyden"))) {
