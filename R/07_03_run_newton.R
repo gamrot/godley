@@ -107,8 +107,17 @@ Please check if equations are correctly specified or change initial values")
           exs <- exs_nl[[.b]]
 
           #x <- rootSolve::multiroot(block_foo, xstart, max_iter, ctol = tol)
-          x <- nleqslv::nleqslv(x = xstart, fn = block_foo, jac = NULL, method = method, 
-                                global = global, control = list(maxit = max_iter, xtol = tol, ...))
+          tryCatch(
+            {x <- nleqslv::nleqslv(x = xstart, fn = block_foo, jac = NULL, method = method, 
+                                   global = global, control = list(maxit = max_iter, xtol = tol, allowSingular = TRUE))
+            },
+            error = function(e) {
+              pattern <- "(?<=index=)\\d+"
+              extracted_number <- as.numeric(stringr::str_extract(conditionMessage(e), pattern))
+              eq <- as.character(exs[[extracted_number]])[2]
+              cat(glue::glue("The solver did not converge.\n During computation NaN or Inf was obtained in equation:\n {eq}\n Please check if equations are correctly specified or change initial values"))
+            }
+          )
 
           # for (.v in seq_along(x$root)) {
           #   m[.i, idvar_[[.v]]] <- x$root[.v]
