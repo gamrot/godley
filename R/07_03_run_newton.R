@@ -1,18 +1,3 @@
-# ' Prep equations for Newton solvers
-# '
-# ' @author João Macalós
-# '
-# ' @param .block blocks of equations
-# '
-# ' @return blocks
-
-prep_broyden <- function(.block) {
-  for (.i in seq_len(vctrs::vec_size(.block))) {
-    .block$rhs2 <- gsub(.block$lhs2[[.i]], paste0(".x\\[", .i, "\\]"), .block$rhs2)
-  }
-  return(.block)
-}
-
 # ' Newton Raphson solver implemented with \code{rootSolve::multiroot()}
 # '
 # ' @author João Macalós

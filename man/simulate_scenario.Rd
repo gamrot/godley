@@ -12,7 +12,9 @@ simulate_scenario(
   method = "Gauss",
   max_iter = 350,
   tol = 1e-05,
+  hidden = TRUE,
   hidden_tol = 0.1,
+  rhtol = FALSE,
   verbose = FALSE
 )
 }

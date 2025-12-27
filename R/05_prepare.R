@@ -74,6 +74,21 @@ find_blocks <- function(adj) {
   return(blocks)
 }
 
+# ' Prep equations for Newton solvers
+# '
+# ' @author João Macalós
+# '
+# ' @param .block blocks of equations
+# '
+# ' @return blocks
+
+prep_broyden <- function(.block) {
+  for (.i in seq_len(vctrs::vec_size(.block))) {
+    .block$rhs2 <- gsub(.block$lhs2[[.i]], paste0(".x\\[", .i, "\\]"), .block$rhs2)
+  }
+  return(.block)
+}
+
 # ' Re-write the equations with the correct matrix syntax that will be used to evaluate the expressions inside the Gauss Seidel/Newton algorithm
 # '
 # ' @param equations_sep tibble of equations after passing \code{validate_model_input()} function

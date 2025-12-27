@@ -31,7 +31,11 @@ Imports: dplyr,
   lubridate,
   data.table,
   tibble,
-  visNetwork
+  visNetwork,
+  Rcpp
+LinkingTo: 
+    Rcpp,
+    RcppArmadillo
 Depends: R (>= 4.1.0)
 RoxygenNote: 7.3.2
 Suggests: 

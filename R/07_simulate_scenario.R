@@ -58,7 +58,9 @@ simulate_scenario <- function(model,
                               method = "Gauss",
                               max_iter = 350,
                               tol = 1e-05,
+                              hidden = TRUE,
                               hidden_tol = 0.1,
+                              rhtol = FALSE,
                               verbose = FALSE) {
   # argument check
   # type
@@ -74,12 +76,13 @@ simulate_scenario <- function(model,
   checkmate::assert_number(hidden_tol, lower = 0)
   checkmate::assert_number(tol, lower = 0)
   checkmate::assert_string(method)
+  checkmate::assert_logical(rhtol)
   checkmate::assert_logical(verbose)
   # conditions
-  if (!(method %in% c("Gauss", "Newton"))) {
+  if (!(method %in% c("Broyden", "Gauss", "Newton"))) {
     stop(
       "There is no method named ", method,
-      "Please choose from: Gauss, Newton"
+      "Please choose from: Broyden, Gauss, Newton"
     )
   }
 
@@ -182,60 +185,70 @@ simulate_scenario <- function(model,
       m <- run_gauss_seidel(m, calls, periods, max_iter, tol, verbose)
     } else if (method == "Newton") {
       m <- run_newton(m, calls, periods, max_iter, tol)
+    } else if (method == "Broyden") {
+      m <- run_broyden(m, calls, periods, max_iter, tol)
     }
-
-    # Check if hidden is fulfilled
-    h <- model$equations %>%
-      dplyr::filter(hidden == TRUE) %>%
-      dplyr::select("equation") %>%
-      tidyr::separate(.data$equation, c("lhs", "rhs"), "=") %>%
-      dplyr::mutate(
-        lhs = stringr::str_squish(lhs),
-        rhs = stringr::str_squish(rhs)
-      )
-    hl <- h$lhs
-    hr <- h$rhs
-
-    # Check if hidden equations are fulfilled
-    diffs <- m[, hl, drop = FALSE] - m[, hr, drop = FALSE]
-
-    # Identify any hidden equations that fail the tolerance criterion
-    failing_equations <- which(apply(abs(diffs), 2, max) >= hidden_tol)
-
-    if (length(failing_equations) > 0) {
-      # Construct a detailed message for each failing equation
-      eq_messages <- sapply(failing_equations, function(i) {
-        eq_lhs <- h$lhs[i]
-        eq_rhs <- h$rhs[i]
-        max_diff <- max(abs(diffs[, i]))
-        paste0(
-          "Hidden equation '", eq_lhs, " = ", eq_rhs,
-          "' does not hold within the hidden tolerance of ", hidden_tol,
-          ". Maximum difference observed: ", max_diff
+  
+    if(hidden){
+      # Check if hidden is fulfilled
+      h <- model$equations %>%
+        dplyr::filter(hidden == TRUE) %>%
+        dplyr::select("equation") %>%
+        tidyr::separate(.data$equation, c("lhs", "rhs"), "=") %>%
+        dplyr::mutate(
+          lhs = stringr::str_squish(lhs),
+          rhs = stringr::str_squish(rhs)
         )
-      })
-
-      error_message <- paste0(
-        "\nThe following hidden (redundant) equation(s) are not fulfilled:\n",
-        paste(eq_messages, collapse = "\n"),
-        "\n\nHidden equations serve as a critical check on the model's water tight accounting,",
-        "which is one of the defining aspects of a SFC model.",
-        " In a properly specified and converged stationary SFC model,",
-        " these redundant conditions should be met exactly (within the chosen tolerance).",
-        "\n\nIf these conditions fail, it may indicate an issue with the model's internal consistency or equilibrium conditions.",
-        " Possible steps to address this issue include:\n",
-        " - Double-checking the model's specification and variables values.\n",
-        " - Adjusting the `hidden_tol` to a higher value if you believe the differences are negligible.\n",
-        " - Changing the solution method (e.g., from 'Gauss' to 'Newton') to improve convergence.\n",
-        " - Trying `hidden = FALSE` to ignore these redundant checks if appropriate.\n"
-      )
-      if (!verbose) {
-        error_message <- paste0(
-          error_message,
-          "\nInclude the simulate_scenario(..., verbose = TRUE) parameter to get more details on the root causes of issues during execution."
-        )
+      hl <- h$lhs
+      hr <- h$rhs
+      
+      if (isTRUE(rhtol)) {
+        # If rhtol is set to TRUE, check whether the discrepancy between the two series as a share of the first series, is always smaller than the hidden_tol value.
+        diffs <- (m[, hl, drop = FALSE] - m[, hr, drop = FALSE]) / (m[, hl, drop = FALSE] +  1e-15)
+      } else {
+        # Check if hidden equations are fulfilled
+        diffs <- m[, hl, drop = FALSE] - m[, hr, drop = FALSE]
       }
-      stop(error_message)
+  
+  
+      # Identify any hidden equations that fail the tolerance criterion
+      failing_equations <- which(apply(abs(diffs), 2, max) >= hidden_tol)
+  
+      if (length(failing_equations) > 0) {
+        # Construct a detailed message for each failing equation
+        eq_messages <- sapply(failing_equations, function(i) {
+          eq_lhs <- h$lhs[i]
+          eq_rhs <- h$rhs[i]
+          max_diff <- max(abs(diffs[, i]))
+          paste0(
+            "Hidden equation '", eq_lhs, " = ", eq_rhs,
+            "' does not hold within the hidden tolerance of ", hidden_tol,
+            ". Maximum difference observed: ", max_diff
+          )
+        })
+  
+        error_message <- paste0(
+          "\nThe following hidden (redundant) equation(s) are not fulfilled:\n",
+          paste(eq_messages, collapse = "\n"),
+          "\n\nHidden equations serve as a critical check on the model's water tight accounting,",
+          "which is one of the defining aspects of a SFC model.",
+          " In a properly specified and converged stationary SFC model,",
+          " these redundant conditions should be met exactly (within the chosen tolerance).",
+          "\n\nIf these conditions fail, it may indicate an issue with the model's internal consistency or equilibrium conditions.",
+          " Possible steps to address this issue include:\n",
+          " - Double-checking the model's specification and variables values.\n",
+          " - Adjusting the `hidden_tol` to a higher value if you believe the differences are negligible.\n",
+          " - Changing the solution method (e.g., from 'Gauss' to 'Newton') to improve convergence.\n",
+          " - Trying `hidden = FALSE` to ignore these redundant checks if appropriate.\n"
+        )
+        if (!verbose) {
+          error_message <- paste0(
+            error_message,
+            "\nInclude the simulate_scenario(..., verbose = TRUE) parameter to get more details on the root causes of issues during execution."
+          )
+        }
+        stop(error_message)
+      }
     }
 
     m <- tibble::tibble(data.frame(m))
