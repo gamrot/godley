@@ -202,14 +202,14 @@ simulate_scenario <- function(model,
       hl <- h$lhs
       hr <- h$rhs
       
+      # Check if hidden equations are fulfilled
+      diffs <- m[, hl, drop = FALSE] - m[, hr, drop = FALSE]
+      max_diff <- max(abs(diffs[, i]))
+      
       if (isTRUE(rhtol)) {
         # If rhtol is set to TRUE, check whether the discrepancy between the two series as a share of the first series, is always smaller than the hidden_tol value.
-        diffs <- (m[, hl, drop = FALSE] - m[, hr, drop = FALSE]) / (m[, hl, drop = FALSE] +  1e-15)
-      } else {
-        # Check if hidden equations are fulfilled
-        diffs <- m[, hl, drop = FALSE] - m[, hr, drop = FALSE]
+        diffs <- diffs / (m[, hl, drop = FALSE] +  1e-15)
       }
-  
   
       # Identify any hidden equations that fail the tolerance criterion
       failing_equations <- which(apply(abs(diffs), 2, max) >= hidden_tol)
@@ -219,7 +219,6 @@ simulate_scenario <- function(model,
         eq_messages <- sapply(failing_equations, function(i) {
           eq_lhs <- h$lhs[i]
           eq_rhs <- h$rhs[i]
-          max_diff <- max(abs(diffs[, i]))
           paste0(
             "Hidden equation '", eq_lhs, " = ", eq_rhs,
             "' does not hold within the hidden tolerance of ", hidden_tol,

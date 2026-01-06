@@ -1,0 +1,537 @@
+---
+title: "Model INSOUT"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Model INSOUT}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r, include = FALSE}
+library(dplyr)
+library(tidyr)
+library(plotly)
+
+`%||%` <- function(a, b) if (!is.null(a) && length(a) > 0) a else b
+
+plotly_style <- function(fig, title = NULL) {
+  fig %>%
+    plotly::layout(
+      title = list(
+        text = title %||% "",
+        y = 0.95, x = 0.5,
+        xanchor = "center", yanchor = "top"
+      ),
+      margin = list(t = 60, b = 70, l = 60, r = 120),
+      hovermode = "spikers",
+      spikedistance = 1000,
+      xaxis = list(
+        title = "time"
+      ),
+      yaxis = list(
+        title = ""
+      ),
+      showlegend = TRUE,
+      legend = list(
+        xanchor = "left",
+        x = 1.02,
+        y = 0.95
+      ),
+      font = list(
+        family = "Arial",
+        size = 13
+      )
+    )
+}
+
+do_plotly <- function(m, scenario, variables, t0 = 1,
+                      start = NULL, end = NULL,
+                      title = NULL,
+                      y_title = NULL) {
+  
+  m1 <- m[[scenario]][["result"]]
+  
+  start <- if (is.null(start)) t0 else start
+  end   <- if (is.null(end)) max(m1[["time"]]) else end
+  
+  # The lookup_names table has the code of the variables
+  # and the name I wanted displayed in the Figures.
+  lookup_names <- tribble(
+    ~name, ~Var,
+    "dBhh", "HH. Bills",
+    "dV", "Wealth",
+    "dM1s", "Checking deposits",
+    "dM2s", "Time deposits",
+    "dHhs", "Cash",
+    "dBLh", "HH. Bonds",
+    "yr", "Real output",
+    "cr", "Real consumption",
+    "ydr", "Real disposable income",
+    "c", "Real consumption",
+    "v", "Real wealth",
+    "rm", "Interest on term deposits",
+    "rb", "Interest on bills",
+    "rl", "Interest on loans",
+    "rbl", "Interest on bonds",
+    "dLs", "Loans",
+    "dM", "All money deposits",
+    "M", "All money deposits",
+    "dAs", "CB advances",
+    "dHbs", "Reserves",
+    "dBbd", "B. Bills",
+    "BLRN", "Net bank liq. ratio",
+    "BPM", "Bank profit margin",
+    "dGb", "Government budget balance",
+    "Bcb", "CB. Bills",
+    "dPSBR", "Deflated PSBR",
+    "pi", "Inflation",
+    "gr", "Real govt. budget balance - Book",
+    "gr2", "Real govt. budget balance - tav",
+    "gr3", "Real govt. budget balance - cb adj.",
+    "BYR", "Debt to GDP ratio",
+    "dCB", "Change in the CB' stock of bills",
+    "ddAs", "Change in Advances to banks",
+    "y", "Real output",
+    "s", "Real sales"
+  )
+  
+  df_long <- m1 %>%
+    mutate(yr = y / y[t0],
+           cr = c / c[t0],
+           dV = V - V[t0],
+           dM1s = M1s - M1s[t0],
+           dM2s = M2s - M2s[t0],
+           dBhh = Bhh - Bhh[t0],
+           dHhs = Hhs - Hhs[t0],
+           dBLh = (pbl * BLh) - (pbl[t0] * BLh[t0]),
+           dLs = Ls - Ls[t0],
+           M = M1s + M2s,
+           dM = M - M[t0],
+           dAs = As - As[t0],
+           dHbs = Hbs - Hbs[t0],
+           dBbd = Bbd - Bbd[t0],
+           dGb = -1 * (PSBR - PSBR[t0]),
+           dPSBR = PSBR / p,
+           tav = (p - lag(p)) / p,
+           gr = ((p - lag(p)) * (lag(Bs) + lag(BLs) * lag(pbl)) - PSBR) / p,
+           gr2 = (tav * (lag(Bs) + lag(BLs) * lag(pbl)) - PSBR) / p,
+           gr3 = (tav * (lag(Bs) - lag(Bcb) + lag(BLs) * lag(pbl) - lag(As)) - PSBR)/p,
+           BYR = (Bs + pbl * BLs) / Y,
+           dCB = Bcb - lag(Bcb),
+           ddAs = As - lag(As)
+    ) %>%
+    filter(time >= start & time <= end) %>%
+    select(time, all_of(variables)) %>%
+    pivot_longer(cols = -time) %>%
+    # Left-join the lookup_names table
+    left_join(lookup_names, by = "name") %>%
+    mutate(Var = if_else(is.na(Var), name, Var))
+  
+  fig <- plotly::plot_ly()
+  
+  for (v in unique(df_long$Var)) {
+    dfi <- df_long %>% filter(Var == v)
+    
+    fig <- plotly::add_trace(
+      fig,
+      data = dfi,
+      x = ~time,
+      y = ~value,
+      name = v,
+      type = "scatter",
+      mode = "lines",
+      hovertemplate = paste(
+        "<b>", v, "</b>",
+        "<br>time=%{x}",
+        "<br>value=%{y}<extra></extra>"
+      )
+    )
+  }
+  
+  fig %>%
+    plotly::layout(
+      yaxis = list(title = y_title %||% "")
+    ) %>%
+    plotly_style(title)
+}
+```
+
+This guide explains how to use the `godley` package to create a model with both inside and outside money, as described by *Wynne Godley* and *Marc Lavoie* in Chapter 10 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth*.
+
+```{r setup}
+library(godley)
+library(purrr)
+library(plotly)
+```
+
+### Base scenario
+Create an empty SFC model to use as our starting point:
+```{r}
+# Create empty model
+model_insout <- create_model(name = "SFC INSOUT")
+```
+
+Next, declare all the variables used in the model. You can also set initial values upfront — for some variables, all of them, or none.
+```{r}
+# Add variables
+model_insout <- model_insout |>
+  add_variable("rbl", init = 0.027) |>
+  add_variable("rb", init = 0.023) |>
+  add_variable("pr", init = 1) |>
+  add_variable("g", init = 25) |>
+  add_variable("Nfe", init = 133.28) |>
+  add_variable("alpha0", init = 0) |>
+  add_variable("alpha1", init = 0.95) |>
+  add_variable("alpha2", init = 0.05) |>
+  add_variable("beta", init = 0.5) |>
+  add_variable("bot", init = 0.02) |>
+  add_variable("botpm", init = 0.003) |>
+  add_variable("epsilon", init = 0.5) |>
+  add_variable("gamma", init = 0.5) |>
+  add_variable("lambdac", init = 0.1) |>
+  add_variable("phi", init = 0.1) |>
+  add_variable("ro1", init = 0.1) |>
+  add_variable("ro2", init = 0.1) |>
+  add_variable("sigma0", init = 0.3612) |>
+  add_variable("sigma1", init = 3) |>
+  add_variable("tau", init = 0.25) |>
+  add_variable("zetab", init = 0.9) |>
+  add_variable("zetal", init = 0.0002) |>
+  add_variable("zetam", init = 0.0002) |>
+  add_variable("Omega0", init = -0.32549) |>
+  add_variable("Omega1", init = 1) |>
+  add_variable("Omega2", init = 1.5) |>
+  add_variable("Omega3", init = 0.1) |>
+  add_variable("top", init = 0.06) |>
+  add_variable("toppm", init = 0.005) |>
+  add_variable("lambda10", init = -0.17071) |>
+  add_variable("lambda11", init = 0) |>
+  add_variable("lambda12", init = 0) |>
+  add_variable("lambda13", init = 0) |>
+  add_variable("lambda14", init = 0) |>
+  add_variable("lambda15", init = 0.18) |>
+  add_variable("lambda20", init = 0.52245) |>
+  add_variable("lambda21", init = 0) |>
+  add_variable("lambda22", init = 30) |>
+  add_variable("lambda23", init = -15) |>
+  add_variable("lambda24", init = -15) |>
+  add_variable("lambda25", init = -0.06) |>
+  add_variable("lambda30", init = 0.47311) |>
+  add_variable("lambda31", init = 0) |>
+  add_variable("lambda32", init = -15) |>
+  add_variable("lambda33", init = 30) |>
+  add_variable("lambda34", init = -15) |>
+  add_variable("lambda35", init = -0.06) |>
+  add_variable("lambda40", init = 0.17515) |>
+  add_variable("lambda41", init = 0) |>
+  add_variable("lambda42", init = -15) |>
+  add_variable("lambda43", init = -15) |>
+  add_variable("lambda44", init = 30) |>
+  add_variable("lambda45", init = -0.06) |>
+  add_variable("y") |>
+  add_variable("sE") |>
+  add_variable("invE") |>
+  add_variable("inv") |>
+  add_variable("N") |>
+  add_variable("WB") |>
+  add_variable("W", init = 1) |>
+  add_variable("UC", init = 1) |>
+  add_variable("s") |>
+  add_variable("invT") |>
+  add_variable("sigmaT") |>
+  add_variable("rl", init = 0.02) |>
+  add_variable("p", init = 1) |>
+  add_variable("NHUC") |>
+  add_variable("c") |>
+  add_variable("S") |>
+  add_variable("sigmas") |>
+  add_variable("INV") |>
+  add_variable("Ld") |>
+  add_variable("FXf") |>
+  add_variable("TX") |>
+  add_variable("pi") |>
+  add_variable("YDr") |>
+  add_variable("FX") |>
+  add_variable("rm", init = 0.02) |>
+  add_variable("M2h") |>
+  add_variable("Bhh") |>
+  add_variable("BLh") |>
+  add_variable("CG") |>
+  add_variable("pbl") |>
+  add_variable("YDhs") |>
+  add_variable("FXb") |>
+  add_variable("V") |>
+  add_variable("C") |>
+  add_variable("Vnc") |>
+  add_variable("Hhh") |>
+  add_variable("ydr") |>
+  add_variable("ydhs") |>
+  add_variable("v") |>
+  add_variable("ydrE") |>
+  add_variable("YDrE") |>
+  add_variable("VE") |>
+  add_variable("Hhd") |>
+  add_variable("VncE") |>
+  add_variable("ERrbl") |>
+  add_variable("M2d") |>
+  add_variable("Bhd") |>
+  add_variable("BLd") |>
+  add_variable("M1d") |>
+  add_variable("M1d2") |>
+  add_variable("M1hN") |>
+  add_variable("z1") |>
+  add_variable("z2") |>
+  add_variable("M1h") |>
+  add_variable("M2hN") |>
+  add_variable("G") |>
+  add_variable("PSBR") |>
+  add_variable("Bs") |>
+  add_variable("BLs") |>
+  add_variable("FXcb") |>
+  add_variable("GD") |>
+  add_variable("Hs") |>
+  add_variable("Bcb") |>
+  add_variable("As") |>
+  add_variable("Hbs") |>
+  add_variable("Hhs") |>
+  add_variable("Bbd") |>
+  add_variable("Ad") |>
+  add_variable("ra") |>
+  add_variable("M1s") |>
+  add_variable("M2s") |>
+  add_variable("Ls") |>
+  add_variable("Hbd") |>
+  add_variable("BbdN") |>
+  add_variable("BLRN") |>
+  add_variable("z3") |>
+  add_variable("BLR") |>
+  add_variable("z4") |>
+  add_variable("z5") |>
+  add_variable("z6") |>
+  add_variable("z7") |>
+  add_variable("BPM", init = 0.0035) |>
+  add_variable("lM1s") |>
+  add_variable("lM2s") |>
+  add_variable("omegaT") |>
+  add_variable("Y")
+```
+
+Then, add the equations that define the relationships between variables.
+```{r}
+# Add equations
+model_insout <- model_insout |>
+  # Firm's behavioral equations
+  add_equation("y = sE + (invE - inv[-1])", desc = "") |>
+  add_equation("N = y / pr", desc = "") |>
+  add_equation("WB = N * W", desc = "") |>
+  add_equation("UC = WB / y", desc = "") |>
+  add_equation("sE = beta * s[-1] + (1 - beta) * sE[-1]", desc = "") |>
+  add_equation("invT = sigmaT * sE", desc = "") |>
+  add_equation("sigmaT = sigma0 - sigma1 * rl", desc = "") |>
+  add_equation("invE = inv[-1] + gamma * (invT - inv[-1])", desc = "") |>
+  add_equation("p = (1 + tau) * (1 + phi) * NHUC", desc = "") |>
+  add_equation("NHUC = (1 - sigmaT) * UC + sigmaT * (1 + rl[-1]) * UC[-1]", desc = "") |>
+  
+  # Firm's realized outcomes
+  add_equation("s = c + g", desc = "") |>
+  add_equation("S = s * p", desc = "") |>
+  add_equation("inv = inv[-1] + y - s", desc = "") |>
+  add_equation("sigmas = inv[-1] / s", desc = "") |>
+  add_equation("INV = inv * UC", desc = "") |>
+  add_equation("Ld = INV", desc = "") |>
+  add_equation("FXf = S - TX - WB + (INV - INV[-1]) - rl[-1] * INV[-1]", desc = "") |>
+  add_equation("pi = (p / p[-1]) - 1", desc = "") |>
+  
+  # Households realized outcomes
+  add_equation("YDr = FX + WB + rm[-1] * M2h[-1] + rb[-1] * Bhh[-1] + BLh[-1]", desc = "") |>
+  add_equation("CG = (pbl - pbl[-1]) * BLh[-1]", desc = "") |>
+  add_equation("YDhs = YDr + CG", desc = "") |>
+  add_equation("FX = FXf + FXb", desc = "") |>
+  add_equation("V = V[-1] + YDhs - C", desc = "") |>
+  add_equation("Vnc = V - Hhh", desc = "") |>
+  add_equation("ydr = YDr/p - pi * (V[-1]/p)", desc = "") |>
+  add_equation("ydhs = (YDr - pi * V[-1] + CG) / p", desc = "") |>
+  add_equation("v = V/p", desc = "") |>
+  
+  # Households behavioral
+  add_equation("c = alpha0 + alpha1 * ydrE + alpha2 * v[-1]", desc = "") |>
+  add_equation("ydrE = epsilon * ydr[-1] + (1 - epsilon) * ydrE[-1]", desc = "") |>
+  add_equation("C = p * c", desc = "") |>
+  add_equation("YDrE = p * ydrE + pi * (V[-1]/p)", desc = "") |>
+  add_equation("VE = V[-1] + (YDrE - C)", desc = "") |>
+  add_equation("Hhd = lambdac * C", desc = "") |>
+  add_equation("VncE = VE - Hhd", desc = "") |>
+  add_equation("ERrbl = rbl", desc = "") |>
+  
+  # Households' portfolio equations
+  add_equation("M2d = VncE * (lambda20 + lambda22 * rm + lambda23 * rb + lambda24 * ERrbl + lambda25 * (YDrE / VncE))", desc = "") |>
+  add_equation("Bhd = VncE * (lambda30 + lambda32 * rm + lambda33 * rb + lambda34 * ERrbl + lambda35 * (YDrE / VncE))", desc = "") |>
+  add_equation("BLd = (VncE / pbl) * (lambda40 + lambda42 * rm + lambda43 * rb + lambda44 * ERrbl + lambda45 * (YDrE / VncE))", desc = "") |>
+  add_equation("M1d = VncE * (lambda10 + lambda12 * rm + lambda13 * rb + lambda14 * ERrbl + lambda15 * (YDrE / VncE))", desc = "") |>
+  add_equation("M1d2 = VncE - M2d - Bhd - pbl * BLd", desc = "") |>
+  
+  # Realized portfolio asset holdings
+  add_equation("Hhh = Hhd", desc = "") |>
+  add_equation("Bhh = Bhd", desc = "") |>
+  add_equation("BLh = BLd", desc = "") |>
+  add_equation("M1hN = Vnc - M2d - Bhd - pbl * BLd", desc = "") |>
+  add_equation("z1 = as.numeric(M1hN > 0)", desc = "") |>
+  add_equation("z2 = 1 - z1", desc = "") |>
+  add_equation("M1h = M1hN * z1", desc = "") |>
+  add_equation("M2hN = M2d", desc = "") |>
+  add_equation("M2h = M2d * z1 + (Vnc - Bhh - pbl * BLd) * z2", desc = "") |>
+  
+  # Government's equations
+  add_equation("TX = S * (tau / (1 + tau))", desc = "") |>
+  add_equation("G = p * g", desc = "") |>
+  add_equation("PSBR = G + rb[-1] * Bs[-1] + BLs[-1] - (TX + FXcb)", desc = "") |>
+  add_equation("Bs = Bs[-1] + PSBR - (BLs - BLs[-1]) * pbl", desc = "") |>
+  add_equation("BLs = BLd", desc = "") |>
+  add_equation("pbl = 1 / rbl", desc = "") |>
+  add_equation("GD = GD[-1] + PSBR", desc = "") |>
+  
+  # Central bank's equations
+  add_equation("Hs = Bcb + As", desc = "") |>
+  add_equation("Hbs = Hs - Hhs", desc = "") |>
+  add_equation("Bcb = Bs - Bhh - Bbd", desc = "") |>
+  add_equation("As = Ad", desc = "") |>
+  add_equation("ra = rb", desc = "") |>
+  add_equation("FXcb = rb[-1] * Bcb[-1] + ra[-1] * As[-1]", desc = "") |>
+  
+  # Bank's realized (supply) equations
+  add_equation("Hhs = Hhd", desc = "") |>
+  add_equation("M1s = M1h", desc = "") |>
+  add_equation("M2s = M2h", desc = "") |>
+  add_equation("Ls = Ld", desc = "") |>
+  add_equation("Hbd = ro1 * M1s + ro2 * M2s", desc = "") |>
+  
+  # Bank's balance sheet constraints
+  add_equation("BbdN = M1s + M2s - Ls - Hbd", desc = "") |>
+  add_equation("BLRN = BbdN / (M1s + M2s)", desc = "") |>
+  add_equation("Ad = (bot * (M1s + M2s) - BbdN) * z3", desc = "") |>  # z3 instead of z4
+  add_equation("z3 = as.numeric(BLRN < bot)", desc = "") |>
+  add_equation("Bbd = Ad + M1s + M2s - Ls - Hbd", desc = "") |>
+  add_equation("BLR = Bbd / (M1s + M2s)", desc = "") |>
+  
+  # Determination of interest rates by banks
+  add_equation("rm = rm[-1] + zetam * (z4 - z5) + zetab * (rb - rb[-1])", desc = "") |>
+  add_equation("z4 = as.numeric(BLRN[-1] < bot)", desc = "") |>
+  add_equation("z5 = as.numeric(BLRN[-1] > top)", desc = "") |>
+  add_equation("FXb = rl[-1] * Ls[-1] + rb[-1] * Bbd[-1] - rm[-1] * M2s[-1] - ra[-1] * Ad[-1]", desc = "") |>
+  add_equation("rl = rl[-1] + zetal * (z6 - z7) + (rb - rb[-1])", desc = "") |>
+  add_equation("z6 = as.numeric(BPM < botpm)", desc = "") |>
+  add_equation("z7 = as.numeric(BPM > toppm)", desc = "") |>
+  add_equation("lM1s = M1s[-1]", desc = "") |>
+  add_equation("lM2s = M2s[-1]", desc = "") |>
+  add_equation("BPM = (FXb + FXb[-1]) / (lM1s + lM1s[-1] + lM2s + lM2s[-1])", desc = "") |>
+  # Inflationary forces
+  add_equation("omegaT = exp(Omega0 + Omega1 * log(pr) + Omega2 * log(N / Nfe))", desc = "") |>
+  add_equation("W = W[-1] * (1 + Omega3 * (omegaT[-1] - (W[-1] / p[-1])))", desc = "") |>
+  add_equation("Y = p * s + UC * (inv - inv[-1])", desc = "") |>
+  
+  # Hidden equation
+  add_equation("Hbd = Hbs", hidden = TRUE)
+```
+
+Now, you can simulate the model (in this example, the baseline scenario over 210 periods using the Broyden method).
+```{r}
+# Simulate model
+model_insout <- simulate_scenario(model_insout, scenario = "baseline",
+                                  max_iter = 350, periods = 210, tol = 1e-15,
+                                  hidden_tol = 0.1, method = "Broyden")
+```
+
+After the simulation, plot a few variables to check if the model stabilises.
+```{r, out.width="100%", out.height="100%"}
+# Steady state
+exprs <- c("Y", "y", "s", "inv", "pi", "Bs", "M1s", "M2s", "V", "INV", "FXf", "FXb")  # Bs, M2s, FXb look different
+plots <- map(exprs,
+             ~ plot_simulation(model = model_insout, scenario = "baseline",
+                               from = 1, to = 210, expressions = .x
+             )
+)
+subplot(plots, nrows = 3, shareX = TRUE, titleX = TRUE)
+```
+
+*Note:* The above example uses the new pipe operator (`|>`), which requires R 4.1 or later.
+
+The model reaches a steady state from around `t = 100` onward.
+```{r}
+t0 <- 100
+```
+
+### Shock scenario
+With `godley` package we can simulate how shocks affect the economy (specifically, how they impact the base scenario).
+
+#### Shock 1
+This scenario explores how the model behaves when confronted with an increase in the targeted inventories-to-sales ratio.
+
+To implement this change, define a shock that specifies its size and timing.
+```{r}
+# Create empty shock and add shock equation
+shock_insout <- create_shock() |>
+  add_shock(variable = "sigma0", value = 0.4, start = t0+5, end = t0+70, desc = "")
+```
+
+Next, link the shock to the baseline model by defining a new scenario.
+```{r}
+# Create new scenario with this shock
+model_insout <- model_insout |>
+  add_scenario(name = "sigma0_shock", origin = "baseline", shock = shock_insout)
+```
+
+From here, the model is ready to be solved forward to examine the adjustment dynamics.
+```{r}
+# Simulate shock
+model_insout <- simulate_scenario(model_insout, scenario = "sigma0_shock", periods = t0+70, max_iter = 350, tol = 1e-10, method = "Broyden", hidden_tol = 0.1, rhtol = TRUE)
+```
+
+To conclude, plot selected variables to see how they evolve following the change in the target ratio.
+```{r, out.width="100%"}
+# Figure 10.1A Evolution of inventories (and hence bank loans), following an increase in the target inventories to sales ratio.
+plot_simulation(model = model_insout, scenario = c("sigma0_shock"),
+                from = t0+1, to = t0+70, expressions = c("INV", "Ls"))
+```
+
+#### Shock 2
+In another example, we look at the effect of an increase in pure government expenditure.
+```{r}
+# Create empty shock and add shock equation
+shock_insout <- create_shock() |>
+  add_shock(variable = "g", value = 30, start = t0+5, end = t0+55, desc = "")
+```
+
+Start by creating an empty shock and specifying the strength, onset and duration of the intervention.
+```{r}
+# Create new scenario with this shock
+model_insout <- model_insout |>
+  add_scenario(name = "g_shock", origin = "baseline", shock = shock_insout)
+```
+
+With the scenario in place, run the simulation.
+```{r}
+# Simulate shock
+model_insout <- simulate_scenario(model_insout, scenario = "g_shock", periods = t0+70,
+                                  max_iter = 350, tol = 1e-15, method = "Broyden",
+                                  hidden_tol = 0.1, rhtol = TRUE)
+```
+
+And finally, plot a few key variables to see how the economy responds to the shock.
+```{r, out.width="100%"}
+# Figure 10.2A Evolution of household real wealth, real disposable income and real consumption, following a one-step permanent increase in real government expenditures
+do_plotly(
+    m = model_insout, scenario = "g_shock",
+    variables = c("c", "v", "ydr"), t0 = t0, end = t0+55,
+    title = "Scenario g_shock", y_title = ""
+)
+```
+
+### References
+For a more detailed discussion of the INSOUT model and its economic interpretation, refer to Chapter 10 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth*.
