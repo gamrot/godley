@@ -45,6 +45,7 @@ d <- function(x) {
 #' @param start_date character date to begin the simulation in the format "yyyy-mm-dd"
 #' @param tol numeric tolerance accepted to determine convergence, defaults to 1e-05
 #' @param hidden_tol numeric error tolerance to accept the equality of hidden equations, defaults to 0.1.
+#' @param rhtol A logical argument that defines whether the a relative measure is used to evaluate
 #' @param method string name of method used to find solution chosen from: 'Gauss', 'Newton', defaults to 'Gauss'
 #' @param verbose logical to tell if additional model verbose should be displayed
 #'
@@ -58,7 +59,6 @@ simulate_scenario <- function(model,
                               method = "Gauss",
                               max_iter = 350,
                               tol = 1e-05,
-                              hidden = TRUE,
                               hidden_tol = 0.1,
                               rhtol = FALSE,
                               verbose = FALSE) {
@@ -189,7 +189,7 @@ simulate_scenario <- function(model,
       m <- run_broyden(m, calls, periods, max_iter, tol)
     }
   
-    if(hidden){
+    if(any(model$equations$hidden)){
       # Check if hidden is fulfilled
       h <- model$equations %>%
         dplyr::filter(hidden == TRUE) %>%
@@ -204,8 +204,7 @@ simulate_scenario <- function(model,
       
       # Check if hidden equations are fulfilled
       diffs <- m[, hl, drop = FALSE] - m[, hr, drop = FALSE]
-      max_diff <- max(abs(diffs[, i]))
-      
+
       if (isTRUE(rhtol)) {
         # If rhtol is set to TRUE, check whether the discrepancy between the two series as a share of the first series, is always smaller than the hidden_tol value.
         diffs <- diffs / (m[, hl, drop = FALSE] +  1e-15)
@@ -219,6 +218,7 @@ simulate_scenario <- function(model,
         eq_messages <- sapply(failing_equations, function(i) {
           eq_lhs <- h$lhs[i]
           eq_rhs <- h$rhs[i]
+          max_diff <- max(abs(diffs[, i]))
           paste0(
             "Hidden equation '", eq_lhs, " = ", eq_rhs,
             "' does not hold within the hidden tolerance of ", hidden_tol,

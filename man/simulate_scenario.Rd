@@ -12,7 +12,6 @@ simulate_scenario(
   method = "Gauss",
   max_iter = 350,
   tol = 1e-05,
-  hidden = TRUE,
   hidden_tol = 0.1,
   rhtol = FALSE,
   verbose = FALSE
@@ -34,6 +33,8 @@ simulate_scenario(
 \item{tol}{numeric tolerance accepted to determine convergence, defaults to 1e-05}
 
 \item{hidden_tol}{numeric error tolerance to accept the equality of hidden equations, defaults to 0.1.}
+
+\item{rhtol}{A logical argument that defines whether the a relative measure is used to evaluate}
 
 \item{verbose}{logical to tell if additional model verbose should be displayed}
 }
