@@ -1,10 +1,10 @@
-# ' Find adjacency matrix for system of equations
-# '
-# ' @author João Macalós
-# '
-# ' @param equations system of equations already time stamped
-# '
-# ' @return adjacency matrix
+#' Find adjacency matrix for system of equations
+#'
+#' @author João Macalós
+#'
+#' @param equations system of equations already time stamped
+#'
+#' @return adjacency matrix
 
 find_adjacency <- function(equations) {
   km <- matrix(0L, nrow = length(equations$lhs), ncol = length(equations$lhs))
@@ -18,55 +18,55 @@ find_adjacency <- function(equations) {
   return(km)
 }
 
-# ' Pattern replacement var
-# '
-# ' @author João Macalós
-# '
-# ' @param x vector of variables
+#' Pattern replacement var
+#'
+#' @author João Macalós
+#'
+#' @param x vector of variables
 
 .pvar <- function(x) {
   paste0("(?<![[:alnum:]]|\\.|\\_)(", paste0(x, collapse = "|"), ")(?![[:alnum:]]|\\[|\\.|\\_)")
 }
 
-# ' Pattern replacement lag
-# '
-# ' @author João Macalós
-# '
-# ' @param x vector of variables
+#' Pattern replacement lag
+#'
+#' @author João Macalós
+#'
+#' @param x vector of variables
 
 .pvarlag_1 <- function(x) {
   paste0("(?<![[:alnum:]]|\\.|\\_)(", paste0(x, collapse = "|"), ")(?=\\[-1\\])")
 }
 
-# ' Pattern replacement lag 2
-# '
-# ' @param x vector of variables
+#' Pattern replacement lag 2
+#'
+#' @param x vector of variables
 
 .pvarlag_2 <- function(x) {
   paste0("(?<![[:alnum:]]|\\.|\\_)(", paste0(x, collapse = "|"), ")(?=\\[-2\\])")
 }
 
-# ' Pattern replacement lag 3
-# '
-# ' @param x vector of variables
+#' Pattern replacement lag 3
+#'
+#' @param x vector of variables
 
 .pvarlag_3 <- function(x) {
   paste0("(?<![[:alnum:]]|\\.|\\_)(", paste0(x, collapse = "|"), ")(?=\\[-3\\])")
 }
 
-# ' Pattern replacement lag 4
-# '
-# ' @param x vector of variables
+#' Pattern replacement lag 4
+#'
+#' @param x vector of variables
 
 .pvarlag_4 <- function(x) {
   paste0("(?<![[:alnum:]]|\\.|\\_)(", paste0(x, collapse = "|"), ")(?=\\[-4\\])")
 }
 
-# ' Find blocks of independent equations (using \code{igraph} functions)
-# '
-# ' @author João Macalós
-# '
-# ' @param adj adjacency matrix
+#' Find blocks of independent equations (using \code{igraph} functions)
+#'
+#' @author João Macalós
+#'
+#' @param adj adjacency matrix
 
 find_blocks <- function(adj) {
   g <- igraph::graph.adjacency(adjmatrix = t(adj), mode = "directed")
@@ -74,27 +74,30 @@ find_blocks <- function(adj) {
   return(blocks)
 }
 
-# ' Prep equations for Newton solvers
-# '
-# ' @author João Macalós
-# '
-# ' @param .block blocks of equations
-# '
-# ' @return blocks
+#' Prepare equation block for non-linear solvers
+#'
+#' Rewrites left-hand side variables into positional vector form
+#' used by Newton and Broyden root-finding algorithms.
+#'
+#' @author João Macalós
+#'
+#' @param .block tibble containing equations for a single block
+#'
+#' @return tibble with rewritten expressions ready for solver evaluation
 
-prep_broyden <- function(.block) {
+prep_nonlinear_block <- function(.block) {
   for (.i in seq_len(vctrs::vec_size(.block))) {
     .block$rhs2 <- gsub(.block$lhs2[[.i]], paste0(".x\\[", .i, "\\]"), .block$rhs2)
   }
   return(.block)
 }
 
-# ' Re-write the equations with the correct matrix syntax that will be used to evaluate the expressions inside the Gauss Seidel/Newton algorithm
-# '
-# ' @param equations_sep tibble of equations after passing \code{validate_model_input()} function
-# ' @param variables_exo tibble of exogenous values after passing \code{validate_model_input()} function
-# '
-# ' @return tibble of equations with the correct matrix syntax
+#' Re-write the equations with the correct matrix syntax that will be used to evaluate the expressions inside the Gauss Seidel/Newton algorithm
+#'
+#' @param equations_sep tibble of equations after passing \code{validate_model_input()} function
+#' @param variables_exo tibble of exogenous values after passing \code{validate_model_input()} function
+#'
+#' @return tibble of equations with the correct matrix syntax
 
 prep_equations <- function(equations_sep,
                            variables_exo) {

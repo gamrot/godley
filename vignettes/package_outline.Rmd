@@ -245,7 +245,7 @@ model_sim <- simulate_scenario(
 ## Model — sensitivity analysis
 For a more comprehensive view, you can carry out sensitivity analysis. Sensitivity analysis allows the creation of multiple scenarios in a separate SFC model by modifying the initial value of a selected variable. To perform sensitivity analysis, use `create_sensitivity()` and `simulate_scenario()`:
  
-```{r}
+```{r, out.width="100%"}
 # Create and calculate sensitivity
 model_sen <- create_sensitivity(
   model_pass = model_sim, variable = "alpha1",
@@ -255,6 +255,12 @@ model_sen <- create_sensitivity(
 model_sen <- simulate_scenario(
   model = model_sen, max_iter = 350, periods = 100, hidden_tol = 0.1,
   tol = 1e-08, method = "Gauss"
+)
+
+# Plot simulation
+plot_simulation(
+    model_sen, scenario = "sensitivity", take_all = TRUE,
+    to = "2028-01-01", expressions = c("Y")
 )
 ```
 

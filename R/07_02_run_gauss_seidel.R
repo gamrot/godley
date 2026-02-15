@@ -69,8 +69,6 @@ run_gauss_seidel <- function(m,
   equations_id <- lapply(blocks, function(x) calls[, "id"][calls[, "block"] == x])
   block_names <- lapply(blocks, function(x) paste0("block", x))
 
-  # safe check
-
   for (.i in 2:periods) {
     for (.block in seq_along(blocks)) {
       .id <- equations_id[[.block]]
@@ -80,7 +78,6 @@ run_gauss_seidel <- function(m,
         if (!checkmate::test_number(eval(exprs[[.id]]), na.ok = T)) next
 
         m[.i, .id] <- eval(exprs[[.id]])
-        # m[.i, block_names[[.block]]] <- 1
 
         if (is.na(m[.i, .id]) | !is.finite(m[.i, .id])) {
           warning(
@@ -94,7 +91,6 @@ run_gauss_seidel <- function(m,
       } else { # If cyclical block, use Gauss-Seidel algorithm
         for (.ite in 1:max_iter) {
           for (.v in .id) {
-            # if (verbose == TRUE) {message("\r",calls$lhs[.v], "/period: ", .i," /iter:", .ite ,appendLF = T)}
             if (verbose == TRUE) {
               # At the start of each period, print a header once
               if (.ite == 1 && .v == .id[1]) {
@@ -110,7 +106,6 @@ run_gauss_seidel <- function(m,
               # Print each variable on its own line, indented for clarity
               message("   ", calls$lhs[.v], ": value = ", m[.i, .v])
             }
-
 
             if (!checkmate::test_number(suppressMessages(eval(exprs[[.v]])), na.ok = T)) next
 
@@ -138,8 +133,6 @@ run_gauss_seidel <- function(m,
             }
             checks[[.v]] <- suppressMessages(abs(m[.i, .v] - holdouts[[.v]]) / (holdouts[[.v]] + 1e-05))
           }
-
-          # m[.i, block_names[[.block]]] <- .ite
 
           if (any(!is.finite(checks[.id]) | is.na(checks[.id]))) {
             warning(paste0(

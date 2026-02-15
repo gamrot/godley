@@ -39,35 +39,16 @@ run_newton <- function(m,
                        periods,
                        max_iter,
                        tol,
+                       dependencies,
                        ...) {
-  blocks <- unique(sort(calls$block))
-
-  equations_id <- purrr::map(blocks, ~calls[, "id"][calls[, "block"] == .x])
-
-  cnd_statements <- calls %>%
-    dplyr::filter(
-      stringr::str_detect(.data$rhs, "if"),
-      stringr::str_detect(.data$rhs, "else")
-      ) %>%
-    dplyr::pull(block)
-
-  eqs2 <- calls %>%
-    dplyr::mutate(lhs2 = gsub(.pvar(.data$lhs), "m\\[.i, '\\1'\\]", .data$lhs, perl = T)) %>%
-    dplyr::mutate(rhs2 = paste0(.data$rhs, " - ", .data$lhs2)) %>%
-    dplyr::mutate(lhs2 = stringr::str_replace_all(.data$lhs2, c("\\[" = "\\\\[", "\\]" = "\\\\]")))
-
-  blk <- purrr::map(blocks, ~eqs2[eqs2$block == .x, ])
-
-  blk <- purrr::map(blk, prep_broyden)
-
-  block_names <- purrr::map(blocks, ~paste0("block", .x))
-
-  ## Parsed non-linear expressions
-  exs_nl <- purrr::map(blk, function(.X) purrr::map(.X$rhs2, ~rlang::parse_expr(.x)))
-
-  ## Parsed linear expressions
-  exs_l <- purrr::map(blk, function(.X) purrr::map(.X$rhs, ~rlang::parse_expr(.x)))
-
+  
+  blocks = dependencies$blocks
+  equations_id = dependencies$equations_id 
+  cnd_statements = dependencies$cnd_statements
+  blk = dependencies$blk
+  exs_nl = dependencies$exs_nl
+  exs_l = dependencies$exs_l
+  
   block_foo <- function(.x) {
     .y <- numeric(length(exs))
     for (.id in seq_along(exs)) {
@@ -75,7 +56,7 @@ run_newton <- function(m,
     }
     .y
   }
-
+  
   for (.i in 2:periods) {
     for (.b in blocks) {
       block <- blk[[.b]]

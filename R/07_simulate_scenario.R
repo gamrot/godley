@@ -1,3 +1,59 @@
+#' Prepare non-linear blocks for Newton and Broyden solvers
+#'
+#' Rewrites model equations into matrix-based syntax and prepares
+#' all objects required for block-wise non-linear solving.
+#' This includes identifying blocks, conditional statements,
+#' parsing linear and non-linear expressions, and constructing
+#' solver-ready structures.
+#'
+#' @param calls tibble of validated model equations returned by
+#'   \code{validate_model_input()}, including block structure and identifiers
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{blocks}{numeric vector of unique block identifiers}
+#'   \item{equations_id}{list of equation ids per block}
+#'   \item{cnd_statements}{vector of blocks containing conditional (if/else) expressions}
+#'   \item{blk}{list of preprocessed block data frames for solver evaluation}
+#'   \item{exs_nl}{list of parsed non-linear expressions for each block}
+#'   \item{exs_l}{list of parsed linear expressions for each block}
+#' }
+
+.prep_nonlinear_blocks <- function(calls) {
+  blocks <- unique(sort(calls$block))
+  
+  equations_id <- purrr::map(blocks, ~calls[, "id"][calls[, "block"] == .x])
+  
+  cnd_statements <- calls %>%
+    dplyr::filter(
+      stringr::str_detect(.data$rhs, "if"),
+      stringr::str_detect(.data$rhs, "else")
+    ) %>%
+    dplyr::pull(block)
+  
+  eqs2 <- calls %>%
+    dplyr::mutate(lhs2 = gsub(.pvar(.data$lhs), "m\\[.i, '\\1'\\]", .data$lhs, perl = T)) %>%
+    dplyr::mutate(rhs2 = paste0(.data$rhs, " - ", .data$lhs2)) %>%
+    dplyr::mutate(lhs2 = stringr::str_replace_all(.data$lhs2, c("\\[" = "\\\\[", "\\]" = "\\\\]")))
+  
+  blk <- purrr::map(blocks, ~eqs2[eqs2$block == .x, ])
+  
+  blk <- purrr::map(blk, prep_nonlinear_block)
+  
+  block_names <- purrr::map(blocks, ~paste0("block", .x))
+  
+  ## Parsed non-linear expressions
+  exs_nl <- purrr::map(blk, function(.X) purrr::map(.X$rhs2, ~rlang::parse_expr(.x)))
+  
+  ## Parsed linear expressions
+  exs_l <- purrr::map(blk, function(.X) purrr::map(.X$rhs, ~rlang::parse_expr(.x)))
+
+  return(
+    list(blocks = blocks, equations_id = equations_id, 
+         cnd_statements = cnd_statements, blk = blk, exs_nl = exs_nl,exs_l = exs_l)
+    )
+}
+
 #' Calculate 1 order lag difference of a variable in model
 #'
 #' @export
@@ -180,13 +236,17 @@ simulate_scenario <- function(model,
     }
 
     dimnames(m) <- list(c(1:periods), colnames(origin))
+    
+    if (method %in% c("Newton", "Broyden")) {
+      solver_dependencies <- .prep_nonlinear_blocks(calls)
+    }
 
     if (method == "Gauss") {
       m <- run_gauss_seidel(m, calls, periods, max_iter, tol, verbose)
     } else if (method == "Newton") {
-      m <- run_newton(m, calls, periods, max_iter, tol)
+      m <- run_newton(m, calls, periods, max_iter, tol, dependencies = solver_dependencies)
     } else if (method == "Broyden") {
-      m <- run_broyden(m, calls, periods, max_iter, tol)
+      m <- run_broyden(m, calls, periods, max_iter, tol, dependencies = solver_dependencies)
     }
   
     if(any(model$equations$hidden)){
