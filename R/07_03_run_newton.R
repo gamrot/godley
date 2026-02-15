@@ -1,3 +1,24 @@
+#' Newton solver algorithm
+#'
+#' @param .x0 Vector with initial guess for x.
+#' @param .fn A function containing the system of equations.
+#' @param max_iter Maximum number of iterations allowed
+#' @param tol A numeric value indicating the accepted tolerance to declare convergence.
+#'
+#' @note Check https://www.math.usm.edu/lambers/mat419/lecture11.pdf for a quick reference
+#' on the algorithm.
+#'
+#' @author ...
+#'
+#' @keywords internal
+#'
+.newton_solver <- function(.x0, .fn, max_iter, tol) {
+  print("Running Newton Solver")
+  x <- rootSolve::multiroot(.fn, .x0, max_iter, ctol = tol)
+  return(list(x = x$root))
+}
+
+
 # ' Newton Raphson solver implemented with \code{rootSolve::multiroot()}
 # '
 # ' @author João Macalós
@@ -21,13 +42,13 @@ run_newton <- function(m,
                        ...) {
   blocks <- unique(sort(calls$block))
 
-  equations_id <- purrr::map(blocks, ~ calls[, "id"][calls[, "block"] == .x])
+  equations_id <- purrr::map(blocks, ~calls[, "id"][calls[, "block"] == .x])
 
   cnd_statements <- calls %>%
     dplyr::filter(
       stringr::str_detect(.data$rhs, "if"),
       stringr::str_detect(.data$rhs, "else")
-    ) %>%
+      ) %>%
     dplyr::pull(block)
 
   eqs2 <- calls %>%
@@ -35,17 +56,17 @@ run_newton <- function(m,
     dplyr::mutate(rhs2 = paste0(.data$rhs, " - ", .data$lhs2)) %>%
     dplyr::mutate(lhs2 = stringr::str_replace_all(.data$lhs2, c("\\[" = "\\\\[", "\\]" = "\\\\]")))
 
-  blk <- purrr::map(blocks, ~ eqs2[eqs2$block == .x, ])
+  blk <- purrr::map(blocks, ~eqs2[eqs2$block == .x, ])
 
   blk <- purrr::map(blk, prep_broyden)
 
-  block_names <- purrr::map(blocks, ~ paste0("block", .x))
+  block_names <- purrr::map(blocks, ~paste0("block", .x))
 
-  ## Parsed non-linear expressions (for nleqslv)
-  exs_nl <- purrr::map(blk, function(.X) purrr::map(.X$rhs2, ~ rlang::parse_expr(.x)))
+  ## Parsed non-linear expressions
+  exs_nl <- purrr::map(blk, function(.X) purrr::map(.X$rhs2, ~rlang::parse_expr(.x)))
 
-  ## Parsed linear expressions (for Gauss Seidel)
-  exs_l <- purrr::map(blk, function(.X) purrr::map(.X$rhs, ~ rlang::parse_expr(.x)))
+  ## Parsed linear expressions
+  exs_l <- purrr::map(blk, function(.X) purrr::map(.X$rhs, ~rlang::parse_expr(.x)))
 
   block_foo <- function(.x) {
     .y <- numeric(length(exs))
@@ -54,7 +75,6 @@ run_newton <- function(m,
     }
     .y
   }
-
 
   for (.i in 2:periods) {
     for (.b in blocks) {
@@ -81,14 +101,13 @@ During computation NaN or Inf was obtained in ", idvar_, " equation
 Please check if equations are correctly specified or change initial values")
           }
         } else {
-          xstart <- m[.i - 1, idvar_]
+          xstart <- m[.i-1, idvar_]
           exs <- exs_nl[[.b]]
 
-          x <- rootSolve::multiroot(block_foo, xstart, max_iter, ctol = tol)
+          x <- .newton_solver(xstart, block_foo, max_iter, tol)
 
-          for (.v in seq_along(x$root)) {
-            m[.i, idvar_[[.v]]] <- x$root[.v]
-            # m[.i, block_names[[.b]]] <- x$iter
+          for (.v in seq_along(x$x)) {
+            m[.i, idvar_[[.v]]] <- x$x[.v]
           }
         }
       }

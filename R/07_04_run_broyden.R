@@ -15,8 +15,6 @@
 .broyden_solver <- function(.x0, .fn, max_iter, tol) {
 
   # First round
-
-  #D0 <- pracma::jacobian(.fn, .x0)
   D0 <- rootSolve::jacobian.full(.x0, .fn)
   g0 <- .fn(.x = .x0)
   D0inv <- solve_armadillo(D0)
@@ -58,7 +56,6 @@
 }
 
 
-
 #' Broyden solver wrapper
 #'
 #' @param m The initialized matrix obtained with \code{.make_matrix()}.
@@ -75,15 +72,21 @@
 #'
 #' @keywords internal
 #'
-run_broyden <- function(m, calls, periods, max_iter, tol) {
-
+run_broyden <- function(m,
+                        calls,
+                        periods,
+                        max_iter,
+                        tol,
+                        ...) {
   blocks <- unique(sort(calls$block))
 
   equations_id <- purrr::map(blocks, ~calls[, "id"][calls[, "block"] == .x])
 
   cnd_statements <- calls %>%
-    dplyr::filter(stringr::str_detect(.data$rhs, "if"),
-                  stringr::str_detect(.data$rhs, "else")) %>%
+    dplyr::filter(
+      stringr::str_detect(.data$rhs, "if"),
+      stringr::str_detect(.data$rhs, "else")
+      ) %>%
     dplyr::pull(block)
 
   eqs2 <- calls %>%
@@ -91,7 +94,7 @@ run_broyden <- function(m, calls, periods, max_iter, tol) {
     dplyr::mutate(rhs2 = paste0(.data$rhs, " - ", .data$lhs2)) %>%
     dplyr::mutate(lhs2 = stringr::str_replace_all(.data$lhs2, c("\\[" = "\\\\[", "\\]" = "\\\\]")))
 
-  blk <- purrr::map(blocks, ~eqs2[eqs2$block == .x,])
+  blk <- purrr::map(blocks, ~eqs2[eqs2$block == .x, ])
 
   blk <- purrr::map(blk, prep_broyden)
 
@@ -103,7 +106,7 @@ run_broyden <- function(m, calls, periods, max_iter, tol) {
   ## Parsed linear expressions
   exs_l <- purrr::map(blk, function(.X) purrr::map(.X$rhs, ~rlang::parse_expr(.x)))
 
-  block_foo <- function(.time, .x, parms) {
+  block_foo <- function(.x) {
     .y <- numeric(length(exs))
     for (.id in seq_along(exs)) {
       .y[.id] <- eval(exs[[.id]])
@@ -111,26 +114,18 @@ run_broyden <- function(m, calls, periods, max_iter, tol) {
     .y
   }
 
-
   for (.i in 2:periods) {
     for (.b in blocks) {
-
       block <- blk[[.b]]
       idvar_ <- equations_id[[.b]]
 
       ## CND statement must be dealt separately
       if (.b %in% cnd_statements) {
-
         m[.i, idvar_] <- eval(exs_l[[.b]][[1]])
-
       } else {
-
         if (vctrs::vec_size(block) == 1) {
-
           m[.i, idvar_] <- eval(exs_l[[.b]][[1]])
-
         } else {
-
           xstart <- m[.i-1, idvar_]
           exs <- exs_nl[[.b]]
 
@@ -138,7 +133,6 @@ run_broyden <- function(m, calls, periods, max_iter, tol) {
 
           for (.v in seq_along(x$x)) {
             m[.i, idvar_[[.v]]] <- x$x[.v]
-            # m[.i, block_names[[.b]]] <- x$ite
           }
 
         }
