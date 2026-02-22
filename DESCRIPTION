@@ -32,7 +32,8 @@ Imports: stringr,
   data.table,
   tibble,
   visNetwork,
-  Rcpp
+  Rcpp,
+  purrr
 LinkingTo: 
     Rcpp,
     RcppArmadillo

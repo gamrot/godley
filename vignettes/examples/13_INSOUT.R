@@ -1,24 +1,6 @@
----
-title: "A Model with both Inside and Outside Money"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Model INSOUT}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
+# A Model with both Inside and Outside Money
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
-
-```{r, include = FALSE}
-library(dplyr)
-library(tidyr)
-library(plotly)
-
+# Helper functions for plotting simulation results as deviations from the baseline
 `%||%` <- function(a, b) if (!is.null(a) && length(a) > 0) a else b
 
 plotly_style <- function(fig, title = NULL) {
@@ -164,25 +146,10 @@ do_plotly <- function(m, scenario, variables, t0 = 1,
     ) %>%
     plotly_style(title)
 }
-```
 
-This guide explains how to use the `godley` package to create a model with both inside and outside money, as described by *Wynne Godley* and *Marc Lavoie* in Chapter 10 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth*.
-
-```{r setup}
-library(godley)
-library(purrr)
-library(plotly)
-```
-
-### Base scenario
-Create an empty SFC model to use as our starting point:
-```{r}
 # Create empty model
 model_insout <- create_model(name = "SFC INSOUT")
-```
 
-Next, declare all the variables used in the model. You can also set initial values upfront — for some variables, all of them, or none.
-```{r}
 # Add variables
 model_insout <- model_insout |>
   add_variable("rbl", init = 0.027) |>
@@ -324,11 +291,9 @@ model_insout <- model_insout |>
   add_variable("lM2s") |>
   add_variable("omegaT") |>
   add_variable("Y")
-```
 
-Then, add the equations that define the relationships between variables.
-```{r}
 # Add equations
+# Note: Equation numbering follows that used in the text.
 model_insout <- model_insout |>
   # Firm's behavioral equations
   add_equation("y = sE + (invE - inv[-1])", desc = "10.1 : y is output, s sales, in inventories (measured as physical objects)") |>
@@ -444,100 +409,188 @@ long-term bonds") |>
   
   # Hidden equation
   add_equation("Hbd = Hbs", hidden = TRUE, desc = "10.83A : the redundant equation: supplies of reserves are found to be equal to demand")
-```
 
-Now, you can simulate the model (in this example, the baseline scenario over 210 periods using the Broyden method).
-```{r}
-# Simulate model
+
+# Simulate the baseline scenario
 model_insout <- simulate_scenario(model_insout, scenario = "baseline",
                                   max_iter = 350, periods = 210, tol = 1e-15,
                                   hidden_tol = 0.1, method = "Broyden")
-```
 
-After the simulation, plot a few variables to check if the model stabilises.
-```{r, out.width="100%", out.height="100%"}
-# Steady state
-exprs <- c("Y", "y", "s", "inv", "pi", "Bs", "M1s", "M2s", "V", "INV", "FXf", "FXb")  # Bs, M2s, FXb look different
+# Plot results
+exprs <- c("Y", "y", "s", "inv", "pi", "Bs", "M1s", "M2s", "V", "INV", "FXf", "FXb")
 plots <- purrr::map(exprs,
              ~ plot_simulation(model = model_insout, scenario = "baseline",
                                from = 1, to = 210, expressions = .x
              )
 )
 plotly::subplot(plots, nrows = 3, shareX = TRUE, titleX = TRUE)
-```
 
-*Note:* The above example uses the new pipe operator (`|>`), which requires R 4.1 or later.
-
-The model reaches a steady state from around `t = 100` onward.
-```{r}
+# A steady state from about t = 100 onward.
 t0 <- 110
-```
 
-### Shock scenario
-With `godley` package we can simulate how shocks affect the economy (specifically, how they impact the base scenario).
+# Simulation 1.: An increase in the targeted inventories to sale ratio
+# Initialise the shock
+shock_insout <- create_shock()
 
-#### Shock 1
-This scenario explores how the model behaves when confronted with an increase in the targeted inventories-to-sales ratio.
+# Raise the targeted inventories to sale ratio (sigma0)
+shock_insout <- add_shock(shock_insout, variable = "sigma0", value = 0.4, start = t0+5, end = t0+70, desc = "")
 
-To implement this change, define a shock that specifies its size and timing.
-```{r}
-# Create empty shock and add shock equation
-shock_insout <- create_shock() |>
-  add_shock(variable = "sigma0", value = 0.4, start = t0+5, end = t0+70, desc = "")
-```
-
-Next, link the shock to the baseline model by defining a new scenario.
-```{r}
-# Create new scenario with this shock
+# Add as a counterfactual scenario...
 model_insout <- model_insout |>
   add_scenario(name = "sigma0_shock", origin = "baseline", shock = shock_insout)
-```
 
-From here, the model is ready to be solved forward to examine the adjustment dynamics.
-```{r}
-# Simulate shock
-model_insout <- simulate_scenario(model_insout, scenario = "sigma0_shock", periods = t0+70, max_iter = 350, tol = 1e-10, method = "Broyden", hidden_tol = 0.1, rhtol = TRUE)
-```
-
-To conclude, plot selected variables to see how they evolve following the change in the target ratio.
-```{r, out.width="100%"}
-# Figure 10.1A Evolution of inventories (and hence bank loans), following an increase in the target inventories to sales ratio.
+# ...and then simulate it
+model_insout <- simulate_scenario(model_insout, scenario = "sigma0_shock", periods = t0+70,
+                                  max_iter = 350, tol = 1e-10, method = "Broyden",
+                                  hidden_tol = 0.1, rhtol = TRUE)
+# Plot results
+# Figure 10.1A Evolution of inventories (and hence bank loans), following an increase
+# in the target inventories to sales ratio
 plot_simulation(model = model_insout, scenario = c("sigma0_shock"),
                 from = t0+1, to = t0+70, expressions = c("INV", "Ls"))
-```
 
-#### Shock 2
-In another example, we look at the effect of an increase in pure government expenditure.
-```{r}
-# Create empty shock and add shock equation
+# # Figure 10.1B Evolution of real output and real consumption, relative to their initial
+# # steady state values, following an increase in the target inventories to sales ratio
+# do_plotly(m = model_insout, scenario = "sigma0_shock", variables = c("yr", "cr"), t0=t0, y_range = c(0.980, 1.030), title = "Scenario: sigma0_shock")
+
+# # Figure 10.1C Evolution of household wealth and of its various components, relative
+# # to their initial steady state values, during the first periods that follow an increase in
+# # the target inventories to sales ratio
+# do_plotly(m = model_insout, scenario = "sigma0_shock", variables = c("dV", "dBhh", "dBLh", "dM1s", "dM2s", "dHhs"), t0=t0, start = t0+2, end = t0+10, y_range = c(-1.5, 4.5), title = "Scenario: sigma0_shock")
+
+# Figure 10.1E Evolution of the various components of the balance sheet of commercial
+# banks, relative to their initial steady state values, during the first periods that follow
+# an increase in the target inventories to sales ratio
+do_plotly(m = model_insout, scenario = "sigma0_shock", variables = c("dM", "dLs", "dAs", "dHbs", "dBbd"), t0=t0, start = t0+3, end = t0+10, y_range = c(-1.5, 5.5), title = "Scenario: sigma0_shock")
+
+# Simulation 2: An increase in pure government expenditure
+# Similarly, define the fiscal shock path
 shock_insout <- create_shock() |>
   add_shock(variable = "g", value = 30, start = t0+5, end = t0+55, desc = "")
-```
 
-Start by creating an empty shock and specifying the strength, onset and duration of the intervention.
-```{r}
-# Create new scenario with this shock
+# Add as an alternative scenario
 model_insout <- model_insout |>
   add_scenario(name = "g_shock", origin = "baseline", shock = shock_insout)
-```
 
-With the scenario in place, run the simulation.
-```{r}
-# Simulate shock
+# Then, simulate the shock
 model_insout <- simulate_scenario(model_insout, scenario = "g_shock", periods = t0+70,
                                   max_iter = 350, tol = 1e-15, method = "Broyden",
                                   hidden_tol = 0.1, rhtol = TRUE)
-```
+# And plot the results
+# Figure 10.2A Evolution of household real wealth, real disposable income and
+# real consumption, following a one-step permanent increase in real government
+# expenditures
+do_plotly(m = model_insout, scenario = "g_shock", 
+        variables = c("c", "v", "ydr"), t0=t0, end = t0+55, title = "Scenario: g_shock")
 
-And finally, plot a few key variables to see how the economy responds to the shock.
-```{r, out.width="100%"}
-# Figure 10.2A Evolution of household real wealth, real disposable income and real consumption, following a one-step permanent increase in real government expenditures
+# # Figure 10.2E Evolution of the debt to GDP ratio, following a one-step permanent
+# # increase in real government expenditures
+# do_plotly(m = model_insout, scenario = "g_shock",
+#           variables = c("BYR"), t0=t0, end = t0+55, y_range = c(0.59, 0.7), title = "Scenario: g_shock")
+
+# # Figure 10.2G Evolution of the various components of the balance sheet of private
+# # banks, relative to their initial steady state values, during the first periods that follow
+# # an increase in the real government expenditures
+# do_plotly(m = model_insout, scenario = "g_shock",
+#           variables = c("dBbd", "dM1s", "dM2s", "dLs", "dHbs"), t0=t0, start = t0+3, end = t0+10, y_range = c(-6.5, 9.5), title = "Scenario: g_shock")
+
+# Simulation 5: A decrease in the propensity to consume out of real disposable income
+# Again, define, add, and simulate the behavioural shock
+shock_insout <- create_shock() |>
+  add_shock(variable = "alpha1", value = 0.8, start = t0+5, end = t0+70, desc = "")
+
+model_insout <- model_insout |>
+  add_scenario(name = "alpha1_shock", origin = "baseline", shock = shock_insout)
+
+model_insout <- simulate_scenario(model_insout, scenario = "alpha1_shock", periods = t0+70,
+                                  max_iter = 350, tol = 1e-10, method = "Broyden",
+                                  hidden_tol = 0.1, rhtol = TRUE)
+# Finally, plot the results
+# Figure 10.5A Evolution of real regular disposable income and of real consumption,
+# following a decrease in the propensity to consume out of (expected) real regular
+# disposable income
 do_plotly(
-    m = model_insout, scenario = "g_shock",
-    variables = c("c", "v", "ydr"), t0 = t0, end = t0+55,
-    title = "Scenario g_shock", y_title = ""
+  m = model_insout, scenario = "alpha1_shock",
+  variables = c("ydr", "c"), t0 = t0, end = t0+70,
+  title = "Scenario: alpha1_shock", y_title = ""
 )
-```
 
-### References
-For a more detailed discussion of the INSOUT model and its economic interpretation, refer to Chapter 10 of *Monetary Economics. An Integrated Approach to Credit, Money, Income, Production and Wealth*.
+# Note: The same procedure applies to all subsequent scenarios; comments are therefore kept to a minimum.
+
+# Simulation 6: An exogenous increase in the rate of inflation
+shock_insout <- create_shock() |>
+  add_shock(variable = "Omega0", value = -0.2, start = t0+5, end = t0+70, desc = "")
+
+model_insout <- model_insout |>
+  add_scenario(name = "Omega0_shock", origin = "baseline", shock = shock_insout)
+
+model_insout <- simulate_scenario(model_insout, scenario = "Omega0_shock", periods = t0+70,
+                                  max_iter = 350, tol = 1e-10, method = "Broyden",
+                                  hidden_tol = 0.1, rhtol = TRUE)
+# Results
+# Figure 10.6B Evolution of real sales and real output following a one-step increase in
+# the target real wage that generates an increase in the rate of inflation
+do_plotly(m = model_insout, scenario = "Omega0_shock",
+          variables = c("y", "s"), t0=t0, end = t0+55, title = "Scenario: Omega0_shock")
+
+# Simulation 7: Increase in the target real wage followed by an increase in interest rates
+shock_insout <- create_shock() |>
+  add_shock(variable = "Omega0", value = -0.2, start = t0+4, end = t0+55, desc = "") |>
+  add_shock(variable = "rb", value = 0.03, start = t0+5, end = t0+55, desc = "") |>
+  add_shock(variable = "rbl", value = 0.039, start = t0+5, end = t0+55, desc = "")
+
+model_insout <- model_insout |>
+  add_scenario(name = "Omega0-rb(l)_shock", origin = "baseline", shock = shock_insout)
+
+model_insout <- simulate_scenario(model_insout, scenario = "Omega0-rb(l)_shock", periods = t0+55,
+                                  max_iter = 350, tol = 1e-30, method = "Broyden",
+                                  hidden_tol = 0.1, rhtol = TRUE)
+# Results
+# Figure 10.7A Evolution of real sales and real output following a one-step increase in
+# the target real wage that generates an increase in the rate of inflation, accompanied by
+# an increase in nominal interest rates that approximately compensates for the increase
+# in inflation
+do_plotly(m = model_insout, scenario = "Omega0-rb(l)_shock",
+        variables = c("s"), t0=t0, end = t0+55, title = "Scenario: Omega0, rb and rbl shocks")
+
+# Figure 10.7B Evolution of real household debt and real government debt following
+# a one-step increase in the target real wage that generates an increase in the rate of
+# inflation, accompanied by an increase in nominal interest rates that approximately
+# compensates for the increase in inflation
+df_long <- model_insout[["Omega0-rb(l)_shock"]][["result"]] %>%
+  mutate(
+    `Deflated government debt` = (Bs + pbl * BLs) / p,
+    `Real wealth` = v
+  ) %>%
+  filter(time >= t0 & time <= t0 + 55) %>%
+  select(time, `Real wealth`, `Deflated government debt`) %>%
+  pivot_longer(cols = -time, names_to = "name", values_to = "value")
+
+fig <- plotly::plot_ly()
+
+for (v in unique(df_long$name)) {
+  dfi <- df_long %>% filter(name == v)
+  
+  fig <- plotly::add_trace(
+    fig,
+    data = dfi,
+    x = ~time,
+    y = ~value,
+    name = v,
+    type = "scatter",
+    mode = "lines",
+    line = list(width = 2),
+    hovertemplate = paste(
+      "<b>", v, "</b>",
+      "<br>time=%{x}",
+      "<br>value=%{y}<extra></extra>"
+    )
+  )
+}
+
+fig %>%
+  plotly::layout(
+    yaxis = list(title = ""),
+    colorway = RColorBrewer::brewer.pal(3, "Dark2")
+  ) %>%
+  plotly_style("Scenario Omega0, rb and rbl shocks")

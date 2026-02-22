@@ -1,0 +1,707 @@
+# A Growth Model Prototype
+
+# Helper functions for plotting simulation results as deviations from the baseline
+plotly_style <- function(fig, title = NULL) {
+  fig %>%
+    plotly::layout(
+      title = list(
+        text = title %||% "",
+        y = 0.95, x = 0.5,
+        xanchor = "center", yanchor = "top"
+      ),
+      margin = list(t = 60, b = 70, l = 60, r = 120),
+      hovermode = "spikers",
+      spikedistance = 1000,
+      xaxis = list(
+        title = "time"
+      ),
+      yaxis = list(
+        title = ""
+      ),
+      showlegend = TRUE,
+      legend = list(
+        xanchor = "left",
+        x = 1.02,
+        y = 0.95
+      ),
+      font = list(
+        family = "Arial",
+        size = 13
+      )
+    )
+}
+
+do_plotly <- function(m, variables, plot = NULL,
+                      title = NULL,
+                      y_title = NULL) {
+  
+  variables <- unique(c("time", variables))
+  
+  m1 <- m %>%
+    mutate(
+      uk      = Y / K,
+      Bsk     = Bs / K,
+      VK      = V / K,
+      wi      = (W - lag(W)) / lag(W),
+      DefY    = PSBR / Y,
+      GDY     = GD / Y,
+      LIN     = Lfd / IN,
+      GRy     = (Yk / lag(Yk)) - 1,
+      LhYDr   = Lhd / YDr,
+      FUfInv  = FUf / INV,
+      EqFMA   = (Pe * Ekd) / Vfma,
+      GRFfk   = -1 + (Ff / P) / (lag(Ff) / lag(P)),
+      GRPek   = -1 + (Pe / P) / (lag(Pe) / lag(P))
+    ) %>%
+    pivot_longer(cols = -time, names_to = "name", values_to = "value")
+  
+  if (is.null(plot)) {
+    m2 <- m1 %>% filter(name %in% setdiff(variables, "time"))
+  } else {
+    m2 <- m1 %>% filter(name %in% plot)
+  }
+  
+  fig <- plotly::plot_ly()
+  
+  for (v in unique(m2$name)) {
+    df <- dplyr::filter(m2, name == v)
+    
+    fig <- plotly::add_trace(
+      fig,
+      data = df,
+      x = ~time,
+      y = ~value,
+      name = v,
+      type = "scatter",
+      mode = "lines+markers",
+      line = list(width = 2),
+      marker = list(size = 3),
+      hovertemplate = paste(
+        "<b>", v, "</b>",
+        "<br>time=%{x}",
+        "<br>value=%{y}<extra></extra>"
+      )
+    )
+  }
+  
+  fig %>%
+    plotly::layout(
+      yaxis = list(title = y_title %||% "")
+    ) %>%
+    plotly_style(title)
+}
+
+
+`%||%` <- function(a, b) if (!is.null(a) && length(a) > 0) a else b
+
+do_cbind <- function(m, scenario, variables) {
+  variables <- unique(c(variables, "time"))
+  
+  merge(
+    m[[scenario]][["result"]],
+    dplyr::select(m[["baseline"]][["result"]], dplyr::all_of(variables)) %>%
+      setNames(paste0(names(.), "_bl")),
+    by.x = "time",
+    by.y = "time_bl"
+  )
+}
+
+do_cplotly <- function(m, scenario, variables, plot = NULL, from, to,
+                       title = NULL,
+                       y_title = "scenario / baseline") {
+  
+  vars_bl <- paste0(variables, "_bl")
+  ntbl <- do_cbind(m, scenario, variables)
+  
+  for (i in seq_along(variables)) {
+    v  <- variables[[i]]
+    vb <- vars_bl[[i]]
+    ntbl[[v]] <- ntbl[[v]] / ntbl[[vb]]
+  }
+  
+  ntbl %>%
+    dplyr::filter(time >= from & time <= to) %>%
+    do_plotly(
+      variables = variables,
+      plot = plot,
+      title = title %||% paste("Scenario", scenario),
+      y_title = y_title
+    )
+}
+
+# Create empty model
+model_growth <- create_model(name = "SFC GROWTH")
+
+# Add variables
+model_growth <- model_growth |>
+  add_variable("alpha1", init = 0.75) |>
+  add_variable("alpha2", init = 0.064) |>
+  add_variable("beta", init = 0.5) |>
+  add_variable("betab", init = 0.4) |>
+  add_variable("gamma", init = 0.15) |>
+  add_variable("gamma0", init = 0.00122) |>
+  add_variable("gammar", init = 0.1) |>
+  add_variable("gammau", init = 0.05) |>
+  add_variable("delta", init = 0.10667) |>
+  add_variable("deltarep", init = 0.1) |>
+  add_variable("eps", init = 0.5) |>
+  add_variable("eps2", init = 0.8) |>
+  add_variable("epsb", init = 0.25) |>
+  add_variable("epsrb", init = 0.9) |>
+  add_variable("eta0", init = 0.07416) |>
+  add_variable("etan", init = 0.6) |>
+  add_variable("etar", init = 0.4) |>
+  add_variable("theta", init = 0.22844) |>
+  add_variable("lambda20", init = 0.25) |>
+  add_variable("lambda21", init = 2.2) |>
+  add_variable("lambda22", init = 6.6) |>
+  add_variable("lambda23", init = 2.2) |>
+  add_variable("lambda24", init = 2.2) |>
+  add_variable("lambda25", init = 0.1) |>
+  add_variable("lambda30", init = -0.04341) |>
+  add_variable("lambda31", init = 2.2) |>
+  add_variable("lambda32", init = 2.2) |>
+  add_variable("lambda33", init = 6.6) |>
+  add_variable("lambda34", init = 2.2) |>
+  add_variable("lambda35", init = 0.1) |>
+  add_variable("lambda40", init = 0.67132) |>
+  add_variable("lambda41", init = 2.2) |>
+  add_variable("lambda42", init = 2.2) |>
+  add_variable("lambda43", init = 2.2) |>
+  add_variable("lambda44", init = 6.6) |>
+  add_variable("lambda45", init = 0.1) |>
+  add_variable("lambdab", init = 0.0153) |>
+  add_variable("lambdac", init = 0.05) |>
+  add_variable("xim1", init = 0.0008) |>
+  add_variable("xim2", init = 0.0007) |>
+  add_variable("ro", init = 0.05) |>
+  add_variable("sigman", init = 0.1666) |>
+  add_variable("sigmat", init = 0.2) |>
+  add_variable("psid", init = 0.15255) |>
+  add_variable("psiu", init = 0.92) |>
+  add_variable("omega0", init = -0.20594) |>
+  add_variable("omega1", init = 1) |>
+  add_variable("omega2", init = 2) |>
+  add_variable("omega3", init = 0.45621) |>
+  add_variable("ADDbl", init = 0.02) |>
+  add_variable("BANDt", init = 0.01) |>
+  add_variable("BANDb", init = 0.01) |>
+  add_variable("bot", init = 0.05) |>
+  add_variable("GRg", init = 0.03) |>
+  add_variable("GRpr", init = 0.03) |>
+  add_variable("Nfe", init = 87.181) |>
+  add_variable("NCAR", init = 0.1) |>
+  add_variable("NPLk", init = 0.02) |>
+  add_variable("Rbbar", init = 0.035) |>
+  add_variable("Rln", init = 0.07) |>
+  add_variable("RA", init = 0) |>
+  add_variable("top", init = 0.12) |>
+  add_variable("sigmase", init = 0.16667) |>
+  add_variable("eta", init = 0.04918) |>
+  add_variable("phi", init = 0.26417) |>
+  add_variable("phit", init = 0.26417) |>
+  add_variable("ADDl", init = 0.04592) |>
+  add_variable("BLR", init = 0.1091) |>
+  add_variable("BUR", init = 0.06324) |>
+  add_variable("Ck", init = 7334240) |>
+  add_variable("CAR", init = 0.09245) |>
+  add_variable("CONS", init = 52603100) |>
+  add_variable("ER", init = 1) |>
+  add_variable("Fb", init = 1744130) |>
+  add_variable("Fbt", init = 1744140) |>
+  add_variable("Ff", init = 18081100) |>
+  add_variable("Fft", init = 18013600) |>
+  add_variable("FDb", init = 1325090) |>
+  add_variable("FDf", init = 2670970) |>
+  add_variable("FUb", init = 419039) |>
+  add_variable("FUf", init = 15153800) |>
+  add_variable("FUft", init = 15066200) |>
+  add_variable("G", init = 16755600) |>
+  add_variable("Gk", init = 2336160) |>
+  add_variable("GL", init = 2775900) |>
+  add_variable("GRk", init = 0.03001) |>
+  add_variable("INV", init = 16911600) |>
+  add_variable("Ik", init = 2357910) |>
+  add_variable("N", init = 87.181) |>
+  add_variable("Nt", init = 87.181) |>
+  add_variable("NHUC", init = 5.6735) |>
+  add_variable("NL", init = 683593) |>
+  add_variable("NLk", init = 95311) |>
+  add_variable("NPL", init = 309158) |>
+  add_variable("NPLke", init = 0.02) |>
+  add_variable("NUC", init = 5.6106) |>
+  add_variable("omegat", init = 112852) |>
+  add_variable("P", init = 7.1723) |>
+  add_variable("Pbl", init = 18.182) |>
+  add_variable("Pe", init = 17937) |>
+  add_variable("PE", init = 5.07185) |>
+  add_variable("PI", init = 0.0026) |>
+  add_variable("PR", init = 138659) |>
+  add_variable("PSBR", init = 1894780) |>
+  add_variable("Q", init = 0.77443) |>
+  add_variable("Rb", init = 0.035) |>
+  add_variable("Rbl", init = 0.055) |>
+  add_variable("Rk", init = 0.03008) |>
+  add_variable("Rl", init = 0.06522) |>
+  add_variable("Rm", init = 0.0193) |>
+  add_variable("REP", init = 2092310) |>
+  add_variable("RRl", init = 0.06246) |>
+  add_variable("S", init = 86270300) |>
+  add_variable("Sk", init = 12028300) |>
+  add_variable("Ske", init = 12028300) |>
+  add_variable("TX", init = 17024100) |>
+  add_variable("U", init = 0.70073) |>
+  add_variable("UC", init = 5.6106) |>
+  add_variable("W", init = 777968) |>
+  add_variable("WB", init = 67824000) |>
+  add_variable("Y", init = 86607700) |>  
+  add_variable("Yk", init = 12088400) |>
+  add_variable("YDr", init = 56446400) |>
+  add_variable("YDkr", init = 7813270) |>
+  add_variable("YDkre", init = 7813290) |>
+  add_variable("YP", init = 73158700) |>
+  add_variable("z1a", init = 0) |>
+  add_variable("z1b", init = 0) |>
+  add_variable("z2a", init = 0) |>  
+  add_variable("z2b", init = 0) |>
+  add_variable("Bbd", init = 4389790) |>
+  add_variable("Bbs", init = 4389790) |>
+  add_variable("Bcbd", init = 4655690) |>
+  add_variable("Bcbs", init = 4655690) |>
+  add_variable("Bhd", init = 33439320) |>
+  add_variable("Bhs", init = 33439320) |>
+  add_variable("Bs", init = 42484800) |>
+  add_variable("BLd", init = 840742) |>
+  add_variable("BLs", init = 840742) |>
+  add_variable("GD", init = 57728700) |>
+  add_variable("Ekd", init = 5112.6001) |>
+  add_variable("Eks", init = 5112.6001) |>
+  add_variable("Hbd", init = 2025540) |>
+  add_variable("Hbs", init = 2025540) |>
+  add_variable("Hhd", init = 2630150) |>
+  add_variable("Hhs", init = 2630150) |>
+  add_variable("Hs", init = 4655690) |>
+  add_variable("IN", init = 11585400) |>
+  add_variable("INk", init = 2064890) |>
+  add_variable("INke", init = 2405660) |>
+  add_variable("INkt", init = 2064890) |>
+  add_variable("K", init = 127486471) |>
+  add_variable("Kk", init = 17774838) |>
+  add_variable("Lfd", init = 15962900) |>
+  add_variable("Lfs", init = 15962900) |>
+  add_variable("Lhd", init = 21606600) |>
+  add_variable("Lhs", init = 21606600) |>
+  add_variable("Ls", init = 37569500) |>
+  add_variable("Mh", init = 40510800) |>
+  add_variable("Ms", init = 40510800) |>
+  add_variable("OFb", init = 3474030) |>
+  add_variable("OFbe", init = 3474030) |>
+  add_variable("OFbt", init = 3638100) |>
+  add_variable("V", init = 165438779) |>
+  add_variable("Vfma", init = 159334599) |>
+  add_variable("Vk", init = 23066350) |>
+  add_variable("Vf", init = 31361792) |>
+  add_variable("z3") |>
+  add_variable("z4") |>
+  add_variable("z5") |>
+  add_variable("z3a") |>
+  add_variable("z3b") |>
+  add_variable("HCe") |>
+  add_variable("YDhs") |>
+  add_variable("CG") |>
+  add_variable("VfmaA") |>
+  add_variable("Fcb") |>
+  add_variable("FUbt")
+
+# Add equations
+# Note: Equation numbering follows that used in the text.
+model_growth <- model_growth |>
+  add_equation("Yk = Ske + INke - INk[-1]", desc = "11.1 : Real output") |>
+  add_equation("Ske = beta*Sk + (1-beta)*Sk[-1]*(1 + (GRpr + RA))", desc = "11.2 : Expected real sales") |>
+  add_equation("INke = INk[-1] + gamma*(INkt - INk[-1])", desc = "11.3 : Long-run inventory target") |>
+  add_equation("INkt = sigmat*Ske", desc = "11.4 : Short-run inventory target") |>
+  add_equation("INk = INk[-1] + Yk - Sk - NPL/UC", desc = "11.5 : Actual real inventories") |>
+  add_equation("Kk = Kk[-1]*(1 + GRk)", desc = "11.6 : Real capital stock") |>
+  add_equation("GRk = gamma0 + gammau*U[-1] - gammar*RRl", desc = "11.7 : Growth of real capital stock") |>
+  add_equation("U = Yk/Kk[-1]", desc = "11.8 : Capital utilization proxy") |>
+  add_equation("RRl = ((1 + Rl)/(1 + PI)) - 1", desc = "11.9 : Real interest rate on loans") |>
+  add_equation("PI = (P - P[-1])/P[-1]", desc = "11.10 : Rate of price inflation") |>
+  add_equation("Ik = (Kk - Kk[-1]) + delta*Kk[-1]", desc = "11.11 : Real gross investment") |>
+  
+  # Firms equations
+  add_equation("Sk = Ck + Gk + Ik", desc = "11.12 : Actual real sales") |>
+  add_equation("S = Sk*P", desc = "11.13 : Value of realized sales") |>
+  add_equation("IN = INk*UC", desc = "11.14 : Inventories valued at current cost") |>
+  add_equation("INV = Ik*P", desc = "11.15 : Nominal gross investment") |>
+  add_equation("K = Kk*P", desc = "11.16 : Nomincal value of fixed capital") |>
+  add_equation("Y = Sk*P + (INk - INk[-1])*UC", desc = "11.17 : Nomincal GDP") |>
+  add_equation("omegat = exp(omega0 + omega1*log(PR) + omega2*log(ER + z3*(1 - ER) - z4*BANDt + z5*BANDb))", desc = "11.18 : Real wage aspirations") |>
+  add_equation("ER = N[-1]/Nfe[-1]", desc = "11.19 : Employment rate") |>
+  # 11.20 : Switch variables
+  add_equation("z3a = (ER > (1 - BANDb))", desc = "") |>
+  add_equation("z3b = 1 - as.numeric(ER > (1 + BANDt))", desc = "") |>
+  add_equation("z3 =  z3a * z3b", desc = "") |>
+  add_equation("z4  = (ER >  (1 + BANDt))", desc = "") |>
+  add_equation("z5  = (ER <  (1 - BANDb))", desc = "") |>
+  
+  add_equation("W = W[-1] + omega3*(omegat*P[-1] - W[-1])", desc = "11.21 : Nominal wage") |>
+  add_equation("PR = PR[-1]*(1 + GRpr)", desc = "11.22 : Labor productivity") |>
+  add_equation("Nt = Yk/PR", desc = "11.23 : Desired employment") |>
+  add_equation("N = N[-1] + etan*(Nt - N[-1])", desc = "11.24 : Actual employment --> etan not in the book") |>
+  add_equation("WB = N*W", desc = "11.25 : Nominal wage bill") |>
+  add_equation("UC = WB/Yk", desc = "11.26 : Actual unit cost") |>
+  add_equation("NUC = W/PR", desc = "11.27 : Normal unit cost") |>
+  add_equation("NHUC = (1 - sigman)*NUC + sigman*(1 + Rln[-1])*NUC[-1]", desc = "11.28 : Normal historic unit cost") |>
+  add_equation("P = (1 + phi)*NHUC", desc = "11.29 : Normal-cost pricing") |>
+  add_equation("phi = phi[-1] + eps2*(phit[-1] - phi[-1])", desc = "11.30 : Actual mark-up --> eps2 not in the book") |>
+  add_equation("phit = (FUft + FDf + Rl[-1]*(Lfd[-1] - IN[-1])) / ((1 - sigmase)*Ske*UC + (1 + Rl[-1])*sigmase*Ske*UC[-1])", desc = "11.31 : Ideal mark-up") |>
+  add_equation("HCe = (1 - sigmase)*Ske*UC + (1 + Rl[-1])*sigmase*Ske*UC[-1]", desc = "11.32 : Expected historical costs") |>
+  add_equation("sigmase = INk[-1]/Ske", desc = "11.33 : Opening inventories to expected sales ratio") |>
+  add_equation("Fft = FUft + FDf + Rl[-1]*(Lfd[-1] - IN[-1])", desc = "11.34 : Planned entrepeneurial profits of firms") |>
+  add_equation("FUft = psiu*INV[-1]", desc = "11.35 : Planned retained earnings of firms") |>
+  add_equation("FDf = psid*Ff[-1]", desc = "11.36 : Dividends of firms") |>
+  add_equation("Ff = S - WB + (IN - IN[-1]) - Rl[-1]*IN[-1]", desc = "11.37 : Realized entrepeneurial profits") |>
+  add_equation("FUf = Ff - FDf - Rl[-1]*(Lfd[-1] - IN[-1]) + Rl[-1]*NPL", desc = "11.38 : Retained earnings of firms") |>
+  add_equation("Lfd = Lfd[-1] + INV + (IN - IN[-1]) - FUf - (Eks - Eks[-1])*Pe - NPL", desc = "11.39 : Demand for loans by firms") |>
+  add_equation("NPL = NPLk * Lfs[-1]", desc = "11.40 : Defaulted loans") |>
+  add_equation("Eks = Eks[-1] + ((1 - psiu)*INV[-1])/Pe", desc = "11.41 : Supply of equities issued by firms") |>
+  add_equation("Rk = FDf/(Pe[-1]*Ekd[-1])", desc = "11.42 : Dividend yield of firms") |>
+  add_equation("PE = Pe/(Ff/Eks[-1])", desc = "11.43 : Price earnings ratio") |>
+  add_equation("Q = (Eks*Pe + Lfd)/(K + IN)", desc = "11.44 : Tobins Q ratio") |>
+  
+  # Households equations
+  add_equation("YP = WB + FDf + FDb + Rm[-1]*Mh[-1] + Rb[-1]*Bhd[-1] + BLs[-1]", desc = "") |>
+  add_equation("TX = theta*YP", desc = "11.46 : Income taxes") |>
+  add_equation("YDr = YP - TX - Rl[-1]*Lhd[-1]", desc = "11.47 : Regular disposable income") |>
+  add_equation("YDhs = YDr + CG", desc = "11.48 : Haig-Simons disposable income") |>
+  add_equation("CG = (Pbl - Pbl[-1])*BLd[-1] + (Pe - Pe[-1])*Ekd[-1] + (OFb - OFb[-1])", desc = "11.49 : Capital gains") |>
+  add_equation("V = V[-1] + YDr - CONS + (Pbl - Pbl[-1])*BLd[-1] + (Pe - Pe[-1])*Ekd[-1] + (OFb - OFb[-1])", desc = "11.50 : Wealth") |>
+  add_equation("Vk = V/P", desc = "11.51 : Real stock of wealth") |>
+  add_equation("CONS = Ck*P", desc = "11.52 : Consumption") |>
+  add_equation("Ck = alpha1*(YDkre + NLk) + alpha2*Vk[-1]", desc = "11.53 : Real consumption") |>
+  add_equation("YDkre = eps*YDkr + (1 - eps)*(YDkr[-1]*(1 + GRpr))", desc = "11.54 : Expected real regular disposable income") |>
+  add_equation("YDkr = YDr/P - ((P - P[-1]) * Vk[-1])/P", desc = "11.55 : Real regular disposable income") |>
+  add_equation("GL = eta*YDr", desc = "11.56 : Gross amount of new personal loans ---> new eta here") |>
+  add_equation("eta = eta0 - etar*RRl", desc = "11.57 : New loans to personal income ratio") |>
+  add_equation("NL = GL - REP", desc = "11.58 : Net amount of new personal loans") |>
+  add_equation("REP = deltarep*Lhd[-1]", desc = "11.59 : Personal loans repayments") |>
+  add_equation("Lhd = Lhd[-1] + GL - REP", desc = "11.60 : Demand for personal loans") |>
+  add_equation("NLk = NL/P", desc = "11.61 : Real amount of new personal loans") |>
+  add_equation("BUR = (REP + Rl[-1] * Lhd[-1]) / YDr[-1]", desc = "11.62 : Burden of personal debt") |>
+  
+  # Households equations - portfolio decisions
+  add_equation("Bhd = Vfma[-1]*(lambda20 + lambda22*Rb[-1] - lambda21*Rm[-1] - lambda24*Rk[-1] - lambda23*Rbl[-1] - lambda25*(YDr/V))", desc = "11.64 : Demand for bills") |>
+  add_equation("BLd = Vfma[-1]*(lambda30 - lambda32*Rb[-1] - lambda31*Rm[-1] - lambda34*Rk[-1] + lambda33*Rbl[-1] - lambda35*(YDr/V))/Pbl", desc = "11.65 : Demand for bonds") |>
+  add_equation("Pe = Vfma[-1]*(lambda40 - lambda42*Rb[-1] - lambda41*Rm[-1] + lambda44*Rk[-1] - lambda43*Rbl[-1] - lambda45*(YDr/V))/Ekd", desc = "11.66 : Demand for equities - normalized to get the price of equitities") |>
+  add_equation("Mh = Vfma - Bhd - Pe*Ekd - Pbl*BLd + Lhd", desc = "11.67 : Money deposits - as a residual") |>
+  add_equation("Vfma = V - Hhd - OFb", desc = "11.68 : Investible wealth") |>
+  add_equation("VfmaA = Mh + Bhd + Pbl * BLd + Pe * Ekd", desc = "") |>
+  add_equation("Hhd = lambdac*CONS", desc = "11.69 : Households demand for cash") |>
+  add_equation("Ekd = Eks", desc = "11.70 : Stock market equilibrium") |>
+  
+  # Governments equations
+  add_equation("G = Gk*P", desc = "11.71 : Pure government expenditures") |>
+  add_equation("Gk = Gk[-1]*(1 + GRg)", desc = "11.72 : Real government expenditures") |>
+  add_equation("PSBR = G + BLs[-1] + Rb[-1]*(Bbs[-1] + Bhs[-1]) - TX", desc = "11.73 : Government deficit --> BLs[-1] missing in the book") |>
+  add_equation("Bs = Bs[-1] + G - TX - (BLs - BLs[-1])*Pbl + Rb[-1]*(Bhs[-1] + Bbs[-1]) + BLs[-1]", desc = "11.74 : New issues of bills") |>
+  add_equation("GD = Bbs + Bhs + BLs*Pbl + Hs", desc = "11.75 : Government debt") |>
+  
+  # The Central banks equations
+  add_equation("Fcb = Rb[-1]*Bcbd[-1]", desc = "11.76 : Central bank profits") |>
+  add_equation("BLs = BLd", desc = "11.77 : Bonds are supplied on demand") |>
+  add_equation("Bhs = Bhd", desc = "11.78 : Household bills supplied on demand") |>
+  add_equation("Hhs = Hhd", desc = "11.79 : Cash supplied on demand --> Mistake on the book") |>
+  add_equation("Hbs = Hbd", desc = "11.80 : Reserves supplied on demand") |>
+  add_equation("Hs = Hbs + Hhs", desc = "11.81 : Total supply of cash") |>
+  add_equation("Bcbd = Hs", desc = "11.82 : Central bankd ") |>
+  add_equation("Bcbs = Bcbd", desc = "11.83 : Supply of bills to Central bank") |>
+  add_equation("Rb = Rbbar", desc = "11.84 : Interest rate on bills set exogenously") |>
+  add_equation("Rbl = Rb + ADDbl", desc = "11.85 : Long term interest rate") |>
+  add_equation("Pbl = 1/Rbl", desc = "11.86 : Price of long-term bonds") |>
+  
+  # Commercial Banks equations
+  add_equation("Ms = Mh", desc = "11.87 : Bank deposits supplied on demand") |>
+  add_equation("Lfs = Lfd", desc = "11.88 : Loans to firms supplied on demand") |>
+  add_equation("Lhs = Lhd", desc = "11.89 : Personal loans supplied on demand") |>
+  add_equation("Hbd = ro*Ms", desc = "11.90 Reserve requirements of banks") |>
+  add_equation("Bbs = Bbs[-1] + (Bs - Bs[-1]) - (Bhs - Bhs[-1]) - (Bcbs - Bcbs[-1])", desc = "11.91 : Bills supplied to banks") |>
+  add_equation("Bbd = Ms + OFb - Lfs - Lhs - Hbd", desc = "11.92 : Balance sheet constraint of banks") |>
+  add_equation("BLR = Bbd/Ms", desc = "11.93 : Bank liquidity ratio") |>
+  add_equation("Rm = Rm[-1] + z1a*xim1 + z1b*xim2 - z2a*xim1 - z2b*xim2", desc = "11.94 : Deposit interest rate") |>
+  # 11.95-97 : Mechanism for determining changes to the interest rate on deposits,
+  # i.e., logical functions dependent on whether the bank liquidity ratio is within its bot and top range.
+  add_equation("z2a = (BLR[-1] >  (top + 0.05))", desc = "") |>
+  add_equation("z2b = (BLR[-1] >  top)", desc = "") |>
+  add_equation("z1a = 1 - as.numeric(BLR[-1] > bot)", desc = "") |>
+  add_equation("z1b = 1 - as.numeric(BLR[-1] > (bot - 0.05))", desc = "") |>
+  
+  # Commercial banks equations
+  add_equation("Rl = Rm + ADDl", desc = "11.98 : Loan interest rate") |>
+  add_equation("OFbt = NCAR*(Lfs[-1] + Lhs[-1])", desc = "11.99 : Long-run own funds target") |>
+  add_equation("OFbe = OFb[-1] + betab*(OFbt - OFb[-1])", desc = "11.100 : Short-run own funds target") |>
+  add_equation("FUbt = OFbe - OFb[-1] + NPLke*Lfs[-1]", desc = "11.101 : Target retained earnings of banks") |>
+  add_equation("NPLke = epsb*NPLke[-1] + (1 - epsb)*NPLk[-1]", desc = "11.102 : Expected proportion of non-performaing loans") |>
+  add_equation("FDb = Fb - FUb", desc = "11.103 : Dividends of banks") |>
+  add_equation("Fbt = lambdab*Y[-1] + (OFbe - OFb[-1] + NPLke*Lfs[-1])", desc = "11.104 : Target profits of banks") |>
+  add_equation("Fb = Rl[-1]*(Lfs[-1] + Lhs[-1] - NPL) + Rb[-1]*Bbd[-1] - Rm[-1]*Ms[-1]", desc = "11.105 : Actual profits of banks") |>
+  add_equation("ADDl = (Fbt - Rb[-1]*Bbd[-1] + Rm[-1]*(Ms[-1] - (1 - NPLke)*Lfs[-1] - Lhs[-1]))/((1 - NPLke)*Lfs[-1] + Lhs[-1])", desc = "11.106 : Lending mark-up over deposit rate --> we added the lag term to Rm") |>
+  add_equation("FUb = Fb - lambdab*Y[-1]", desc = "11.107 : Actual retained earnings") |>
+  add_equation("OFb = OFb[-1] + FUb - NPL", desc = "11.108 : Own funds of banks") |>
+  add_equation("CAR = OFb/(Lfs + Lhs)", desc = "") |>
+  add_equation("Vf = IN + K - Lfd - Ekd * Pe", desc = "Firm's wealth (memo for matrices)") |>
+  add_equation("Ls = Lfs + Lhs", desc = "Loans supply (memo for matrices)") |>
+  
+  # Hidden equation
+  add_equation("Bbs = Bbd", desc = "", hidden = TRUE)
+
+# Simulate the model
+model_growth <- simulate_scenario(model_growth, scenario = "baseline", 
+                                  max_iter = 350, periods = 500, tol = 1e-15,
+                                  hidden_tol = 1e-6, rhtol = TRUE, method = "Broyden")
+# Plot results
+exprs <- c("Bsk = Bs / K", "VK = V / K", "GRk", "PI")
+plots <- purrr::map(exprs,
+             ~ plot_simulation(model = model_growth, scenario = "baseline",
+                               from = 1, to = 350, expressions = .x
+             )
+             )
+plotly::subplot(plots, nrows = 2, shareX = TRUE, titleX = TRUE)
+
+# A steady state from about t = 300 onward.
+t0 <- 300
+
+# Simulation 1.: An autonomous increase in wage inflation
+# Specify the shock path
+shock_growth <- create_shock() |>
+  add_shock(variable = "omega0", value = -0.1, start = 5, end = 150, desc = "")
+
+# Add as an alternative scenario
+model_growth <- model_growth |>
+  add_scenario(name = "omega0_shock", origin = "baseline", shock = shock_growth)
+
+# Then, simulate the shock
+model_growth <- simulate_scenario(model_growth, scenario = "omega0_shock", periods = 80, 
+                                  max_iter = 350, tol = 1e-10, method = "Broyden",
+                                  hidden_tol = 1e-6, rhtol = TRUE)
+# Finally, plot the results
+# Figure 11.2A Evolution of wage inflation and price inflation, following an
+# autonomous increase in the target real wage
+plot_simulation(model = model_growth, scenario = c("baseline", "omega0_shock"),
+                from = 1, to = 80, expressions = c("PI", "wi = (W - dplyr::lag(W)) / dplyr::lag(W)"))
+
+# Figure 11.2B Evolution of real gross fixed investment, real output and real
+# consumption, all relative to the base line solution, following an autonomous increase
+# in the target real wage
+do_cplotly(m = model_growth, scenario = "omega0_shock",
+           from = 1, to = 80, variables = c("Ik", "Ck", "Yk"))
+
+# Note: The same steps apply to all following scenarios, so further comments are limited.
+
+# Simulation 2.: A one-period increase in the growth rate of pure government expenditures
+shock_growth <- create_shock() |>
+  add_shock(variable = "GRg", value = 0.035, start = t0+10, end = t0+11, desc = "")
+
+model_growth <- model_growth |>
+  add_scenario(name = "GRg_onetime_shock", origin = "baseline", shock = shock_growth)
+
+model_growth <- simulate_scenario(model_growth, scenario = "GRg_onetime_shock", periods = t0+80,
+                                  max_iter = 350, tol = 1e-10, method = "Broyden",
+                                  hidden_tol = 1e-6, rhtol = TRUE)
+# Results
+# Figure 11.3A Evolution of real output and real consumption, relative to the base
+# line solution, following an increase in the rate of growth of real pure government
+# expenditures for only one year
+do_cplotly(m = model_growth, scenario = "GRg_onetime_shock",
+         variables = c("Yk", "Gk"), plot = c("Yk", "Gk"),
+         from = t0, to = t0+80)
+
+# Figure 11.3C Evolution of the government deficit to GDP ratio and of the government
+# debt to GDP ratio, relative to the base line solution, following an increase in the rate
+# of growth of real pure government expenditures for only one year
+do_cplotly(m = model_growth, scenario = "GRg_onetime_shock",
+         variables = c("PSBR", "Y", "GD"), plot = c("DefY", "GDY"),
+         from = t0, to = t0+80)
+
+# Figure 11.3D Evolution of the bank liquidity ratio and of the loans to inventories ratio
+# of firms, relative to the base line solution, following an increase in the rate of growth
+# of real pure government expenditures for only one year
+do_cplotly(m = model_growth, scenario = "GRg_onetime_shock",
+         variables = c("Lfd", "IN", "BLR"), plot = c("LIN", "BLR"),
+         from = t0, to = t0+80)
+
+# Scenario 2.B: One-shot decrease in the income tax
+shock_growth <- create_shock() |>
+  add_shock(variable = "theta", value = 0.22, start = t0+10, end = t0+80, desc = "")
+
+model_growth <- model_growth |>
+  add_scenario(name = "theta_shock", origin = "baseline", shock = shock_growth)
+
+model_growth <- simulate_scenario(model_growth, scenario = "theta_shock", periods = t0+80,
+                                  max_iter = 350, tol = 1e-10, method = "Broyden",
+                                  hidden_tol = 1e-6, rhtol = TRUE)
+# Results
+# Figure 11.3E Evolution of real consumption and real output, relative to the base line
+# solution, following a permanent one-shot decrease in the income tax rate
+do_cplotly(m = model_growth, scenario = "theta_shock",
+         variables = c("Ck", "Yk"), plot = c("Ck", "Yk"),
+         from = t0, to = t0+80)
+
+# Simulation 3.: A permanent increase in the growth rate of pure government expenditures
+shock_growth <- create_shock() |>
+  add_shock(variable = "GRg", value = 0.035, start = t0+10, end = t0+80, desc = "")
+
+model_growth <- model_growth |>
+  add_scenario(name = "GRg_permanent_shock", origin = "baseline", shock = shock_growth)
+
+model_growth <- simulate_scenario(model_growth, scenario = "GRg_permanent_shock", periods = t0+80,
+                                  max_iter = 350, tol = 1e-10, method = "Broyden",
+                                  hidden_tol = 1e-6, rhtol = TRUE)
+# Results
+# Figure 11.4B Evolution of the real rate of capital accumulation and of the growth rate
+# of real output, with the growth rate of real pure government expenditures being forever
+# higher than in the base line solution
+plot_simulation(model = model_growth, scenario = "GRg_permanent_shock",
+                from = t0, to = t0+80, expressions = c("GRg", "GRk", "GRy = (Yk / dplyr::lag(Yk)) - 1")
+)
+
+# Scenario 6: Increase in the propensity to consume out of regular income
+shock_growth <- create_shock() |>
+  add_shock(variable = "alpha1", value = 0.80, start = t0+10, end = t0+80, desc = "")
+
+model_growth <- model_growth |>
+  add_scenario(name = "alpha1_shock", origin = "baseline", shock = shock_growth)
+
+model_growth <- simulate_scenario(model_growth, scenario = "alpha1_shock", periods = t0+80,
+                                  max_iter = 350, tol = 1e-10, method = "Broyden",
+                                  hidden_tol = 1e-6, rhtol = TRUE)
+# Results
+# Figure 11.7A Evolution of real consumption and real output, relative to the base line
+# solution, following a one-step permanent increase in the propensity to consume out
+# of regular income
+do_cplotly(m = model_growth, scenario = "alpha1_shock",
+           variables = c("Ck", "Yk"), plot = c("Ck", "Yk"),
+           from = t0, to = t0+80)
+
+# Figure 11.7E Evolution of the retained earnings to gross fixed investment ratio and
+# of real inventories, relative to the base line solution, following a one-step permanent
+# increase in the propensity to consume out of regular income
+do_cplotly(m = model_growth, scenario = "alpha1_shock",
+         variables = c("FUf", "INV", "INk"), plot = c("FUfInv", "INk"),
+         from = t0, to = t0+80)
+
+# Figure 11.7F Evolution of government deficit to GDP ratio and of the government
+# debt to GDP ratio, relative to the base line solution, following a one-step permanent
+# increase in the propensity to consume out of regular income
+do_cplotly(m = model_growth, scenario = "alpha1_shock",
+         variables = c("Y", "GD", "PSBR"), plot = c("DefY", "GDY"),
+         from = t0, to = t0+80)
+
+# Figure 11.7G Evolution of Tobin’s q ratio and of the price-earnings ratio, relative to
+# the base line solution, following a one-step permanent increase in the propensity to
+# consume out of regular income
+do_cplotly(m = model_growth, scenario = "alpha1_shock",
+         variables = c("Q", "PE"), plot = c("Q", "PE"),
+         from = t0, to = t0+80)
+
+# Scenario 7: An increase in the gross new loans to personal income ratio
+shock_growth <- create_shock() |>
+  add_shock(variable = "eta0", value = 0.08416, start = t0+10, end = t0+80, desc = "")
+
+model_growth <- model_growth |>
+  add_scenario(name = "eta0_shock", origin = "baseline", shock = shock_growth)
+
+model_growth <- simulate_scenario(model_growth, scenario = "eta0_shock", periods = t0+80,
+                                  max_iter = 350, tol = 1e-10, method = "Broyden",
+                                  hidden_tol = 1e-6, rhtol = TRUE)
+# Results
+# Figure 11.8E Evolution of the government deficit to GDP ratio and of the government
+# debt to GDP ratio, relative to the base line solution, following an increase in the gross
+# new loans to personal income ratio
+do_cplotly(m = model_growth, scenario = "eta0_shock",
+         variables = c("Y", "PSBR", "GD"), plot = c("DefY", "GDY"),
+         from = t0, to = t0+80)
+
+# Scenario 8: An increase in the desire to hold equities
+shock_growth <- create_shock() |>
+  add_shock(variable = "lambda40", value = 0.77132, start = t0+10, end = t0+80, desc = "")
+
+model_growth <- model_growth |>
+  add_scenario(name = "lambda40_shock", origin = "baseline", shock = shock_growth)
+
+model_growth <- simulate_scenario(model_growth, scenario = "lambda40_shock", periods = t0+80,
+                                  max_iter = 350, tol = 1e-10, method = "Broyden",
+                                  hidden_tol = 1e-6, rhtol = TRUE)
+# Results
+# # Figure 11.9A Evolution of Tobin’s q ratio, the price-earnings ratio and the share of
+# # equities in household wealth held in the form of financial market assets, all relative
+# # to the base line solution, following an increase in the household desire to hold stock
+# # market equities
+# do_cplotly(m = model_growth, scenario = "lambda40_shock",
+#          variables = c("Q", "PE", "Ekd", "Pe", "Vfma"), plot = c("Q", "PE", "EqFMA"),
+#          from = t0, to = t0+80)
+
+# Figure 11.9B Evolution of real wealth, real consumption, real output and real gross
+# investment, all relative to the base line solution, following an increase in the household
+# desire to hold stock market equities
+do_cplotly(m = model_growth, scenario = "lambda40_shock",
+         variables = c("Ck", "Vk", "Yk", "Ik"), plot = c("Ck", "Vk", "Yk", "Ik"),
+         from = t0, to = t0+80)
+
+# Scenario 9: An increase in the target proportion of gross investment financed by retained earnings
+shock_growth <- create_shock() |>
+  add_shock(variable = "psiu", value = 1, start = t0+10, end = t0+80, desc = "")
+
+model_growth <- model_growth |>
+  add_scenario(name = "psiu_shock", origin = "baseline", shock = shock_growth)
+
+model_growth <- simulate_scenario(model_growth, scenario = "psiu_shock", periods = t0+80,
+                                  max_iter = 350, tol = 1e-10, method = "Broyden",
+                                  hidden_tol = 1e-6, rhtol = TRUE)
+# Results
+# Figure 11.10C Evolution of the employment rate and of real consumption, relative
+# to the base line solution, following an increase in the target proportion of gross
+# investment being financed by gross retained earnings
+do_cplotly(m = model_growth, scenario = "psiu_shock",
+         variables = c("ER", "Ck"), plot = c("ER", "Ck"),
+         from = t0, to = t0+80)
+
+# # Figure 11.10D Evolution of Tobin’s q ratio and of the price-earnings ratio, relative to
+# # the base line solution, following an increase in the target proportion of gross investment
+# # being financed by gross retained earnings, which also corresponds to a decrease in the
+# # proportion of investment being financed by new equity issues
+# do_cplotly(m = model_growth, scenario = "psiu_shock",
+#          variables = c("Q", "PE"), plot = c("Q", "PE"),
+#          from = t0, to = t0+80)
+
+# Scenario 10: An increase in non-performing loans
+shock_growth <- create_shock() |>
+  add_shock(variable = "NPLk", value = 0.05, start = t0+10, end = t0+80, desc = "")
+
+model_growth <- model_growth |>
+  add_scenario(name = "NPLk_shock", origin = "baseline", shock = shock_growth)
+
+model_growth <- simulate_scenario(model_growth, scenario = "NPLk_shock", periods = t0+80,
+                                  max_iter = 350, tol = 1e-10, method = "Broyden",
+                                  hidden_tol = 1e-6, rhtol = TRUE)
+# Results
+# Figure 11.11B Evolution of the lending rate and deposit rate, relative to the base line
+# solution, following an increase the percentage of non-performing loans (defaulting loans)
+do_cplotly(m = model_growth, scenario = "NPLk_shock",
+         variables = c("Rm", "Rl"), plot = c("Rm", "Rl"),
+         from = t0, to = t0+80)
+
+# Scenario 10B: An increase in the normal adequacy ratio
+shock_growth <- create_shock() |>
+  add_shock(variable = "NCAR", value = 0.11, start = t0+10, end = t0+80, desc = "")
+
+model_growth <- model_growth |>
+  add_scenario(name = "NCAR_shock", origin = "baseline", shock = shock_growth)
+
+model_growth <- simulate_scenario(model_growth, scenario = "NCAR_shock", periods = t0+80,
+                                  max_iter = 350, tol = 1e-10, method = "Broyden",
+                                  hidden_tol = 1e-6, rhtol = TRUE)
+# Results
+# Figure 11.11C Evolution of the actual bank capital adequacy ratio, following a
+# one-time permanent increase in the normal capital adequacy ratio
+plot_simulation(model = model_growth, scenario = "NCAR_shock",
+                from = t0, to = t0+80, expressions = c("NCAR", "CAR"))

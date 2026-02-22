@@ -16,8 +16,6 @@ knitr::opts_chunk$set(
 
 ```{r, include = FALSE}
 library(dplyr)
-library(tidyr)
-library(plotly)
 
 plotly_style <- function(fig, title = NULL) {
   fig %>%
@@ -71,7 +69,7 @@ do_plotly <- function(m, variables, plot = NULL,
       GRFfk   = -1 + (Ff / P) / (lag(Ff) / lag(P)),
       GRPek   = -1 + (Pe / P) / (lag(Pe) / lag(P))
     ) %>%
-    pivot_longer(cols = -time, names_to = "name", values_to = "value")
+    tidyr::pivot_longer(cols = -time, names_to = "name", values_to = "value")
 
   if (is.null(plot)) {
     m2 <- m1 %>% filter(name %in% setdiff(variables, "time"))
@@ -153,8 +151,6 @@ This guide explains how to use the `godley` package to create a Growth model pro
 
 ```{r setup}
 library(godley)
-library(purrr)
-library(plotly)
 ```
 
 ### Base scenario
@@ -364,19 +360,14 @@ model_growth <- model_growth |>
   add_equation("PI = (P - P[-1])/P[-1]", desc = "11.10 : Rate of price inflation") |>
   add_equation("Ik = (Kk - Kk[-1]) + delta*Kk[-1]", desc = "11.11 : Real gross investment") |>
   
-  # Box 11.2 : Firms equations
-  # ---------------------------
+  # Firms equations
   add_equation("Sk = Ck + Gk + Ik", desc = "11.12 : Actual real sales") |>
   add_equation("S = Sk*P", desc = "11.13 : Value of realized sales") |>
   add_equation("IN = INk*UC", desc = "11.14 : Inventories valued at current cost") |>
   add_equation("INV = Ik*P", desc = "11.15 : Nominal gross investment") |>
   add_equation("K = Kk*P", desc = "11.16 : Nomincal value of fixed capital") |>
   add_equation("Y = Sk*P + (INk - INk[-1])*UC", desc = "11.17 : Nomincal GDP") |>
-  
-  # Box 11.3 : Firms equations
-  # ---------------------------
-  # 11.18 : Real wage aspirations
-  add_equation("omegat = exp(omega0 + omega1*log(PR) + omega2*log(ER + z3*(1 - ER) - z4*BANDt + z5*BANDb))", desc = "") |>
+  add_equation("omegat = exp(omega0 + omega1*log(PR) + omega2*log(ER + z3*(1 - ER) - z4*BANDt + z5*BANDb))", desc = "11.18 : Real wage aspirations") |>
   add_equation("ER = N[-1]/Nfe[-1]", desc = "11.19 : Employment rate") |>
   # 11.20 : Switch variables
   add_equation("z3a = (ER > (1 - BANDb))", desc = "") |>
@@ -392,49 +383,35 @@ model_growth <- model_growth |>
   add_equation("UC = WB/Yk", desc = "11.26 : Actual unit cost") |>
   add_equation("NUC = W/PR", desc = "11.27 : Normal unit cost") |>
   add_equation("NHUC = (1 - sigman)*NUC + sigman*(1 + Rln[-1])*NUC[-1]", desc = "11.28 : Normal historic unit cost") |>
-  
-  # Box 11.4 : Firms equations
-  # ---------------------------
   add_equation("P = (1 + phi)*NHUC", desc = "11.29 : Normal-cost pricing") |>
   add_equation("phi = phi[-1] + eps2*(phit[-1] - phi[-1])", desc = "11.30 : Actual mark-up") |>
-  # 11.31 : Ideal mark-up
-  add_equation("phit = (FUft + FDf + Rl[-1]*(Lfd[-1] - IN[-1])) / ((1 - sigmase)*Ske*UC + (1 + Rl[-1])*sigmase*Ske*UC[-1])", desc = "") |>
+  add_equation("phit = (FUft + FDf + Rl[-1]*(Lfd[-1] - IN[-1])) / ((1 - sigmase)*Ske*UC + (1 + Rl[-1])*sigmase*Ske*UC[-1])", desc = "11.31 : Ideal mark-up") |>
   add_equation("HCe = (1 - sigmase)*Ske*UC + (1 + Rl[-1])*sigmase*Ske*UC[-1]", desc = "11.32 : Expected historical costs") |>
   add_equation("sigmase = INk[-1]/Ske", desc = "11.33 : Opening inventories to expected sales ratio") |>
   add_equation("Fft = FUft + FDf + Rl[-1]*(Lfd[-1] - IN[-1])", desc = "11.34 : Planned entrepeneurial profits of firms") |>
   add_equation("FUft = psiu*INV[-1]", desc = "11.35 : Planned retained earnings of firms") |>
   add_equation("FDf = psid*Ff[-1]", desc = "11.36 : Dividends of firms") |>
-  
-  # Box 11.5 : Firms equations
-  # ---------------------------
   add_equation("Ff = S - WB + (IN - IN[-1]) - Rl[-1]*IN[-1]", desc = "11.37 : Realized entrepeneurial profits") |>
   add_equation("FUf = Ff - FDf - Rl[-1]*(Lfd[-1] - IN[-1]) + Rl[-1]*NPL", desc = "11.38 : Retained earnings of firms") |>
-  # 11.39 : Demand for loans by firms
-  add_equation("Lfd = Lfd[-1] + INV + (IN - IN[-1]) - FUf - (Eks - Eks[-1])*Pe - NPL", desc = "") |>
+  add_equation("Lfd = Lfd[-1] + INV + (IN - IN[-1]) - FUf - (Eks - Eks[-1])*Pe - NPL", desc = "11.39 : Demand for loans by firms") |>
   add_equation("NPL = NPLk * Lfs[-1]", desc = "11.40 : Defaulted loans") |>
   add_equation("Eks = Eks[-1] + ((1 - psiu)*INV[-1])/Pe", desc = "11.41 : Supply of equities issued by firms") |>
   add_equation("Rk = FDf/(Pe[-1]*Ekd[-1])", desc = "11.42 : Dividend yield of firms") |>
   add_equation("PE = Pe/(Ff/Eks[-1])", desc = "11.43 : Price earnings ratio") |>
   add_equation("Q = (Eks*Pe + Lfd)/(K + IN)", desc = "11.44 : Tobins Q ratio") |>
   
-  # Box 11.6 : Households equations
-  # --------------------------------
+  # Households equations
   add_equation("YP = WB + FDf + FDb + Rm[-1]*Mh[-1] + Rb[-1]*Bhd[-1] + BLs[-1]", desc = "") |>
   add_equation("TX = theta*YP", desc = "11.46 : Income taxes") |>
   add_equation("YDr = YP - TX - Rl[-1]*Lhd[-1]", desc = "11.47 : Regular disposable income") |>
   add_equation("YDhs = YDr + CG", desc = "11.48 : Haig-Simons disposable income") |>
-  # 11.49 : Capital gains
-  add_equation("CG = (Pbl - Pbl[-1])*BLd[-1] + (Pe - Pe[-1])*Ekd[-1] + (OFb - OFb[-1])", desc = "") |>
-  # 11.50 : Wealth
-  add_equation("V = V[-1] + YDr - CONS + (Pbl - Pbl[-1])*BLd[-1] + (Pe - Pe[-1])*Ekd[-1] + (OFb - OFb[-1])", desc = "") |>
+  add_equation("CG = (Pbl - Pbl[-1])*BLd[-1] + (Pe - Pe[-1])*Ekd[-1] + (OFb - OFb[-1])", desc = "11.49 : Capital gains") |>
+  add_equation("V = V[-1] + YDr - CONS + (Pbl - Pbl[-1])*BLd[-1] + (Pe - Pe[-1])*Ekd[-1] + (OFb - OFb[-1])", desc = "11.50 : Wealth") |>
   add_equation("Vk = V/P", desc = "11.51 : Real stock of wealth") |>
   add_equation("CONS = Ck*P", desc = "11.52 : Consumption") |>
   add_equation("Ck = alpha1*(YDkre + NLk) + alpha2*Vk[-1]", desc = "11.53 : Real consumption") |>
   add_equation("YDkre = eps*YDkr + (1 - eps)*(YDkr[-1]*(1 + GRpr))", desc = "11.54 : Expected real regular disposable income") |>
   add_equation("YDkr = YDr/P - ((P - P[-1]) * Vk[-1])/P", desc = "11.55 : Real regular disposable income") |>
-  
-  # Box 11.7 : Households equations
-  # --------------------------------
   add_equation("GL = eta*YDr", desc = "11.56 : Gross amount of new personal loans") |>
   add_equation("eta = eta0 - etar*RRl", desc = "11.57 : New loans to personal income ratio") |>
   add_equation("NL = GL - REP", desc = "11.58 : Net amount of new personal loans") |>
@@ -443,31 +420,24 @@ model_growth <- model_growth |>
   add_equation("NLk = NL/P", desc = "11.61 : Real amount of new personal loans") |>
   add_equation("BUR = (REP + Rl[-1] * Lhd[-1]) / YDr[-1]", desc = "11.62 : Burden of personal debt") |>
   
-  # Box 11.8 : Households equations - portfolio decisions
-  # -----------------------------------------------------
-  # 11.64 : Demand for bills
-  add_equation("Bhd = Vfma[-1]*(lambda20 + lambda22*Rb[-1] - lambda21*Rm[-1] - lambda24*Rk[-1] - lambda23*Rbl[-1] - lambda25*(YDr/V))", desc = "") |>
-  # 11.65 : Demand for bonds
-  add_equation("BLd = Vfma[-1]*(lambda30 - lambda32*Rb[-1] - lambda31*Rm[-1] - lambda34*Rk[-1] + lambda33*Rbl[-1] - lambda35*(YDr/V))/Pbl", desc = "") |>
-  # 11.66 : Demand for equities - normalized to get the price of equitities
-  add_equation("Pe = Vfma[-1]*(lambda40 - lambda42*Rb[-1] - lambda41*Rm[-1] + lambda44*Rk[-1] - lambda43*Rbl[-1] - lambda45*(YDr/V))/Ekd", desc = "") |>
+  # Households equations - portfolio decisions
+  add_equation("Bhd = Vfma[-1]*(lambda20 + lambda22*Rb[-1] - lambda21*Rm[-1] - lambda24*Rk[-1] - lambda23*Rbl[-1] - lambda25*(YDr/V))", desc = "11.64 : Demand for bills") |>
+  add_equation("BLd = Vfma[-1]*(lambda30 - lambda32*Rb[-1] - lambda31*Rm[-1] - lambda34*Rk[-1] + lambda33*Rbl[-1] - lambda35*(YDr/V))/Pbl", desc = "11.65 : Demand for bonds") |>
+  add_equation("Pe = Vfma[-1]*(lambda40 - lambda42*Rb[-1] - lambda41*Rm[-1] + lambda44*Rk[-1] - lambda43*Rbl[-1] - lambda45*(YDr/V))/Ekd", desc = "11.66 : Demand for equities - normalized to get the price of equitities") |>
   add_equation("Mh = Vfma - Bhd - Pe*Ekd - Pbl*BLd + Lhd", desc = "11.67 : Money deposits - as a residual") |>
   add_equation("Vfma = V - Hhd - OFb", desc = "11.68 : Investible wealth") |>
   add_equation("VfmaA = Mh + Bhd + Pbl * BLd + Pe * Ekd", desc = "") |>
   add_equation("Hhd = lambdac*CONS", desc = "11.69 : Households demand for cash") |>
   add_equation("Ekd = Eks", desc = "11.70 : Stock market equilibrium") |>
   
-  # Box 11.9 : Governments equations
-  # ---------------------------------
+  # Governments equations
   add_equation("G = Gk*P", desc = "11.71 : Pure government expenditures") |>
   add_equation("Gk = Gk[-1]*(1 + GRg)", desc = "11.72 : Real government expenditures") |>
   add_equation("PSBR = G + BLs[-1] + Rb[-1]*(Bbs[-1] + Bhs[-1]) - TX", desc = "11.73 : Government deficit") |>
-  # 11.74 : New issues of bills
-  add_equation("Bs = Bs[-1] + G - TX - (BLs - BLs[-1])*Pbl + Rb[-1]*(Bhs[-1] + Bbs[-1]) + BLs[-1]", desc = "") |>
+  add_equation("Bs = Bs[-1] + G - TX - (BLs - BLs[-1])*Pbl + Rb[-1]*(Bhs[-1] + Bbs[-1]) + BLs[-1]", desc = "11.74 : New issues of bills") |>
   add_equation("GD = Bbs + Bhs + BLs*Pbl + Hs", desc = "11.75 : Government debt") |>
   
-  # Box 11.10 : The Central banks equations
-  # ----------------------------------------
+  # The Central banks equations
   add_equation("Fcb = Rb[-1]*Bcbd[-1]", desc = "11.76 : Central bank profits") |>
   add_equation("BLs = BLd", desc = "11.77 : Bonds are supplied on demand") |>
   add_equation("Bhs = Bhd", desc = "11.78 : Household bills supplied on demand") |>
@@ -480,27 +450,23 @@ model_growth <- model_growth |>
   add_equation("Rbl = Rb + ADDbl", desc = "11.85 : Long term interest rate") |>
   add_equation("Pbl = 1/Rbl", desc = "11.86 : Price of long-term bonds") |>
   
-  # Box 11.11 : Commercial Banks equations
-  # ---------------------------------------
+  # Commercial Banks equations
   add_equation("Ms = Mh", desc = "11.87 : Bank deposits supplied on demand") |>
   add_equation("Lfs = Lfd", desc = "11.88 : Loans to firms supplied on demand") |>
   add_equation("Lhs = Lhd", desc = "11.89 : Personal loans supplied on demand") |>
   add_equation("Hbd = ro*Ms", desc = "11.90 Reserve requirements of banks") |>
-  # 11.91 : Bills supplied to banks
-  add_equation("Bbs = Bbs[-1] + (Bs - Bs[-1]) - (Bhs - Bhs[-1]) - (Bcbs - Bcbs[-1])", desc = "") |>
-  # 11.92 : Balance sheet constraint of banks
-  add_equation("Bbd = Ms + OFb - Lfs - Lhs - Hbd", desc = "") |>
+  add_equation("Bbs = Bbs[-1] + (Bs - Bs[-1]) - (Bhs - Bhs[-1]) - (Bcbs - Bcbs[-1])", desc = "11.91 : Bills supplied to banks") |>
+  add_equation("Bbd = Ms + OFb - Lfs - Lhs - Hbd", desc = "11.92 : Balance sheet constraint of banks") |>
   add_equation("BLR = Bbd/Ms", desc = "11.93 : Bank liquidity ratio") |>
-  # 11.94 : Deposit interest rate
-  add_equation("Rm = Rm[-1] + z1a*xim1 + z1b*xim2 - z2a*xim1 - z2b*xim2", desc = "") |>
-  # 11.95-97 : Mechanism for determining changes to the interest rate on deposits
+  add_equation("Rm = Rm[-1] + z1a*xim1 + z1b*xim2 - z2a*xim1 - z2b*xim2", desc = "11.94 : Deposit interest rate") |>
+  # 11.95-97 : Mechanism for determining changes to the interest rate on deposits,
+  # i.e., logical functions dependent on whether the bank liquidity ratio is within its bot and top range.
   add_equation("z2a = (BLR[-1] >  (top + 0.05))", desc = "") |>
   add_equation("z2b = (BLR[-1] >  top)", desc = "") |>
   add_equation("z1a = 1 - as.numeric(BLR[-1] > bot)", desc = "") |>
   add_equation("z1b = 1 - as.numeric(BLR[-1] > (bot - 0.05))", desc = "") |>
   
-  # Box 11.12 : Commercial banks equations
-  # ---------------------------------------
+  # Commercial banks equations
   add_equation("Rl = Rm + ADDl", desc = "11.98 : Loan interest rate") |>
   add_equation("OFbt = NCAR*(Lfs[-1] + Lhs[-1])", desc = "11.99 : Long-run own funds target") |>
   add_equation("OFbe = OFb[-1] + betab*(OFbt - OFb[-1])", desc = "11.100 : Short-run own funds target") |>
@@ -508,19 +474,16 @@ model_growth <- model_growth |>
   add_equation("NPLke = epsb*NPLke[-1] + (1 - epsb)*NPLk[-1]", desc = "11.102 : Expected proportion of non-performaing loans") |>
   add_equation("FDb = Fb - FUb", desc = "11.103 : Dividends of banks") |>
   add_equation("Fbt = lambdab*Y[-1] + (OFbe - OFb[-1] + NPLke*Lfs[-1])", desc = "11.104 : Target profits of banks") |>
-  # 11.105 : Actual profits of banks
-  add_equation("Fb = Rl[-1]*(Lfs[-1] + Lhs[-1] - NPL) + Rb[-1]*Bbd[-1] - Rm[-1]*Ms[-1]", desc = "") |>
-  # 11.106 : Lending mark-up over deposit rate
-  add_equation("ADDl = (Fbt - Rb[-1]*Bbd[-1] + Rm[-1]*(Ms[-1] - (1 - NPLke)*Lfs[-1] - Lhs[-1]))/((1 - NPLke)*Lfs[-1] + Lhs[-1])", desc = "") |>
+  add_equation("Fb = Rl[-1]*(Lfs[-1] + Lhs[-1] - NPL) + Rb[-1]*Bbd[-1] - Rm[-1]*Ms[-1]", desc = "11.105 : Actual profits of banks") |>
+  add_equation("ADDl = (Fbt - Rb[-1]*Bbd[-1] + Rm[-1]*(Ms[-1] - (1 - NPLke)*Lfs[-1] - Lhs[-1]))/((1 - NPLke)*Lfs[-1] + Lhs[-1])", desc = "11.106 : Lending mark-up over deposit rate") |>
   add_equation("FUb = Fb - lambdab*Y[-1]", desc = "11.107 : Actual retained earnings") |>
   add_equation("OFb = OFb[-1] + FUb - NPL", desc = "11.108 : Own funds of banks") |>
-  add_equation("CAR = OFb/(Lfs + Lhs)", desc = "") |>
+  add_equation("CAR = OFb/(Lfs + Lhs)", desc = "11.109 : Actual capital adequacy ratio") |>
   add_equation("Vf = IN + K - Lfd - Ekd * Pe", desc = "Firm's wealth (memo for matrices)") |>
   add_equation("Ls = Lfs + Lhs", desc = "Loans supply (memo for matrices)") |>
   
   # Hidden equation
-  # ---------------------------------------
-  add_equation("Bbs = Bbd", desc = "", hidden = TRUE)
+  add_equation("Bbs = Bbd", desc = "11.110A : Redundant equation", hidden = TRUE)
 
 ```
 
@@ -536,12 +499,12 @@ With the simulation estimated, plot a few variables to quickly check whether the
 ```{r, out.width="100%"}
 # Plot results
 exprs <- c("Bsk = Bs / K", "VK = V / K", "GRk", "PI")
-plots <- map(exprs,
+plots <- purrr::map(exprs,
              ~ plot_simulation(model = model_growth, scenario = "baseline",
                                from = 1, to = 350, expressions = .x
              )
 )
-subplot(plots, nrows = 2, shareX = TRUE, titleX = TRUE)
+plotly::subplot(plots, nrows = 2, shareX = TRUE, titleX = TRUE)
 
 # A steady state from about t = 300 onward.
 t0 <- 300
@@ -581,13 +544,13 @@ Finally, plot the shock scenario against the baseline to see what changed.
 ```{r, out.width="100%"}
 # Figure 11.2A: Evolution of wage inflation and price inflation, following an autonomous increase in the target real wage
 plot_simulation(model = model_growth, scenario = c("baseline", "omega0_shock"),
-                from = 1, to = 150, expressions = c("PI", "wi = (W - dplyr::lag(W)) / dplyr::lag(W)"))
+                from = 1, to = 80, expressions = c("PI", "wi = (W - dplyr::lag(W)) / dplyr::lag(W)"))
 ```
 
 ```{r, out.width="100%"}
 # Figure 11.2B: Evolution of real gross fixed investment, real output and real consumption, all relative to the base line solution, following an autonomous increase in the target real wage
 do_cplotly(m = model_growth, scenario = "omega0_shock",
-         from = 1, to = 150, variables = c("Ik", "Ck", "Yk"))
+         from = 1, to = 80, variables = c("Ik", "Ck", "Yk"))
 ```
 
 #### Shock 2
@@ -613,21 +576,21 @@ Once you have the simulation, you can plot the results:
 # Figure 11.3A: Evolution of real output and real pure government expenditure, relative to the base line solution, following an increase in the rate of growth of real pure government expenditures for only one year
 do_cplotly(m = model_growth, scenario = "GRg_onetime_shock",
          variables = c("Yk", "Gk"), plot = c("Yk", "Gk"),
-         from = t0, to = t0+150)
+         from = t0, to = t0+80)
 ```
 
 ```{r, out.width="100%"}
 # Figure 11.3C: Evolution of the government deficit to GDP ratio and of the government debt to GDP ratio, relative to the base line solution, following an increase in the rate of growth of real pure government expenditures for only one year
 do_cplotly(m = model_growth, scenario = "GRg_onetime_shock",
          variables = c("PSBR", "Y", "GD"), plot = c("DefY", "GDY"),
-         from = t0, to = t0+150)
+         from = t0, to = t0+80)
 ```
 
 ```{r, out.width="100%"}
 # Figure 11.3D: Evolution of the bank liquidity ratio and of the loans to inventories ratio of firms, relative to the base line solution, following an increase in the rate of growth of real pure government expenditures for only one year
 do_cplotly(m = model_growth, scenario = "GRg_onetime_shock",
          variables = c("Lfd", "IN", "BLR"), plot = c("LIN", "BLR"),
-         from = t0, to = t0+150)
+         from = t0, to = t0+80)
 
 ```
 
@@ -659,7 +622,7 @@ Plot the long-run effects, for example on output growth and capital accumulation
 ```{r, out.width="100%"}
 # Figure 11.4B: Evolution of the real rate of capital accumulation and of the growth rate of real output, with the growth rate of real pure government expenditures being forever higher than in the base line solution
 plot_simulation(model = model_growth, scenario = "GRg_permanent_shock",
-                from = t0, to = t0+150, expressions = c("GRg", "GRk", "GRy = (Yk / dplyr::lag(Yk)) - 1")
+                from = t0, to = t0+80, expressions = c("GRg", "GRk", "GRy = (Yk / dplyr::lag(Yk)) - 1")
 )
 ```
 
@@ -1066,12 +1029,12 @@ model_growth2 <- simulate_scenario(model_growth2, scenario = "baseline",
 
 # Plot results
 exprs <- c("Bsk = Bs / K", "GRk", "PI", "VK = V / K")
-plots <- map(exprs,
+plots <- purrr::map(exprs,
              ~ plot_simulation(model = model_growth2, scenario = "baseline",
                                from = 1, to = 350, expressions = .x
              )
 )
-subplot(plots, nrows = 2, shareX = TRUE, titleX = TRUE)
+plotly::subplot(plots, nrows = 2, shareX = TRUE, titleX = TRUE)
 ```
 
 #### Shock - permanent increase in government expenditures
@@ -1101,14 +1064,14 @@ With these results, you can visualize the growth rate of real output...
 ```{r, out.width="100%"}
 # Figure 11.6A: Evolution of the growth rate of real output, with the growth rate of real pure government expenditures being forever higher than in the base line solution, when the central bank attempts to keep the real interest rate on bills at a constant level, but with a partial adjustment function
 plot_simulation(model = model_growth2, scenario = c("GRg_shock"),
-                from = 1, to = 150, expressions = c("GRy = (Yk / dplyr::lag(Yk)) - 1"))
+                from = 1, to = 80, expressions = c("GRy = (Yk / dplyr::lag(Yk)) - 1"))
 ```
 
 ...or, for example, check how interest rates move: the lending rate, the bill rate, and the deposit rate.
 ```{r, out.width="100%"}
 # Figure 11.6D: Evolution of the lending rate, the bill rate and the deposit rate, with the growth rate of real pure government expenditures being forever higher than in the base line solution, when the central bank attempts to keep the employment rate at a constant level in a forward-looking manner
 plot_simulation(model = model_growth2, scenario = c("GRg_shock"),
-                from = 1, to = 150, expressions = c("Rl", "Rb", "Rm"))
+                from = 1, to = 80, expressions = c("Rl", "Rb", "Rm"))
 ```
 
 ### References

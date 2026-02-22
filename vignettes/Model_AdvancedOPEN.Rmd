@@ -1,5 +1,5 @@
 ---
-title: "Model Advanced OPEN"
+title: "A More Advanced Open Economy Model"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Model Advanced OPEN}
@@ -16,9 +16,6 @@ knitr::opts_chunk$set(
 
 ```{r, include = FALSE}
 library(dplyr)
-library(purrr)
-library(plotly)
-library(tidyverse)
 
 plotly_style <- function(fig, title = NULL) {
   fig %>%
@@ -50,7 +47,6 @@ plotly_style <- function(fig, title = NULL) {
     )
 }
 
-# Plot results
 do_plotly <- function(m, scenario, variables, t0 = 1, start = NULL, end = NULL,
                       title = NULL, y_title = NULL,
                       mode = "lines") {
@@ -74,7 +70,7 @@ do_plotly <- function(m, scenario, variables, t0 = 1, start = NULL, end = NULL,
            bukus_p = (b_ukus_d/xr_us)/v_uk,
            bukus_d = b_ukus_d / v_uk) %>%
     filter(time >= start & time <= end) %>%
-    pivot_longer(cols = -time) %>%
+    tidyr::pivot_longer(cols = -time) %>%
     filter(name %in% variables)
 
   fig <- plotly::plot_ly()
@@ -120,8 +116,6 @@ More specifically, they differ along the following dimensions:
 
 ```{r setup}
 library(godley)
-library(purrr)
-library(plotly)
 ```
 
 ## 1. Model OPENFLEX
@@ -299,7 +293,7 @@ model_open <- model_open |>
   add_equation("kabp_uk = -(b_ukus_s - b_ukus_s[-1])*xr_us + (b_usuk_s - b_usuk_s[-1])", desc = "12.19 : Capital account balance in UK, net of official transactions") |>
   add_equation("kabp_us = -(b_usuk_s - b_usuk_s[-1])*xr_uk + (b_ukus_s - b_ukus_s[-1])", desc = "12.20 : Capital account balance in US, net of official transactions") |>
   
-  # TRADE
+  # Trade
   add_equation("pm_uk = exp(nu0m + nu1m*log(py_us) + (1 - nu1m)*log(py_uk) - nu1m*log(xr_uk))", desc = "12.21 : Import prices in UK") |>
   add_equation("px_uk = exp(nu0x + nu1x*log(py_us) + (1 - nu1x)*log(py_uk) - nu1x*log(xr_uk))", desc = "12.22 : Export prices in UK") |>
   add_equation("px_us = pm_uk*xr_uk", desc = "12.23 : Export prices in US") |>
@@ -313,7 +307,7 @@ model_open <- model_open |>
   add_equation("im_uk = im_k_uk*pm_uk", desc = "12.31 : Imports of UK") |>
   add_equation("im_us = im_k_us*pm_us", desc = "12.32 : Imports of US") |>
   
-  # INCOME AND EXPENDITURE
+  # Income and expenditure
   add_equation("v_k_uk = v_uk/pds_uk", desc = "12.33 : Real wealth in UK") |>
   add_equation("v_k_us = v_us/pds_us", desc = "12.34 : Real wealth in US") |>
   add_equation("ydhs_k_uk = yd_uk/pds_uk - v_k_uk[-1]*(pds_uk - pds_uk[-1])/pds_uk", desc = "12.35 : Real Haig-Simons disposable income in UK") |>
@@ -347,7 +341,7 @@ model_open <- model_open |>
   add_equation("n_uk = y_k_uk/pr_uk", desc = "12.65 : Employment in UK") |>
   add_equation("n_us = y_k_us/pr_us", desc = "12.66 : Employment in US") |>
   
-  # ASSET DEMANDS
+  # Asset demands
   add_equation("b_ukuk_d = v_uk*(lambda10 + lambda11*r_uk - lambda12*(r_us + dxre_us))", desc = "12.67 : Demand for UK bills in UK") |>
   add_equation("b_ukus_d = v_uk*(lambda20 - lambda21*r_uk + lambda22*(r_us + dxre_us))", desc = "12.68F : Demand for US bills in UK") |>
   add_equation("h_uk_d = v_uk - b_ukuk_d - b_ukus_d", desc = "12.69 : Demand for money in UK") |>
@@ -355,7 +349,7 @@ model_open <- model_open |>
   add_equation("b_usuk_d = v_us*(lambda50 - lambda51*r_us + lambda52*(r_uk + dxre_uk))", desc = "12.71 : Demand for UK bills in US") |>
   add_equation("h_us_d = v_us - b_usus_d - b_usuk_d", desc = "12.72 : Demand for money in US") |>
   
-  # ASSET SUPPLIES
+  # Asset supplies
   add_equation("h_us_s = h_us_d", desc = "12.77 : Suply of cash in US") |>
   add_equation("b_usus_s = b_usus_d", desc = "12.78 : Supply of US bills to Country") |>
   add_equation("b_cb_usus_s = b_cb_usus_d", desc = "12.79 : Supply of US bills to US Central bank") |>
@@ -644,7 +638,7 @@ model_open <- model_open |>
   add_equation("kabp_uk = -(b_ukus_s - b_ukus_s[-1])*xr_us + (b_usuk_s - b_usuk_s[-1])", desc = "12.19 : Capital account balance in UK, net of official transactions") |>
   add_equation("kabp_us = -(b_usuk_s - b_usuk_s[-1])*xr_uk + (b_ukus_s - b_ukus_s[-1])", desc = "12.20 : Capital account balance in US, net of official transactions") |>
   
-  # TRADE
+  # Trade
   add_equation("pm_uk = exp(nu0m + nu1m*log(py_us) + (1 - nu1m)*log(py_uk) - nu1m*log(xr_uk))", desc = "12.21 : Import prices in UK") |>
   add_equation("px_uk = exp(nu0x + nu1x*log(py_us) + (1 - nu1x)*log(py_uk) - nu1x*log(xr_uk))", desc = "12.22 : Export prices in UK") |>
   add_equation("px_us = pm_uk*xr_uk", desc = "12.23 : Export prices in US") |>
@@ -658,7 +652,7 @@ model_open <- model_open |>
   add_equation("im_uk = im_k_uk*pm_uk", desc = "12.31 : Imports of UK") |>
   add_equation("im_us = im_k_us*pm_us", desc = "12.32 : Imports of US") |>
   
-  # INCOME AND EXPENDITURE
+  # Income and expenditure
   add_equation("v_k_uk = v_uk/pds_uk", desc = "12.33 : Real wealth in UK") |>
   add_equation("v_k_us = v_us/pds_us", desc = "12.34 : Real wealth in US") |>
   add_equation("ydhs_k_uk = yd_uk/pds_uk - v_k_uk[-1]*(pds_uk - pds_uk[-1])/pds_uk", desc = "12.35 : Real Haig-Simons disposable income in UK") |>
@@ -692,7 +686,7 @@ model_open <- model_open |>
   add_equation("n_uk = y_k_uk/pr_uk", desc = "12.65 : Employment in UK") |>
   add_equation("n_us = y_k_us/pr_us", desc = "12.66 : Employment in US") |>
   
-  # ASSET DEMANDS
+  # Asset demands
   add_equation("b_ukuk_d = v_uk*(lambda10 + lambda11*r_uk - lambda12*(r_us + dxre_us))", desc = "12.67 : Demand for UK bills in UK") |>
   add_equation("b_ukus_d = v_uk*(lambda20 - lambda21*r_uk + lambda22*(r_us + dxre_us))", desc = "12.68F: Demand for US bills in UK") |>
   add_equation("h_uk_d = v_uk - b_ukuk_d - b_ukus_d", desc = "12.69 : Demand for money in UK") |>
@@ -700,7 +694,7 @@ model_open <- model_open |>
   add_equation("b_usuk_d = v_us*(lambda50 - lambda51*r_us + lambda52*(r_uk + dxre_uk))", desc = "12.71 : Demand for UK bills in US") |>
   add_equation("h_us_d = v_us - b_usus_d - b_usuk_d", desc = "12.72 : Demand for money in US") |>
   
-  # ASSET SUPPLIES
+  # Asset supplies
   add_equation("h_us_s = h_us_d", desc = "12.77 : Suply of cash in US") |>
   add_equation("b_usus_s = b_usus_d", desc = "12.78 : Supply of US bills to Country") |>
   add_equation("b_cb_usus_s = b_cb_usus_d", desc = "12.79 : Supply of US bills to US Central bank") |>
@@ -962,7 +956,7 @@ model_open <- model_open |>
   add_equation("kabp_uk = -(b_ukus_s - b_ukus_s[-1])*xr_us + (b_usuk_s - b_usuk_s[-1])", desc = "12.19 : Capital account balance in UK, net of official transactions") |>
   add_equation("kabp_us = -(b_usuk_s - b_usuk_s[-1])*xr_uk + (b_ukus_s - b_ukus_s[-1])", desc = "12.20 : Capital account balance in US, net of official transactions") |>
   
-  # TRADE
+  # Trade
   add_equation("pm_uk = exp(nu0m + nu1m*log(py_us) + (1 - nu1m)*log(py_uk) - nu1m*log(xr_uk))", desc = "12.21 : Import prices in UK") |>
   add_equation("px_uk = exp(nu0x + nu1x*log(py_us) + (1 - nu1x)*log(py_uk) - nu1x*log(xr_uk))", desc = "12.22 : Export prices in UK") |>
   add_equation("px_us = pm_uk*xr_uk", desc = "12.23 : Export prices in US") |>
@@ -976,7 +970,7 @@ model_open <- model_open |>
   add_equation("im_uk = im_k_uk*pm_uk", desc = "12.31 : Imports of UK") |>
   add_equation("im_us = im_k_us*pm_us", desc = "12.32 : Imports of US") |>
   
-  # INCOME AND EXPENDITURE
+  # Income and expenditure
   add_equation("v_k_uk = v_uk/pds_uk", desc = "12.33 : Real wealth in UK") |>
   add_equation("v_k_us = v_us/pds_us", desc = "12.34 : Real wealth in US") |>
   add_equation("ydhs_k_uk = yd_uk/pds_uk - v_k_uk[-1]*(pds_uk - pds_uk[-1])/pds_uk", desc = "12.35 : Real Haig-Simons disposable income in UK") |>
@@ -1011,14 +1005,14 @@ model_open <- model_open |>
   add_equation("n_uk = y_k_uk/pr_uk", desc = "12.65 : Employment in UK") |>
   add_equation("n_us = y_k_us/pr_us", desc = "12.66 : Employment in US") |>
   
-  # ASSET DEMANDS
+  # Asset demands
   add_equation("b_ukuk_d = v_uk*(lambda10 + lambda11*r_uk - lambda12*(r_us + dxre_us))", desc = "12.67 : Demand for UK bills in UK") |>
   add_equation("h_uk_d = v_uk - b_ukuk_d - b_ukus_d", desc = "12.69 : Demand for money in UK") |>
   add_equation("b_usus_d = v_us*(lambda40 + lambda41*r_us - lambda42*(r_uk + dxre_uk))", desc = "12.70 : Demand for US	bills in US") |>
   add_equation("b_usuk_d = v_us*(lambda50 - lambda51*r_us + lambda52*(r_uk + dxre_uk))", desc = "12.71 : Demand for UK bills in US") |>
   add_equation("h_us_d = v_us - b_usus_d - b_usuk_d", desc = "12.72 : Demand for money in US") |>
   
-  # ASSET SUPPLIES
+  # Asset supplies
   add_equation("h_us_s = h_us_d", desc = "12.77 : Suply of cash in US") |>
   add_equation("b_usus_s = b_usus_d", desc = "12.78 : Supply of US bills to Country") |>
   add_equation("b_cb_usus_s = b_cb_usus_d", desc = "12.79 : Supply of US bills to US Central bank") |>
@@ -1263,7 +1257,7 @@ model_open <- model_open |>
   add_equation("kabp_uk = -(b_ukus_s - b_ukus_s[-1])*xr_us + (b_usuk_s - b_usuk_s[-1])", desc = "12.19 : Capital account balance in UK, net of official transactions") |>
   add_equation("kabp_us = -(b_usuk_s - b_usuk_s[-1])*xr_uk + (b_ukus_s - b_ukus_s[-1])", desc = "12.20 : Capital account balance in US, net of official transactions") |>
   
-  # TRADE
+  # Trade
   add_equation("pm_uk = exp(nu0m + nu1m*log(py_us) + (1 - nu1m)*log(py_uk) - nu1m*log(xr_uk))", desc = "12.21 : Import prices in UK") |>
   add_equation("px_uk = exp(nu0x + nu1x*log(py_us) + (1 - nu1x)*log(py_uk) - nu1x*log(xr_uk))", desc = "12.22 : Export prices in UK") |>
   add_equation("px_us = pm_uk*xr_uk", desc = "12.23 : Export prices in US") |>
@@ -1277,7 +1271,7 @@ model_open <- model_open |>
   add_equation("im_uk = im_k_uk*pm_uk", desc = "12.31 : Imports of UK") |>
   add_equation("im_us = im_k_us*pm_us", desc = "12.32 : Imports of US") |>
   
-  # INCOME AND EXPENDITURE
+  # Income and expenditure
   add_equation("v_k_uk = v_uk/pds_uk", desc = "12.33 : Real wealth in UK") |>
   add_equation("v_k_us = v_us/pds_us", desc = "12.34 : Real wealth in US") |>
   add_equation("ydhs_k_uk = yd_uk/pds_uk - v_k_uk[-1]*(pds_uk - pds_uk[-1])/pds_uk", desc = "12.35 : Real Haig-Simons disposable income in UK") |>
@@ -1310,7 +1304,7 @@ model_open <- model_open |>
   add_equation("n_uk = y_k_uk/pr_uk", desc = "12.65 : Employment in UK") |>
   add_equation("n_us = y_k_us/pr_us", desc = "12.66 : Employment in US") |>
   
-  # ASSET DEMANDS
+  # Asset demands
   add_equation("b_ukuk_d = v_uk*(lambda10 + lambda11*r_uk - lambda12*(r_us + dxre_us))", desc = "12.67 : Demand for UK bills in UK") |>
   add_equation("b_ukus_d = v_uk*(lambda20 - lambda21*r_uk + lambda22*(r_us + dxre_us))", desc = "12.68F : Demand for US bills in UK") |>
   add_equation("h_uk_d = v_uk - b_ukuk_d - b_ukus_d", desc = "12.69 : Demand for money in UK") |>
@@ -1318,7 +1312,7 @@ model_open <- model_open |>
   add_equation("b_usuk_d = v_us*(lambda50 - lambda51*r_us + lambda52*(r_uk + dxre_uk))", desc = "12.71 : Demand for UK bills in US") |>
   add_equation("h_us_d = v_us - b_usus_d - b_usuk_d", desc = "12.72 : Demand for money in US") |>
   
-  # ASSET SUPPLIES
+  # Asset supplies
   add_equation("h_us_s = h_us_d", desc = "12.77 : Suply of cash in US") |>
   add_equation("b_usus_s = b_usus_d", desc = "12.78 : Supply of US bills to Country") |>
   add_equation("b_cb_usus_s = b_cb_usus_d", desc = "12.79 : Supply of US bills to US Central bank") |>

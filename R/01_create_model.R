@@ -20,7 +20,7 @@ create_model <- function(name = "SFC model",
   # copying variables and equations if the name of an existing model was given
   if (!missing(template)) {
     if (is.character(template)) {
-      if (template %in% c("SIM", "PC", "PCEX", "LP", "REG", "OPEN", "BMW", "BMWK", "DIS", "DISINF", "SIMEX")) {
+      if (template %in% c("SIM", "PC", "PCEX", "LP", "REG", "OPEN", "BMW", "BMWK", "DIS", "DISINF", "SIMEX", "INSOUT", "GROWTH", "OPENFIX")) {
         # loading a model defined based on examples
         model <- suppressMessages(load_model_template(template))
         message("Model ", template, " loaded from template")
