@@ -45,7 +45,7 @@ do_plotly <- function(m, scenario, variables, t0 = 1,
   end   <- if (is.null(end)) max(m1[["time"]]) else end
   
   # Lookup table: internal variable codes -> figure labels
-  lookup_names <- tribble(
+  lookup_names <- tidyr::tribble(
     ~name, ~Var,
     "dBhh", "HH. Bills",
     "dV", "Wealth",
@@ -85,7 +85,7 @@ do_plotly <- function(m, scenario, variables, t0 = 1,
   )
   
   df_long <- m1 %>%
-    mutate(yr = y / y[t0],
+    dplyr::mutate(yr = y / y[t0],
            cr = c / c[t0],
            dV = V - V[t0],
            dM1s = M1s - M1s[t0],
@@ -109,17 +109,17 @@ do_plotly <- function(m, scenario, variables, t0 = 1,
            dCB = Bcb - lag(Bcb),
            ddAs = As - lag(As)
     ) %>%
-    filter(time >= start & time <= end) %>%
-    select(time, all_of(variables)) %>%
-    pivot_longer(cols = -time) %>%
+    dplyr::filter(time >= start & time <= end) %>%
+    dplyr::select(time, all_of(variables)) %>%
+    tidyr::pivot_longer(cols = -time) %>%
     # Left-join the lookup_names table
-    left_join(lookup_names, by = "name") %>%
-    mutate(Var = if_else(is.na(Var), name, Var))
+    dplyr::left_join(lookup_names, by = "name") %>%
+    dplyr::mutate(Var = dplyr::if_else(is.na(Var), name, Var))
   
   fig <- plotly::plot_ly()
   
   for (v in unique(df_long$Var)) {
-    dfi <- df_long %>% filter(Var == v)
+    dfi <- df_long %>% dplyr::filter(Var == v)
     
     fig <- plotly::add_trace(
       fig,
@@ -293,7 +293,7 @@ model_insout <- model_insout |>
   add_variable("Y")
 
 # Add equations
-# Note: Equation numbering follows that used in the text.
+# Note: Equation numbering follows that used in *Monetary Economics: An Integrated Approach to Credit, Money, Income, Production and Wealth* by Wynne Godley and Marc Lavoie.
 model_insout <- model_insout |>
   # Firm's behavioral equations
   add_equation("y = sE + (invE - inv[-1])", desc = "10.1 : y is output, s sales, in inventories (measured as physical objects)") |>
@@ -558,18 +558,18 @@ do_plotly(m = model_insout, scenario = "Omega0-rb(l)_shock",
 # inflation, accompanied by an increase in nominal interest rates that approximately
 # compensates for the increase in inflation
 df_long <- model_insout[["Omega0-rb(l)_shock"]][["result"]] %>%
-  mutate(
+  dplyr::mutate(
     `Deflated government debt` = (Bs + pbl * BLs) / p,
     `Real wealth` = v
   ) %>%
-  filter(time >= t0 & time <= t0 + 55) %>%
-  select(time, `Real wealth`, `Deflated government debt`) %>%
-  pivot_longer(cols = -time, names_to = "name", values_to = "value")
+  dplyr::filter(time >= t0 & time <= t0 + 55) %>%
+  dplyr::select(time, `Real wealth`, `Deflated government debt`) %>%
+  tidyr::pivot_longer(cols = -time, names_to = "name", values_to = "value")
 
 fig <- plotly::plot_ly()
 
 for (v in unique(df_long$name)) {
-  dfi <- df_long %>% filter(name == v)
+  dfi <- df_long %>% dplyr::filter(name == v)
   
   fig <- plotly::add_trace(
     fig,

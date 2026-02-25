@@ -38,7 +38,7 @@ do_plotly <- function(m, variables, plot = NULL,
   variables <- unique(c("time", variables))
   
   m1 <- m %>%
-    mutate(
+    dplyr::mutate(
       uk      = Y / K,
       Bsk     = Bs / K,
       VK      = V / K,
@@ -53,12 +53,12 @@ do_plotly <- function(m, variables, plot = NULL,
       GRFfk   = -1 + (Ff / P) / (lag(Ff) / lag(P)),
       GRPek   = -1 + (Pe / P) / (lag(Pe) / lag(P))
     ) %>%
-    pivot_longer(cols = -time, names_to = "name", values_to = "value")
+    tidyr::pivot_longer(cols = -time, names_to = "name", values_to = "value")
   
   if (is.null(plot)) {
-    m2 <- m1 %>% filter(name %in% setdiff(variables, "time"))
+    m2 <- m1 %>% dplyr::filter(name %in% setdiff(variables, "time"))
   } else {
-    m2 <- m1 %>% filter(name %in% plot)
+    m2 <- m1 %>% dplyr::filter(name %in% plot)
   }
   
   fig <- plotly::plot_ly()
@@ -308,7 +308,7 @@ model_growth <- model_growth |>
   add_variable("Rrb", init = 0.03232)
   
 # Add equations
-# Note: Equation numbering follows that used in the text.
+# Note: Equation numbering follows that used in *Monetary Economics: An Integrated Approach to Credit, Money, Income, Production and Wealth* by Wynne Godley and Marc Lavoie.
 model_growth <- model_growth |>
   add_equation("Yk = Ske + INke - INk[-1]", desc = "11.1 : Real output") |>
   add_equation("Ske = beta*Sk + (1-beta)*Sk[-1]*(1 + (GRpr + RA))", desc = "11.2 : Expected real sales") |>
@@ -471,12 +471,12 @@ model_growth <- simulate_scenario(model_growth, scenario = "baseline",
                                   hidden_tol = 1e-6, rhtol = TRUE, method = "Broyden")
 # Plot the results
 exprs <- c("Bsk = Bs / K", 'GRk', "PI", "VK = V / K")
-plots <- map(exprs,
-             ~ plot_simulation(model = model_growth, scenario = "baseline",
+plots <- purrr::map(exprs,
+                    ~ plot_simulation(model = model_growth, scenario = "baseline",
                                from = 1, to = 350, expressions = .x
-             )
-)
-subplot(plots, nrows = 2, shareX = TRUE, titleX = TRUE)
+                               )
+                    )
+plotly::subplot(plots, nrows = 2, shareX = TRUE, titleX = TRUE)
 
 # Scenario: Permanent increase in government expenditures
 # Define the fiscal shock path and add it as an alternative scenario

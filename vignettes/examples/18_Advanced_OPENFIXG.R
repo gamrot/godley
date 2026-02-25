@@ -42,7 +42,7 @@ do_plotly <- function(m, scenario, variables, t0 = 1, start = NULL, end = NULL,
   end   <- if (is.null(end)) max(m1[["time"]]) else end
   
   df_long <- m1 %>%
-    mutate(tab_uk = x_uk - im_uk,
+    dplyr::mutate(tab_uk = x_uk - im_uk,
            tab_us = x_us - im_us,
            gab_uk = -psbr_uk,
            gab_us = -psbr_us,
@@ -54,9 +54,9 @@ do_plotly <- function(m, scenario, variables, t0 = 1, start = NULL, end = NULL,
            by_us = b_us_s / y_us,
            bukus_p = (b_ukus_d/xr_us)/v_uk,
            bukus_d = b_ukus_d / v_uk) %>%
-    filter(time >= start & time <= end) %>%
-    pivot_longer(cols = -time) %>%
-    filter(name %in% variables)
+    dplyr::filter(time >= start & time <= end) %>%
+    tidyr::pivot_longer(cols = -time) %>%
+    dplyr::filter(name %in% variables)
   
   fig <- plotly::plot_ly()
   
@@ -236,7 +236,7 @@ model_open <- model_open |>
   add_variable("nwcb_uk")
 
 # Add equations
-# Note: Equation numbering follows that used in the text.
+# Note: Equation numbering follows that used in *Monetary Economics: An Integrated Approach to Credit, Money, Income, Production and Wealth* by Wynne Godley and Marc Lavoie.
 model_open <- model_open |>
   # Disposable income in UK - eq. 12.1
   add_equation("yd_uk = (y_uk + r_uk[-1]*b_ukuk_d[-1] + xr_us*r_us[-1]*b_ukus_s[-1])*(1 - theta_uk) + (xr_us - xr_us[-1])*b_ukus_s[-1]") |>

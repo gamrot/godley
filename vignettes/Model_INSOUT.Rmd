@@ -1,5 +1,5 @@
 ---
-title: "A Model with both Inside and Outside Money"
+title: "Model INSOUT"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Model INSOUT}
@@ -15,10 +15,6 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, include = FALSE}
-library(dplyr)
-library(tidyr)
-library(plotly)
-
 `%||%` <- function(a, b) if (!is.null(a) && length(a) > 0) a else b
 
 plotly_style <- function(fig, title = NULL) {
@@ -63,7 +59,7 @@ do_plotly <- function(m, scenario, variables, t0 = 1,
   end   <- if (is.null(end)) max(m1[["time"]]) else end
   
   # Lookup table: internal variable codes -> figure labels
-  lookup_names <- tribble(
+  lookup_names <- tidyr::tribble(
     ~name, ~Var,
     "dBhh", "HH. Bills",
     "dV", "Wealth",
@@ -103,7 +99,7 @@ do_plotly <- function(m, scenario, variables, t0 = 1,
   )
   
   df_long <- m1 %>%
-    mutate(yr = y / y[t0],
+    dplyr::mutate(yr = y / y[t0],
            cr = c / c[t0],
            dV = V - V[t0],
            dM1s = M1s - M1s[t0],
@@ -127,17 +123,17 @@ do_plotly <- function(m, scenario, variables, t0 = 1,
            dCB = Bcb - lag(Bcb),
            ddAs = As - lag(As)
     ) %>%
-    filter(time >= start & time <= end) %>%
-    select(time, all_of(variables)) %>%
-    pivot_longer(cols = -time) %>%
+    dplyr::filter(time >= start & time <= end) %>%
+    dplyr::select(time, all_of(variables)) %>%
+    tidyr::pivot_longer(cols = -time) %>%
     # Left-join the lookup_names table
-    left_join(lookup_names, by = "name") %>%
-    mutate(Var = if_else(is.na(Var), name, Var))
+    dplyr::left_join(lookup_names, by = "name") %>%
+    dplyr::mutate(Var = dplyr::if_else(is.na(Var), name, Var))
   
   fig <- plotly::plot_ly()
   
   for (v in unique(df_long$Var)) {
-    dfi <- df_long %>% filter(Var == v)
+    dfi <- df_long %>% dplyr::filter(Var == v)
     
     fig <- plotly::add_trace(
       fig,
@@ -170,8 +166,6 @@ This guide explains how to use the `godley` package to create a model with both 
 
 ```{r setup}
 library(godley)
-library(purrr)
-library(plotly)
 ```
 
 ### Base scenario

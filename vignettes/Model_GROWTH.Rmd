@@ -15,8 +15,6 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, include = FALSE}
-library(dplyr)
-
 plotly_style <- function(fig, title = NULL) {
   fig %>%
     plotly::layout(
@@ -54,7 +52,7 @@ do_plotly <- function(m, variables, plot = NULL,
   variables <- unique(c("time", variables))
 
   m1 <- m %>%
-    mutate(
+    dplyr::mutate(
       uk      = Y / K,
       Bsk     = Bs / K,
       VK      = V / K,
@@ -72,9 +70,9 @@ do_plotly <- function(m, variables, plot = NULL,
     tidyr::pivot_longer(cols = -time, names_to = "name", values_to = "value")
 
   if (is.null(plot)) {
-    m2 <- m1 %>% filter(name %in% setdiff(variables, "time"))
+    m2 <- m1 %>% dplyr::filter(name %in% setdiff(variables, "time"))
   } else {
-    m2 <- m1 %>% filter(name %in% plot)
+    m2 <- m1 %>% dplyr::filter(name %in% plot)
   }
 
   fig <- plotly::plot_ly()

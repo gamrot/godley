@@ -1,5 +1,5 @@
 ---
-title: "A More Advanced Open Economy Model"
+title: "Model Advanced OPEN"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Model Advanced OPEN}
@@ -15,8 +15,6 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, include = FALSE}
-library(dplyr)
-
 plotly_style <- function(fig, title = NULL) {
   fig %>%
     plotly::layout(
@@ -57,7 +55,7 @@ do_plotly <- function(m, scenario, variables, t0 = 1, start = NULL, end = NULL,
   end   <- if (is.null(end)) max(m1[["time"]]) else end
   
   df_long <- m1 %>%
-    mutate(tab_uk = x_uk - im_uk,
+    dplyr::mutate(tab_uk = x_uk - im_uk,
            tab_us = x_us - im_us,
            gab_uk = -psbr_uk,
            gab_us = -psbr_us,
@@ -69,9 +67,9 @@ do_plotly <- function(m, scenario, variables, t0 = 1, start = NULL, end = NULL,
            by_us = b_us_s / y_us,
            bukus_p = (b_ukus_d/xr_us)/v_uk,
            bukus_d = b_ukus_d / v_uk) %>%
-    filter(time >= start & time <= end) %>%
+    dplyr::filter(time >= start & time <= end) %>%
     tidyr::pivot_longer(cols = -time) %>%
-    filter(name %in% variables)
+    dplyr::filter(name %in% variables)
 
   fig <- plotly::plot_ly()
 
