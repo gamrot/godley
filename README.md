@@ -212,9 +212,9 @@ To simplify model creation, **godley** comes with a set of predefined templates.
 
 More examples inspired by Godley and Lavoie’s *Monetary Economics* can be found in the `vignettes/examples` directory of the package’s GitHub repository. These include a modification of the GROWTH model (Model `GROWTH2`: Making Monetary Policy Endogenous) and three alternative closures of the Advanced OPEN model. In addition to the fixed exchange rate closure with endogenous foreign reserves (Model `OPENFIX`, the template version), we estimate:
 
-* A flexible exchange rate closure (Model `OPENFLEX`)
-* An alternative fixed exchange rate closure in which the deficit country allows its interest rate to become endogenous (Model `OPENFIXR`)
-* Another alternative fixed exchange rate closure in which one country sets government expenditures endogenously (Model `OPENFIXG`)
+* A flexible exchange rate closure (Model `OPENFLEX`).
+* An alternative fixed exchange rate closure in which the deficit country allows its interest rate to become endogenous (Model `OPENFIXR`).
+* Another alternative fixed exchange rate closure in which one country sets government expenditures endogenously (Model `OPENFIXG`).
 
 ### Shocks ⚡
 
