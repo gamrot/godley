@@ -271,6 +271,7 @@ model_open <- model_open |>
 Then, add the behavioural equations and accounting identities that tie the system together. This block also includes the closure-specific equations for the fixed exchange-rate setup.
 ```{r}
 # Add equations
+# Note: Equation numbering follows that used in *Monetary Economics: An Integrated Approach to Credit, Money, Income, Production and Wealth* by Wynne Godley and Marc Lavoie.
 model_open <- model_open |>
   add_equation("yd_uk = (y_uk + r_uk[-1]*b_ukuk_d[-1] + xr_us*r_us[-1]*b_ukus_s[-1])*(1 - theta_uk) + (xr_us - xr_us[-1])*b_ukus_s[-1]", desc = "12.1 : Disposable income in UK") |>
   add_equation("yd_hs_uk = yd_uk + (xr_us - xr_us[-1])*b_ukus_s[-1]", desc = "12.2 : Haig-Simons disposable income in UK") |>

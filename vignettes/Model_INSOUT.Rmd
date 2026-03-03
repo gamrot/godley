@@ -323,6 +323,7 @@ model_insout <- model_insout |>
 Then, add the equations that define the relationships between variables.
 ```{r}
 # Add equations
+# Note: Equation numbering follows that used in *Monetary Economics: An Integrated Approach to Credit, Money, Income, Production and Wealth* by Wynne Godley and Marc Lavoie.
 model_insout <- model_insout |>
   # Firm's behavioral equations
   add_equation("y = sE + (invE - inv[-1])", desc = "10.1 : y is output, s sales, in inventories (measured as physical objects)") |>

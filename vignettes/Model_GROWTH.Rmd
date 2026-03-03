@@ -345,6 +345,7 @@ model_growth <- model_growth |>
 Then, add the equations — this is where you define how the variables relate to each other.
 ```{r}
 # Add equations
+# Note: Equation numbering follows that used in *Monetary Economics: An Integrated Approach to Credit, Money, Income, Production and Wealth* by Wynne Godley and Marc Lavoie.
 model_growth <- model_growth |>
   add_equation("Yk = Ske + INke - INk[-1]", desc = "11.1 : Real output") |>
   add_equation("Ske = beta*Sk + (1-beta)*Sk[-1]*(1 + (GRpr + RA))", desc = "11.2 : Expected real sales") |>

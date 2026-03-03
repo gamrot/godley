@@ -208,7 +208,13 @@ plot_cycles(model_sim)
 
 ### Templates 📝
 
-To streamline model creation, **godley** comes with predefined templates. Rather than starting with an empty model and manually adding equations each time, users can reuse a previously created model or choose from the classic SFC models (Godley & Lavoie, 2007) included in the package. These templates are available through the `template` argument in the `create_model()` function. The available templates include `SIM`, `SIMEX`, `PC`, `PCEX`, `LP`, `REG`, `OPEN`, `BMW`, `BMWK`, `DIS`, and `DISINF`, covering all models presented in Godley & Lavoie (2007).
+To simplify model creation, **godley** comes with a set of predefined templates. Instead of starting from scratch and manually adding equations each time, users can either reuse an existing model or select one of the classic SFC models from Godley & Lavoie (2007) included in the package. These templates are available via the `template` argument in the `create_model()` function. The available options include `SIM`, `SIMEX`, `PC`, `PCEX`, `LP`, `REG`, `OPEN`, `BMW`, `BMWK`, `DIS`, `DISINF`, `INSOUT`, `GROWTH`, and `OPENFIX` — each of them is thoroughly described in Godley & Lavoie (2007).
+
+More examples inspired by Godley and Lavoie’s *Monetary Economics* can be found in the `vignettes/examples` directory of the package’s GitHub repository. These include a modification of the GROWTH model (Model `GROWTH2`: Making Monetary Policy Endogenous) and three alternative closures of the Advanced OPEN model. In addition to the fixed exchange rate closure with endogenous foreign reserves (Model `OPENFIX`, the template version), we estimate:
+
+* A flexible exchange rate closure (Model `OPENFLEX`)
+* An alternative fixed exchange rate closure in which the deficit country allows its interest rate to become endogenous (Model `OPENFIXR`)
+* Another alternative fixed exchange rate closure in which one country sets government expenditures endogenously (Model `OPENFIXG`)
 
 ### Shocks ⚡
 

@@ -31,8 +31,7 @@ model_sim <- create_model(name = "SFC model")
 - `name`: Model name (required).  
 - `template`: Name of a model template to upload (optional).  
 
-*Note:* Users can skip manually adding variables and equations (steps 2 and 3 below) by uploading model attributes from pre-defined templates included in the package. Available templates include: `SIM`, `SIMEX`, `PC`, `LP`, `REG`, `OPEN`, `BMW`, `BMWK`, `DIS`, and `DISINF`.
-
+**Note**: Users may skip the manual addition of variables and equations (Steps 2 and 3 below) by loading model attributes from the predefined templates included in the package. The available templates are: `SIM`, `SIMEX`, `PC`, `LP`, `REG`, `OPEN`, `BMW`, `BMWK`, `DIS`, `DISINF`, `INSOUT`, `GROWTH`, and `OPENFIX`.
 
 ### 2. Adding variables
 Add variables to the model using the `add_variable()` function. It incorporates variables by creating new entries in the SFC tibble:
