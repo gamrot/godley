@@ -56,7 +56,7 @@ run_gauss_seidel <- function(m,
   checkmate::assert_numeric(tol)
   checkmate::assert_logical(verbose)
 
-  exprs <- purrr::map(calls$rhs, function(x) parse(text = x))
+  exs <- purrr::map(calls$rhs, function(x) parse(text = x))
 
   checks <- rep(0, length(calls$lhs))
   names(checks) <- calls$lhs
@@ -70,54 +70,54 @@ run_gauss_seidel <- function(m,
   block_names <- lapply(blocks, function(x) paste0("block", x))
 
   for (.i in 2:periods) {
-    for (.block in seq_along(blocks)) {
-      .id <- equations_id[[.block]]
+    for (.b in seq_along(blocks)) {
+      .ids <- equations_id[[.b]]
 
       # If 1 variable in the block, it is deterministic and no iteration is required.
-      if (length(.id) == 1) {
-        if (!checkmate::test_number(eval(exprs[[.id]]), na.ok = T)) next
+      if (length(.ids) == 1) {
+        if (!checkmate::test_number(eval(exs[[.ids]]), na.ok = T)) next
 
-        m[.i, .id] <- eval(exprs[[.id]])
+        m[.i, .ids] <- eval(exs[[.ids]])
 
-        if (is.na(m[.i, .id]) | !is.finite(m[.i, .id])) {
+        if (is.na(m[.i, .ids]) | !is.finite(m[.i, .ids])) {
           warning(
             "\n Gauss-Seidel algorithm failed.",
             "\n During computation NaN or Inf was obtained in ",
-            exprs[[.id]], " equation",
+            exs[[.ids]], " equation",
             "\n Please check if equations are correctly specified or change initial values"
           )
           return(m)
         }
       } else { # If cyclical block, use Gauss-Seidel algorithm
-        for (.ite in 1:max_iter) {
-          for (.v in .id) {
+        for (.j in 1:max_iter) {
+          for (.v in .ids) {
             if (verbose == TRUE) {
               # At the start of each period, print a header once
-              if (.ite == 1 && .v == .id[1]) {
+              if (.j == 1 && .v == .ids[1]) {
                 message("\nSimulating scenario expansion (1 of 1)")
                 message("Period: ", .i)
               }
 
               # At the start of each iteration, print an iteration header
-              if (.v == .id[1]) {
-                message(" Iteration: ", .ite)
+              if (.v == .ids[1]) {
+                message(" Iteration: ", .j)
               }
 
               # Print each variable on its own line, indented for clarity
               message("   ", calls$lhs[.v], ": value = ", m[.i, .v])
             }
 
-            if (!checkmate::test_number(suppressMessages(eval(exprs[[.v]])), na.ok = T)) next
+            if (!checkmate::test_number(suppressMessages(eval(exs[[.v]])), na.ok = T)) next
 
-            m[.i, .v] <- suppressMessages(eval(exprs[[.v]]))
+            m[.i, .v] <- suppressMessages(eval(exs[[.v]]))
 
             if (is.na(m[.i, .v]) | !is.finite(m[.i, .v])) {
               warning_message <- paste0(
                 "\nGauss-Seidel algorithm failed in cyclical block with variables: ",
-                paste0(calls$lhs[.id], collapse = ", "),
+                paste0(calls$lhs[.ids], collapse = ", "),
                 "\nDuring computation NaN or Inf was obtained in equation for ",
                 calls$lhs[.v], ":\n",
-                restore_equation(as.character(exprs[[.v]])),
+                restore_equation(as.character(exs[[.v]])),
                 "\nCheck if equations are correctly specified or change initial values."
               )
 
@@ -134,11 +134,11 @@ run_gauss_seidel <- function(m,
             checks[[.v]] <- suppressMessages(abs(m[.i, .v] - holdouts[[.v]]) / (holdouts[[.v]] + 1e-05))
           }
 
-          if (any(!is.finite(checks[.id]) | is.na(checks[.id]))) {
+          if (any(!is.finite(checks[.ids]) | is.na(checks[.ids]))) {
             warning(paste0(
               "Gauss-Seidel algorithm failed to converge.",
               "\nProblem occured in ",
-              paste0(.id, collapse = ", "),
+              paste0(.ids, collapse = ", "),
               " equations block.",
               "\n Please check the initial values to exclude any division by zero or other invalid operations.",
               "\n If the problem persists, try a different method."
@@ -146,10 +146,10 @@ run_gauss_seidel <- function(m,
             return(m)
           }
 
-          if (all(checks[.id] < tol)) {
+          if (all(checks[.ids] < tol)) {
             break
           } else {
-            for (.v in .id) {
+            for (.v in .ids) {
               holdouts[[.v]] <- m[.i, .v]
             }
           }

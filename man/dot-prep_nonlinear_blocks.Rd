@@ -13,10 +13,10 @@
 \value{
 A list containing:
 \describe{
-  \item{blocks}{numeric vector of unique block identifiers}
-  \item{equations_id}{list of equation ids per block}
+  \item{block_ids}{numeric vector of unique block identifiers}
+  \item{equation_ids}{list of equation ids per block}
   \item{cnd_statements}{vector of blocks containing conditional (if/else) expressions}
-  \item{blk}{list of preprocessed block data frames for solver evaluation}
+  \item{blocks}{list of preprocessed block data frames for solver evaluation}
   \item{exs_nl}{list of parsed non-linear expressions for each block}
   \item{exs_l}{list of parsed linear expressions for each block}
 }

@@ -11,18 +11,18 @@
 #'
 #' @return A list containing:
 #' \describe{
-#'   \item{blocks}{numeric vector of unique block identifiers}
-#'   \item{equations_id}{list of equation ids per block}
+#'   \item{block_ids}{numeric vector of unique block identifiers}
+#'   \item{equation_ids}{list of equation ids per block}
 #'   \item{cnd_statements}{vector of blocks containing conditional (if/else) expressions}
-#'   \item{blk}{list of preprocessed block data frames for solver evaluation}
+#'   \item{blocks}{list of preprocessed block data frames for solver evaluation}
 #'   \item{exs_nl}{list of parsed non-linear expressions for each block}
 #'   \item{exs_l}{list of parsed linear expressions for each block}
 #' }
 
 .prep_nonlinear_blocks <- function(calls) {
-  blocks <- unique(sort(calls$block))
+  block_ids <- unique(sort(calls$block))
   
-  equations_id <- purrr::map(blocks, ~calls[, "id"][calls[, "block"] == .x])
+  equation_ids <- purrr::map(block_ids, ~calls[, "id"][calls[, "block"] == .x])
   
   cnd_statements <- calls %>%
     dplyr::filter(
@@ -36,21 +36,21 @@
     dplyr::mutate(rhs2 = paste0(.data$rhs, " - ", .data$lhs2)) %>%
     dplyr::mutate(lhs2 = stringr::str_replace_all(.data$lhs2, c("\\[" = "\\\\[", "\\]" = "\\\\]")))
   
-  blk <- purrr::map(blocks, ~eqs2[eqs2$block == .x, ])
+  blocks <- purrr::map(block_ids, ~eqs2[eqs2$block == .x, ])
   
-  blk <- purrr::map(blk, prep_nonlinear_block)
+  blocks <- purrr::map(blocks, prep_nonlinear_block)
   
-  block_names <- purrr::map(blocks, ~paste0("block", .x))
+  block_names <- purrr::map(block_ids, ~paste0("block", .x))
   
   ## Parsed non-linear expressions
-  exs_nl <- purrr::map(blk, function(.X) purrr::map(.X$rhs2, ~rlang::parse_expr(.x)))
+  exs_nl <- purrr::map(blocks, function(.X) purrr::map(.X$rhs2, ~rlang::parse_expr(.x)))
   
   ## Parsed linear expressions
-  exs_l <- purrr::map(blk, function(.X) purrr::map(.X$rhs, ~rlang::parse_expr(.x)))
+  exs_l <- purrr::map(blocks, function(.X) purrr::map(.X$rhs, ~rlang::parse_expr(.x)))
 
   return(
-    list(blocks = blocks, equations_id = equations_id, 
-         cnd_statements = cnd_statements, blk = blk, exs_nl = exs_nl,exs_l = exs_l)
+    list(block_ids = block_ids, equation_ids = equation_ids, 
+         cnd_statements = cnd_statements, blocks = blocks, exs_nl = exs_nl,exs_l = exs_l)
     )
 }
 
@@ -238,15 +238,15 @@ simulate_scenario <- function(model,
     dimnames(m) <- list(c(1:periods), colnames(origin))
     
     if (method %in% c("Newton", "Broyden")) {
-      solver_dependencies <- .prep_nonlinear_blocks(calls)
+      deps <- .prep_nonlinear_blocks(calls)
     }
 
     if (method == "Gauss") {
       m <- run_gauss_seidel(m, calls, periods, max_iter, tol, verbose)
     } else if (method == "Newton") {
-      m <- run_newton(m, calls, periods, max_iter, tol, dependencies = solver_dependencies)
+      m <- run_newton(m, calls, periods, max_iter, tol, deps = deps)
     } else if (method == "Broyden") {
-      m <- run_broyden(m, calls, periods, max_iter, tol, dependencies = solver_dependencies)
+      m <- run_broyden(m, calls, periods, max_iter, tol, deps = deps)
     }
   
     if(any(model$equations$hidden)){

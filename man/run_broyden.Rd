@@ -4,7 +4,7 @@
 \alias{run_broyden}
 \title{Broyden solver wrapper}
 \usage{
-run_broyden(m, calls, periods, max_iter, tol, dependencies, ...)
+run_broyden(m, calls, periods, max_iter, tol, deps, ...)
 }
 \arguments{
 \item{m}{The initialized matrix obtained with \code{.make_matrix()}.}

@@ -39,15 +39,10 @@ run_newton <- function(m,
                        periods,
                        max_iter,
                        tol,
-                       dependencies,
+                       deps,
                        ...) {
   
-  blocks = dependencies$blocks
-  equations_id = dependencies$equations_id 
-  cnd_statements = dependencies$cnd_statements
-  blk = dependencies$blk
-  exs_nl = dependencies$exs_nl
-  exs_l = dependencies$exs_l
+  exs_l <- deps$exs_l
   
   block_foo <- function(.x) {
     .y <- numeric(length(exs))
@@ -58,37 +53,37 @@ run_newton <- function(m,
   }
   
   for (.i in 2:periods) {
-    for (.b in blocks) {
-      block <- blk[[.b]]
-      idvar_ <- equations_id[[.b]]
+    for (.b in deps$block_ids) {
+      block <- deps$blocks[[.b]]
+      .ids <- deps$equation_ids[[.b]]
 
       ## CND statement must be dealt separately
-      if (.b %in% cnd_statements) {
-        m[.i, idvar_] <- eval(exs_l[[.b]][[1]])
+      if (.b %in% deps$cnd_statements) {
+        m[.i, .ids] <- eval(exs_l[[.b]][[1]])
 
-        if (is.na(m[.i, idvar_]) | !is.finite(m[.i, idvar_])) {
+        if (is.na(m[.i, .ids]) | !is.finite(m[.i, .ids])) {
           stop("Newton algorithm failed
-During computation NaN or Inf was obtained in ", idvar_, " equation
+During computation NaN or Inf was obtained in ", .ids, " equation
 Please check if equations are correctly specified or change initial values")
         }
       } else {
         # If acyclical block --> deterministic
         if (vctrs::vec_size(block) == 1) {
-          m[.i, idvar_] <- eval(exs_l[[.b]][[1]])
+          m[.i, .ids] <- eval(exs_l[[.b]][[1]])
 
-          if (is.na(m[.i, idvar_]) | !is.finite(m[.i, idvar_])) {
+          if (is.na(m[.i, .ids]) | !is.finite(m[.i, .ids])) {
             stop("Newton algorithm failed
-During computation NaN or Inf was obtained in ", idvar_, " equation
+During computation NaN or Inf was obtained in ", .ids, " equation
 Please check if equations are correctly specified or change initial values")
           }
         } else {
-          xstart <- m[.i-1, idvar_]
-          exs <- exs_nl[[.b]]
+          xstart <- m[.i-1, .ids]
+          exs <- deps$exs_nl[[.b]]
 
           x <- .newton_solver(xstart, block_foo, max_iter, tol)
 
           for (.v in seq_along(x$x)) {
-            m[.i, idvar_[[.v]]] <- x$x[.v]
+            m[.i, .ids[[.v]]] <- x$x[.v]
           }
         }
       }
