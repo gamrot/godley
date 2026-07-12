@@ -26,7 +26,7 @@ simulate_scenario(
 
 \item{start_date}{character date to begin the simulation in the format "yyyy-mm-dd"}
 
-\item{method}{string name of method used to find solution chosen from: 'Gauss', 'Newton', defaults to 'Gauss'}
+\item{method}{string name of method used to find solution chosen from: 'Gauss', 'Newton', 'Broyden', defaults to 'Gauss'}
 
 \item{max_iter}{numeric maximum iterations allowed per period, defaults to 350}
 

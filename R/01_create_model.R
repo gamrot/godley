@@ -6,7 +6,9 @@
 #' @importFrom utils tail
 #'
 #' @param name string name for created SFC model object
-#' @param template string name of model template chosen from: 'SIM', 'PC', 'LP', 'REG', 'OPEN', 'BMW', 'BMWK', 'DIS', 'DISINF', 'SIMEX', 'PCEX'
+#' @param template string name of model template chosen from: 'SIM', 'SIMEX',
+#' 'PC', 'PCEX', 'LP', 'REG', 'OPEN', 'BMW', 'BMWK', 'DIS', 'DISINF',
+#' 'INSOUT', 'GROWTH', 'OPENFIX'
 #' or user created SFC model object to be used as a template
 #'
 #' @return SFC model object
@@ -25,8 +27,10 @@ create_model <- function(name = "SFC model",
         model <- suppressMessages(load_model_template(template))
         message("Model ", template, " loaded from template")
       } else {
-        stop("There is no template named ", template, "
-Please choose from: SIM, SIMEX, PC, PCEX, LP, REG, OPEN, BMW, BMWK, DIS, DISINF")
+        stop(
+          "There is no template named ", template,
+          "\nPlease choose from: SIM, SIMEX, PC, PCEX, LP, REG, OPEN, BMW, BMWK, DIS, DISINF, INSOUT, GROWTH, OPENFIX"
+        )
       }
     } else {
       checkmate::assert_class(template, "SFC")
