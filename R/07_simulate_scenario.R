@@ -102,7 +102,9 @@ d <- function(x) {
 #' @param tol numeric tolerance accepted to determine convergence, defaults to 1e-05
 #' @param hidden_tol numeric error tolerance to accept the equality of hidden equations, defaults to 0.1.
 #' @param rhtol A logical argument that defines whether the a relative measure is used to evaluate
-#' @param method string name of method used to find solution chosen from: 'Gauss', 'Newton', defaults to 'Gauss'
+#' @param method string name of method used to find solution chosen from:
+#' 'Gauss', 'Newton', 'Broyden', defaults to 'Gauss'.
+#' Note that not every method converges on every model.
 #' @param verbose logical to tell if additional model verbose should be displayed
 #'
 #' @return updated model containing simulated scenario(s)
@@ -237,17 +239,9 @@ simulate_scenario <- function(model,
 
     dimnames(m) <- list(c(1:periods), colnames(origin))
     
-    if (method %in% c("Newton", "Broyden")) {
-      deps <- .prep_nonlinear_blocks(calls)
-    }
-
-    if (method == "Gauss") {
-      m <- run_gauss_seidel(m, calls, periods, max_iter, tol, verbose)
-    } else if (method == "Newton") {
-      m <- run_newton(m, calls, periods, max_iter, tol, deps = deps)
-    } else if (method == "Broyden") {
-      m <- run_broyden(m, calls, periods, max_iter, tol, deps = deps)
-    }
+    deps <- .prep_nonlinear_blocks(calls)
+    m <- .run_nonlinear_solver(m, calls, periods, max_iter, tol,
+                               deps = deps, method = method, verbose = verbose)
   
     if(any(model$equations$hidden)){
       # Check if hidden is fulfilled

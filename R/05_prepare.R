@@ -69,7 +69,7 @@ find_adjacency <- function(equations) {
 #' @param adj adjacency matrix
 
 find_blocks <- function(adj) {
-  g <- igraph::graph.adjacency(adjmatrix = t(adj), mode = "directed")
+  g <- igraph::graph_from_adjacency_matrix(t(adj), mode = "directed")
   blocks <- igraph::components(g, "strong")$membership
   return(blocks)
 }

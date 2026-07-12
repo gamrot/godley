@@ -531,6 +531,11 @@ model_open <- model_open |>
 model_open <- simulate_scenario(model_open, scenario = "baseline",
                                   max_iter = 350, periods = 100, tol = 1e-15,
                                   hidden_tol = 0.1, method = "Broyden")
+# Note: OPENFIX does not converge with the default Gauss-Seidel method, 
+# so use method = "Newton" or method = "Broyden" here. 
+# This is a limitation of the algorithm, not of the model: Gauss-Seidel updates
+# the price equations one by one, and early in the iteration some price indices
+# go negative, so their logs return NaN and the simulation stops.
 
 # Experiments with the main fixed exchange rate closure
 # Scenario 1: Increase in the US propensity to import
