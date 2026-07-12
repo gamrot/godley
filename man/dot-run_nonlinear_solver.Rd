@@ -2,7 +2,7 @@
 % Please edit documentation in R/07_03_run_nonlinear_solver.R
 \name{.run_nonlinear_solver}
 \alias{.run_nonlinear_solver}
-\title{Simulation engine for all solution methods (Gauss, Newton, Broyden)}
+\title{Gauss-Seidel, Newton and Broyden solver wrapper}
 \usage{
 .run_nonlinear_solver(
   m,
@@ -17,44 +17,42 @@
 )
 }
 \arguments{
-\item{m}{The initialized matrix obtained with \code{prepare()} or
-\code{prepare_scenario_matrix()}.}
+\item{m}{the initialized matrix obtained with \code{prepare()} or \code{prepare_scenario_matrix()}}
 
-\item{calls}{Prepared equations obtained with \code{prepare()}.}
+\item{calls}{prepared equations with \code{prepare()}}
 
-\item{periods}{Total number of rows (periods) in the model.}
+\item{periods}{total number of rows (periods) in the model}
 
-\item{max_iter}{Maximum number of iterations allowed per block per period.}
+\item{max_iter}{maximum number of iterations allowed per block per period}
 
-\item{tol}{Tolerance accepted to determine convergence.}
+\item{tol}{tolerance accepted to determine convergence}
 
-\item{deps}{Solver-ready structures returned by \code{.prep_nonlinear_blocks()}.}
+\item{deps}{solver-ready structures obtained with \code{.prep_nonlinear_blocks()}}
 
-\item{method}{String, one of \code{"Gauss"}, \code{"Newton"} or \code{"Broyden"}.}
+\item{method}{name of the algorithm used to solve the cyclical blocks, 'Gauss', 'Newton' or 'Broyden'}
 
-\item{verbose}{If TRUE, print the progress of the algorithm (Gauss only).}
+\item{verbose}{if TRUE, print the progress of the algorithm (Gauss only)}
 }
 \value{
-Simulated scenario matrix.
+simulated scenario matrix
 }
 \description{
-Shared block-wise simulation loop. Deterministic (single-equation) blocks
-are evaluated directly. Cyclical blocks are handed to the requested
-algorithm: the Gauss-Seidel fixed-point iteration
-(\code{.gauss_solver()}), or a root-finding method on the residual system
-f(x) = 0 (\code{.newton_solver()} / \code{.broyden_solver()}).
+Gauss-Seidel, Newton and Broyden solver wrapper
 }
 \details{
-The two root-finding algorithms consume the same objective function but
-through different calling conventions imposed by \pkg{rootSolve}:
-\code{multiroot()} calls \code{f(x, ...)}, while \code{jacobian.full()}
-calls \code{func(time, y, parms)}. The canonical \code{block_foo()} below
-uses the wider three-argument convention and a one-argument adapter is
-constructed for the Newton path.
-
-The Gauss path evaluates the fixed-point expressions (\code{deps$exs_l})
-sequentially with immediate in-place updates; conditional (if/else)
-equations need no special handling there, so the \code{cnd_statements}
-shortcut applies only to the root-finding methods.
+This function simulates the model by recursion by using nested
+for loops. CND statements and acyclical blocks are deterministic and
+evaluated directly. The cyclical blocks of equations are solved with
+\code{.gauss_solver()}, \code{.newton_solver()} (based on \code{multiroot()}
+from \code{rootSolve}) or \code{.broyden_solver()}, depending on the method
+chosen by the user. Newton and Broyden share the same \code{block_foo()},
+but \code{multiroot()} expects \code{f(x)} while \code{jacobian.full()}
+expects \code{f(time, x, parms)}, hence the small wrapper on the Newton
+path. The Gauss-Seidel convergence trackers (\code{checks} and
+\code{holdouts}) live here and are carried across blocks and periods,
+like in the original \code{run_gauss_seidel()}.
+}
+\author{
+João Macalós
 }
 \keyword{internal}

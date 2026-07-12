@@ -2,7 +2,7 @@
 % Please edit documentation in R/07_02_gauss_solver.R
 \name{.gauss_solver}
 \alias{.gauss_solver}
-\title{Gauss-Seidel solver algorithm (single cyclical block, single period)}
+\title{Gauss Seidel algorithm}
 \usage{
 .gauss_solver(
   m,
@@ -18,44 +18,41 @@
 )
 }
 \arguments{
-\item{m}{The scenario matrix being simulated.}
+\item{m}{the initialized matrix obtained with \code{prepare()} or \code{prepare_scenario_matrix()}}
 
-\item{.i}{Current period (row of \code{m}).}
+\item{.i}{current period (row of the matrix)}
 
-\item{.ids}{Equation ids (matrix columns) of the cyclical block.}
+\item{.ids}{equation ids of the cyclical block}
 
-\item{exs}{List of parsed right-hand-side expressions, indexed by
-equation id.}
+\item{exs}{parsed equations, indexed by equation id}
 
-\item{checks}{Named numeric vector of last relative changes per variable.}
+\item{checks}{last relative change per variable}
 
-\item{holdouts}{Named numeric vector of reference values per variable.}
+\item{holdouts}{reference values per variable}
 
-\item{max_iter}{Maximum number of sweeps allowed for this block.}
+\item{max_iter}{maximum number of iterations allowed per block per period}
 
-\item{tol}{Tolerance accepted to determine convergence.}
+\item{tol}{tolerance accepted to determine convergence}
 
-\item{verbose}{If TRUE, print the progress of the algorithm.}
+\item{verbose}{if TRUE, print the progress of the algorithm}
 
-\item{calls}{Prepared equations (used for readable error messages).}
+\item{calls}{prepared equations with \code{prepare()}}
 }
 \value{
-A list with elements \code{m}, \code{checks}, \code{holdouts}
-  (updated state) and \code{converged} (logical).
+list with the updated matrix, checks, holdouts and a convergence flag
 }
 \description{
-Runs the Gauss-Seidel fixed-point iteration for one cyclical block of
-equations in one simulation period. Equations are evaluated one by one
-and results are written into the matrix immediately, so that subsequent
-equations within the same sweep see the updated values -- this sequential
-updating is the defining feature of the method and must not be
-parallelised or vectorised.
+Gauss Seidel algorithm
 }
 \details{
-The convergence bookkeeping (`checks`, `holdouts`) is deliberately
-engine-level state that persists across blocks and periods (matching the
-historical implementation); this function receives the current state and
-returns the updated one.
+This algorithm solves one cyclical block of equations by recursion.
+At each round of iteration, the values calculated
+are compared to the previous values. If the difference is below
+a tolerance value set by the user, the round of calculations have converged
+and the algorithm jump to the next block of equations.
+The algorithm modifies a matrix in place to optimize its performance.
+The convergence trackers (\code{checks}, \code{holdouts}) are shared across
+blocks and periods, so they are passed in and returned together with the matrix.
 }
 \author{
 João Macalós
