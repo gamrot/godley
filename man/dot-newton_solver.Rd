@@ -9,23 +9,17 @@
 \arguments{
 \item{.x0}{Vector with initial guess for x.}
 
-\item{.fn}{A function containing the system of equations, in the
-single-argument convention \code{function(.x)} required by
-\code{rootSolve::multiroot()}.}
+\item{.fn}{A function containing the system of equations.}
 
-\item{max_iter}{Maximum number of iterations allowed.}
+\item{max_iter}{Maximum number of iterations allowed}
 
 \item{tol}{A numeric value indicating the accepted tolerance to declare convergence.}
 }
-\value{
-A list with elements \code{x} (solution vector) and \code{converged}
-  (logical convergence heuristic).
-}
 \description{
-Thin wrapper around \code{rootSolve::multiroot()}.
+Newton solver algorithm
 }
 \note{
-Check https://www.math.usm.edu/lambers/mat419/lecture11.pdf for a quick
-reference on the algorithm.
+Check https://www.math.usm.edu/lambers/mat419/lecture11.pdf for a quick reference
+on the algorithm.
 }
 \keyword{internal}

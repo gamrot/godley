@@ -2,7 +2,7 @@
 % Please edit documentation in R/07_03_run_nonlinear_solver.R
 \name{.run_nonlinear_solver}
 \alias{.run_nonlinear_solver}
-\title{Root-finding engine for cyclical blocks (Newton and Broyden methods)}
+\title{Newton and Broyden solver wrapper}
 \usage{
 .run_nonlinear_solver(
   m,
@@ -16,36 +16,37 @@
 )
 }
 \arguments{
-\item{m}{The initialized matrix obtained with \code{prepare()} or
-\code{prepare_scenario_matrix()}.}
+\item{m}{the initialized matrix obtained with \code{prepare()} or \code{prepare_scenario_matrix()}}
 
-\item{calls}{Prepared equations obtained with \code{prepare()}.}
+\item{calls}{prepared equations with \code{prepare()}}
 
-\item{periods}{Total number of rows (periods) in the model.}
+\item{periods}{total number of rows (periods) in the model}
 
-\item{max_iter}{Maximum number of iterations allowed per block per period.}
+\item{max_iter}{maximum number of iterations allowed per block per period}
 
-\item{tol}{Tolerance accepted to determine convergence.}
+\item{tol}{tolerance accepted to determine convergence}
 
-\item{deps}{Solver-ready structures returned by \code{.prep_nonlinear_blocks()}.}
+\item{deps}{solver-ready structures obtained with \code{.prep_nonlinear_blocks()}}
 
-\item{method}{String, one of \code{"Newton"} or \code{"Broyden"}.}
+\item{method}{name of the algorithm used to solve the cyclical blocks, 'Newton' or 'Broyden'}
 }
 \value{
-Simulated scenario matrix.
+simulated scenario matrix
 }
 \description{
-Shared block-wise simulation loop for the non-linear solvers. Deterministic
-(single-equation) blocks and conditional (if/else) statements are evaluated
-directly; cyclical blocks are handed to the requested root-finding
-algorithm.
+Newton and Broyden solver wrapper
 }
 \details{
-The two algorithms consume the same objective function but through
-different calling conventions imposed by \pkg{rootSolve}:
-\code{multiroot()} calls \code{f(x, ...)}, while \code{jacobian.full()}
-calls \code{func(time, y, parms)}. The canonical \code{block_foo()} below
-uses the wider three-argument convention and a one-argument adapter is
-constructed for the Newton path.
+This function simulates the model by recursion by using nested
+for loops, the same way as \code{run_gauss_seidel()}. CND statements and
+acyclical blocks are deterministic and evaluated directly. The cyclical
+blocks of equations are solved with \code{.newton_solver()} (based on
+\code{multiroot()} from \code{rootSolve}) or with \code{.broyden_solver()}.
+Both methods share the same \code{block_foo()}, but \code{multiroot()}
+expects \code{f(x)} while \code{jacobian.full()} expects
+\code{f(time, x, parms)}, hence the small wrapper on the Newton path.
+}
+\author{
+João Macalós
 }
 \keyword{internal}

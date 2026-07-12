@@ -9,7 +9,9 @@ create_model(name = "SFC model", template)
 \arguments{
 \item{name}{string name for created SFC model object}
 
-\item{template}{string name of model template chosen from: 'SIM', 'PC', 'LP', 'REG', 'OPEN', 'BMW', 'BMWK', 'DIS', 'DISINF', 'SIMEX', 'PCEX'
+\item{template}{string name of model template chosen from: 'SIM', 'SIMEX',
+'PC', 'PCEX', 'LP', 'REG', 'OPEN', 'BMW', 'BMWK', 'DIS', 'DISINF',
+'INSOUT', 'GROWTH', 'OPENFIX'
 or user created SFC model object to be used as a template}
 }
 \value{
